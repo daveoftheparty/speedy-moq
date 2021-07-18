@@ -19,7 +19,7 @@ export function activate(context: ExtensionContext) {
     // The server is implemented in node
     const serverExe = 'dotnet';
     
-    const debugServerLocation = join("server", "BoilerMoq", "bin", "Debug", "netcoreapp3.1", "win10-x64", "BoilerMoq.exe");
+    const debugServerLocation = join("server", "BoilerMoq", "bin", "Debug", "netcoreapp3.1", "BoilerMoq.exe");
     const releaseServerLocation = join("server", "BoilerMoq", "bin", "Release", "netcoreapp3.1", "publish", "BoilerMoq.dll");
     const debugServer = context.asAbsolutePath(debugServerLocation);
     const releaseServer = context.asAbsolutePath(releaseServerLocation);
