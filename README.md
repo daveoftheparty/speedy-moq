@@ -1,38 +1,15 @@
-# LSP Example
+# boiler-moq
 
-Heavily documented sample code for https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
+First, this **is not** the readme that the client will see when browsing the Extension Marketplace... at least, I hope not.
 
-## Functionality
+That readme will go under the client folder, I believe...
 
-This Language Server works for plain text file. It has the following language features:
-- Completions
-- Diagnostics regenerated on each file change or configuration change
+Secondly, this code was originally copied from github.com/microsoft/vscode-extension-samples.git
 
-It also includes an End-to-End test.
+And then I'm going to heavily borrow from both:
+1) https://github.com/bjorkstromm/lsp-example.git (also see his original [blog post](https://martinbjorkstrom.com/posts/2018-11-29-creating-a-language-server))
+2) https://github.com/natanfudge/Auto-Using.git (less so this one, but will use some patterns to find server DLL etc)
 
-## Structure
 
-```
-.
-├── client // Language Client
-│   ├── src
-│   │   ├── test // End to End tests for Language Client / Server
-│   │   └── extension.ts // Language Client entry point
-├── package.json // The extension manifest.
-└── server // Language Server
-    └── src
-        └── server.ts // Language Server entry point
-```
+Thirdly, I love the way Martin Björkström (the blog poster from #1 above) simplified his file/directory structure to simply just be ./Client and ./Server, but I don't understand enough yet about the locations of all the "magic" files so... I'll stick with the messier Microsoft example for now.
 
-## Running the Sample
-
-- Run `npm install` in this folder. This installs all necessary npm modules in both the client and server folder
-- Open VS Code on this folder.
-- Press Ctrl+Shift+B to compile the client and server.
-- Switch to the Debug viewlet.
-- Select `Launch Client` from the drop down.
-- Run the launch config.
-- If you want to debug the server as well use the launch configuration `Attach to Server`
-- In the [Extension Development Host] instance of VSCode, open a document in 'plain text' language mode.
-  - Type `j` or `t` to see `Javascript` and `TypeScript` completion.
-  - Enter text content such as `AAA aaa BBB`. The extension will emit diagnostics for all words in all-uppercase.
