@@ -6,7 +6,7 @@
 'use strict';
 
 import { workspace, ExtensionContext, languages } from 'vscode';
-import { LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, TransportKind, InitializeParams } from 'vscode-languageclient';
+import { LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, TransportKind, InitializeParams } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
 import { join } from 'path';
 import { release } from 'os';
@@ -16,10 +16,9 @@ const friendlyName = 'Boiler Moq';
 
 export function activate(context: ExtensionContext) {
 
-    // The server is implemented in node
     const serverExe = 'dotnet';
     
-    const debugServerLocation = join("server", "BoilerMoq", "bin", "Debug", "netcoreapp3.1", "BoilerMoq.exe");
+    const debugServerLocation = join("server", "BoilerMoq", "bin", "Debug", "netcoreapp3.1", "BoilerMoq.dll");
     const releaseServerLocation = join("server", "BoilerMoq", "bin", "Release", "netcoreapp3.1", "publish", "BoilerMoq.dll");
     const debugServer = context.asAbsolutePath(debugServerLocation);
     const releaseServer = context.asAbsolutePath(releaseServerLocation);
