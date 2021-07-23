@@ -9,7 +9,10 @@ namespace BoilerMoq
 {
 	public class AnyCommandParams
 	{
+		// public string? EventName { get; set; }
 
+		// public Dictionary<string, string>? Properties { get; set; }
+		public object[] Params {get; set;}
 	}
 
 	public class AllCommandsHandler : ExecuteTypedCommandHandlerBase<AnyCommandParams>

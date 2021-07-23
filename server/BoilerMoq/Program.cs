@@ -24,7 +24,7 @@ namespace BoilerMoq
 				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
 				.WithServices(ConfigureServices)
 				.WithHandler<TextDocumentHandler>()
-				.WithHandler<CommandHandler>() // out of curiosity, leave this registered even though it's not working/doing anything...
+				// .WithHandler<CommandHandler>() // out of curiosity, leave this registered even though it's not working/doing anything...
 				.WithHandler<AllCommandsHandler>()
 				);
 
