@@ -40,6 +40,20 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
+		},
+		"commands": [
+			{
+				"command": "boilerMoq.go",
+				"title": "Do the Boiler thing",
+				"category": "boilerMoq"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "boilerMoq.go"
+				}
+			]
 		}
 	},
 	"scripts": {

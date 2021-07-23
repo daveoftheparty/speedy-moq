@@ -5,7 +5,7 @@
 // tslint:disable
 'use strict';
 
-import { workspace, ExtensionContext, languages } from 'vscode';
+import * as vscode from 'vscode';
 import { LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, TransportKind, InitializeParams } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
 import { join } from 'path';
@@ -14,7 +14,7 @@ import { release } from 'os';
 const vsCodeName = 'boilerMoq';
 const friendlyName = 'Boiler Moq';
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
 
     const serverExe = 'dotnet';
     
@@ -45,7 +45,7 @@ export function activate(context: ExtensionContext) {
         synchronize: {
             // Synchronize the setting section for our extension to the server
             configurationSection: vsCodeName,
-            fileEvents: workspace.createFileSystemWatcher('**/*.cs')
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/*.cs')
         },
     };
 
@@ -54,9 +54,15 @@ export function activate(context: ExtensionContext) {
 
     console.log("whelp my extension typescript file is loggin', Dave...");
     client.trace = Trace.Verbose;
-    const disposable = client.start();
+    const lsp = client.start();
+
+
+    const goBoiler = vscode.commands.registerCommand('boilerMoq.go', () => {
+        vscode.window.showInformationMessage('Hello World from boilerMoq.go!');
+        client.sendNotification("boilerMoq.go");
+    });
 
     // Push the disposable to the context's subscriptions so that the
     // client can be deactivated on extension deactivation
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(lsp, goBoiler);
 }

@@ -17,7 +17,7 @@ namespace BoilerMoq
 
 		public CommandHandler(ISerializer serializer, ILogger<CommandHandler> logger)
 		{
-			_command = "foo";
+			_command = "boilerMoq.go";
 			_serializer = serializer;
 			_logger = logger;
 		}
