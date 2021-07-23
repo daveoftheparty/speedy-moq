@@ -16,8 +16,11 @@ namespace BoilerMoq
 				options
 				.WithInput(Console.OpenStandardInput())
 				.WithOutput(Console.OpenStandardOutput())
-				.WithLoggerFactory(new LoggerFactory())
-				.AddDefaultLoggingProvider()
+				.ConfigureLogging(
+					x => x
+						.AddLanguageProtocolLogging()
+						.SetMinimumLevel(LogLevel.Debug)
+				)
 				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
 				.WithServices(ConfigureServices)
 				.WithHandler<TextDocumentHandler>()

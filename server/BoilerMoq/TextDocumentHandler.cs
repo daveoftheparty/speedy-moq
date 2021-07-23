@@ -23,9 +23,8 @@ namespace BoilerMoq
 			_logger = logger;
 			_logTestin = logTestin;
 			var logMessage = $"hello from {nameof(TextDocumentHandler)} ctor...";
-			_logger.LogTrace(logMessage);
-			_logger.LogCritical(logMessage);
-			_logger.LogWarning(logMessage);
+#warning why is SayFoo not working?
+			_logger.LogInformation(logMessage);
 			_logTestin.SayFoo();
 		}
 
@@ -41,13 +40,13 @@ namespace BoilerMoq
 
 		public override Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
 		{
-			_logger.LogTrace($"hey got a callback in DidChangeTextDocumentParams!");
+			_logger.LogInformation($"hey got a callback in DidChangeTextDocumentParams!");
 			return Unit.Task;
 		}
 
 		public override Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
 		{
-			_logger.LogTrace($"hey got a callback in DidSaveTextDocumentParams!");
+			_logger.LogInformation($"hey got a callback in DidSaveTextDocumentParams!");
 			return Unit.Task;
 		}
 
