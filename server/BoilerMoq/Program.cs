@@ -24,6 +24,7 @@ namespace BoilerMoq
 				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
 				.WithServices(ConfigureServices)
 				.WithHandler<TextDocumentHandler>()
+				.WithHandler<CommandHandler>()
 				);
 
 			await server.WaitForExit;
