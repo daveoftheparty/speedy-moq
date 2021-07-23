@@ -10,9 +10,6 @@
 	},
 	"publisher": "vscode-samples",
 	"categories": [],
-	"keywords": [
-		"multi-root ready"
-	],
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -31,7 +28,7 @@
 					"default": 100,
 					"description": "Controls the maximum number of problems produced by the server."
 				},
-				"languageServerExample.trace.server": {
+				"boilerMoq.trace.server": {
 					"scope": "window",
 					"type": "string",
 					"enum": [
@@ -39,7 +36,7 @@
 						"messages",
 						"verbose"
 					],
-					"default": "off",
+					"default": "verbose",
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}

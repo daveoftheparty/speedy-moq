@@ -6,6 +6,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 
 namespace BoilerMoq
 {
@@ -21,7 +22,10 @@ namespace BoilerMoq
 		{
 			_logger = logger;
 			_logTestin = logTestin;
-			_logger.LogTrace($"hello from {nameof(TextDocumentHandler)} ctor...");
+			var logMessage = $"hello from {nameof(TextDocumentHandler)} ctor...";
+			_logger.LogTrace(logMessage);
+			_logger.LogCritical(logMessage);
+			_logger.LogWarning(logMessage);
 			_logTestin.SayFoo();
 		}
 
@@ -56,7 +60,9 @@ namespace BoilerMoq
 		{
 			return new TextDocumentSyncRegistrationOptions
 			{
-				DocumentSelector = _documentSelector
+				DocumentSelector = _documentSelector,
+				Change = TextDocumentSyncKind.Full,
+				Save = new SaveOptions()
 			};
 		}
 	}
