@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
@@ -37,7 +36,7 @@ namespace BoilerMoq
 			_logger.LogWarning("Code action isn't setup yet!!!");
 			
 			#warning boilerMoq magic string...
-			#warning also, just fuckin great, omnisharp is using newtonsoft...
+			
 			var container = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic.Source.Equals("boilerMoq", StringComparison.OrdinalIgnoreCase))
 				.Select(diagnostic => {
@@ -47,10 +46,8 @@ namespace BoilerMoq
 						Title = title,
 						Diagnostics = new [] { diagnostic },
 						Kind = CodeActionKind.QuickFix,
-						
 						Edit = new WorkspaceEdit
 						{
-							// IDictionary<DocumentUri, IEnumerable<TextEdit>>?
 							Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
 							{
 								{
@@ -66,15 +63,6 @@ namespace BoilerMoq
 								}
 							}
 						}
-						// Command = new Command {
-						// 	Name = "chocolatey.open",
-						// 	Title = title,
-						// 	Arguments = new JArray(url)
-						// },
-						// Edit = new WorkspaceEdit
-						// {
-						// 	Changes = 
-						// }
 					});
 				}).ToArray() ?? Array.Empty<CommandOrCodeAction>();
 

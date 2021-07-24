@@ -15,28 +15,18 @@ namespace BoilerMoq
 {
 	public class TextDocumentHandler : TextDocumentSyncHandlerBase
 	{
-
-		
-
 		private readonly ILogger<TextDocumentHandler> _logger;
-		private readonly LogTestin _logTestin;
-
 		private readonly ILanguageServerFacade _router;
 
-		public TextDocumentHandler(ILogger<TextDocumentHandler> logger, LogTestin logTestin, ILanguageServerFacade router)
+		public TextDocumentHandler(ILogger<TextDocumentHandler> logger, ILanguageServerFacade router)
 		{
 			_logger = logger;
-			_logTestin = logTestin;
-			var logMessage = $"hello from {nameof(TextDocumentHandler)} ctor...";
 			_router = router;
-#warning why is SayFoo not working?
-			_logger.LogInformation(logMessage);
-			_logTestin.SayFoo();
+			_logger.LogInformation($"hello from {nameof(TextDocumentHandler)} ctor...");
 		}
 
 		private readonly DocumentSelector _documentSelector = new DocumentSelector(new DocumentFilter { Pattern = "**/*.cs" });
 
-		// absolutely zero clue what this method is for or why I'm forced to override it...
 		public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri) => new TextDocumentAttributes(uri, "csharp");
 		
 		public override Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
@@ -48,14 +38,14 @@ namespace BoilerMoq
 		{
 			_logger.LogInformation($"hey got a callback in DidChangeTextDocumentParams!");
 
-			FuckOmnisharp(request.TextDocument.Uri, "DidChangeTextDocumentParams");
+			PublishDiagnostics(request.TextDocument.Uri, "DidChangeTextDocumentParams");
 			return Unit.Task;
 		}
 
 		public override Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
 		{
 			_logger.LogInformation($"hey got a callback in DidSaveTextDocumentParams!");
-			FuckOmnisharp(request.TextDocument.Uri, "DidSaveTextDocumentParams");
+			PublishDiagnostics(request.TextDocument.Uri, "DidSaveTextDocumentParams");
 			return Unit.Task;
 		}
 
@@ -74,7 +64,7 @@ namespace BoilerMoq
 			};
 		}
 
-		private void FuckOmnisharp(DocumentUri uri, string who)
+		private void PublishDiagnostics(DocumentUri uri, string who)
 		{
 			// let's publish some diagnostics...
 			_logger.LogInformation($"trying to publish, yo, from: {who}");
@@ -85,7 +75,6 @@ namespace BoilerMoq
 					new Diagnostic
 					{
 						Code = "BoilerMoq_0xId",
-						// CodeDescription = "I'm a diag!",
 						Message = "I'm a diagnostic message",
 						Severity = DiagnosticSeverity.Warning,
 						Source = "boilerMoq",

@@ -24,8 +24,6 @@ namespace BoilerMoq
 				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
 				.WithServices(ConfigureServices)
 				.WithHandler<TextDocumentHandler>()
-				// .WithHandler<CommandHandler>() // out of curiosity, leave this registered even though it's not working/doing anything...
-				.WithHandler<AllCommandsHandler>()
 				.WithHandler<CodeActionHandler>()
 				);
 
@@ -34,22 +32,6 @@ namespace BoilerMoq
 
 		static void ConfigureServices(IServiceCollection services)
 		{
-			services.AddSingleton<LogTestin>();
-			// services.AddSingleton<TextDocumentHandler>();
 		}
-	}
-
-#warning this ol' class here can go later...
-	public class LogTestin
-	{
-		private readonly ILogger<LogTestin> _logger;
-
-		public LogTestin(ILogger<LogTestin> logger)
-		{
-			logger.LogInformation($"inside {nameof(LogTestin)} ctor");
-			_logger = logger;
-		}
-
-		public void SayFoo() => _logger.LogInformation($"{nameof(LogTestin)} says howdy, mate!");
 	}
 }
