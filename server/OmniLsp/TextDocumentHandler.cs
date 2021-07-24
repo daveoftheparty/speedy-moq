@@ -25,10 +25,28 @@ namespace OmniLsp
 			_logger.LogInformation($"hello from {nameof(TextDocumentHandler)} ctor...");
 		}
 
-		private readonly DocumentSelector _documentSelector = new DocumentSelector(new DocumentFilter { Pattern = "**/*.cs" });
+		#region magic strings
 
-		public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri) => new TextDocumentAttributes(uri, "csharp");
+		private const string _magicLanguage = "csharp";
+		private const string _magicFileGlob = "**/*.cs";
 		
+		#endregion magic strings
+
+		#region TextDocumentSyncHandlerBase overrides
+
+		private readonly DocumentSelector _documentSelector = new DocumentSelector(new DocumentFilter { Pattern = _magicFileGlob });
+
+		public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri) => new TextDocumentAttributes(uri, _magicLanguage);
+		
+		protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(SynchronizationCapability capability, ClientCapabilities clientCapabilities)
+		{
+			return new TextDocumentSyncRegistrationOptions
+			{
+				DocumentSelector = DocumentSelector.ForLanguage(_magicLanguage),
+				Change = TextDocumentSyncKind.Full
+			};
+		}
+
 		public override Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
 		{
 			return Unit.Task;
@@ -54,15 +72,7 @@ namespace OmniLsp
 			return Unit.Task;
 		}
 
-		protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(SynchronizationCapability capability, ClientCapabilities clientCapabilities)
-		{
-			return new TextDocumentSyncRegistrationOptions
-			{
-				DocumentSelector = _documentSelector,
-				Change = TextDocumentSyncKind.Full,
-				Save = new SaveOptions()
-			};
-		}
+		#endregion TextDocumentSyncHandlerBase overrides
 
 		private bool _alreadyDoneDidIt = false;
 		private void PublishDiagnostics(DocumentUri uri, string who)
