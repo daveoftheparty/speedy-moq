@@ -64,9 +64,17 @@ namespace BoilerMoq
 			};
 		}
 
+		private bool _alreadyDoneDidIt = false;
 		private void PublishDiagnostics(DocumentUri uri, string who)
 		{
 			// let's publish some diagnostics...
+			if(_alreadyDoneDidIt)
+			{
+				_logger.LogInformation($"we've already published this diagnostic before!: {who}");
+				return;
+			}
+
+			_alreadyDoneDidIt = true;
 			_logger.LogInformation($"trying to publish, yo, from: {who}");
 			var diagnostics = new List<Diagnostic>();
 			try
