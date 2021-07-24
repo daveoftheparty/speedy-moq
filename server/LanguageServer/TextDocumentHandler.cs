@@ -11,7 +11,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using System.Collections.Generic;
 using System;
 
-namespace BoilerMoq
+namespace LanguageServer
 {
 	public class TextDocumentHandler : TextDocumentSyncHandlerBase
 	{
