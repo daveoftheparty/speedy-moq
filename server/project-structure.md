@@ -4,20 +4,21 @@ C# projects:
 
 - server
 	- Features
-	- LanguageServer
 	- IntegrationTests.Features??
+	- OmniLsp
 	- UnitTests.Features
-	- UnitTests.LanguageServer??
+	- UnitTests.OmniLsp??
 	- GuineaPig
 
 A few of these are self-explanatory, for those that arent:
 - Features is where the work of the extension/code generation happens
-- Language Server uses some existing library to communicate with the IDE
+- OmniLsp communicates with the IDE
 - GuineaPig is just a project to run manual UI tests inside the extension host during development/debugging
 
 For now:
-LanguageServer will use OmniSharp to talk to the IDE.
 
-All communication between LanguageServer <==> Features will go through simple c# interfaces.
+All communication between OmniLsp <==> Features will go through simple c# interfaces.
 
-Therefore, the LanguageServer is responsible for adapting to the Features interfaces.
+Therefore, the OmniLsp is responsible for adapting to the Features interfaces.
+
+I feel like I've witnessed buggy behavior with OmniSharp's LSP implementation and I want to insulate from that.

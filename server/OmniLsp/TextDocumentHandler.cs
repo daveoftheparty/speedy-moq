@@ -11,7 +11,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using System.Collections.Generic;
 using System;
 
-namespace LanguageServer
+namespace OmniLsp
 {
 	public class TextDocumentHandler : TextDocumentSyncHandlerBase
 	{

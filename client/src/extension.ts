@@ -13,13 +13,14 @@ import { release } from 'os';
 
 const vsCodeName = 'boilerMoq';
 const friendlyName = 'Boiler Moq';
+const CSharpPackageName = 'OmniLsp';
 
 export function activate(context: vscode.ExtensionContext) {
 
     const serverExe = 'dotnet';
     
-    const debugServerLocation = join("server", "BoilerMoq", "bin", "Debug", "netcoreapp3.1", "BoilerMoq.dll");
-    const releaseServerLocation = join("server", "BoilerMoq", "bin", "Release", "netcoreapp3.1", "publish", "BoilerMoq.dll");
+    const debugServerLocation = join("server", CSharpPackageName, "bin", "Debug", "netcoreapp3.1", `${CSharpPackageName}.dll`);
+    const releaseServerLocation = join("server", CSharpPackageName, "bin", "Release", "netcoreapp3.1", "publish", `${CSharpPackageName}.dll`);
     const debugServer = context.asAbsolutePath(debugServerLocation);
     const releaseServer = context.asAbsolutePath(releaseServerLocation);
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 using OmniSharp.Extensions.LanguageServer.Server;
 
-namespace LanguageServer
+namespace OmniLsp
 {
 	class Program
 	{
