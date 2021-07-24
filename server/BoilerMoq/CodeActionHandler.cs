@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
@@ -24,7 +26,9 @@ namespace BoilerMoq
 		{
 			return new CodeActionRegistrationOptions
 			{
-				DocumentSelector = new DocumentSelector(new DocumentFilter { Pattern = "**/*.cs" } )
+				DocumentSelector = new DocumentSelector(new DocumentFilter { Pattern = "**/*.cs" } ),
+				CodeActionKinds = new Container<CodeActionKind>(CodeActionKind.QuickFix),
+				ResolveProvider = false
 			};
 		}
 
@@ -43,11 +47,30 @@ namespace BoilerMoq
 						Title = title,
 						Diagnostics = new [] { diagnostic },
 						Kind = CodeActionKind.QuickFix,
-						Command = new Command {
-							Name = "chocolatey.open",
-							Title = title,
-							Arguments = new JArray(url)
-						},
+						
+						Edit = new WorkspaceEdit
+						{
+							// IDictionary<DocumentUri, IEnumerable<TextEdit>>?
+							Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+							{
+								{
+									request.TextDocument.Uri,
+									new List<TextEdit>
+									{
+										new TextEdit
+										{
+											NewText = "fuckit!!!",
+											Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(new Position(2,3), new Position(2,9))
+										}
+									}
+								}
+							}
+						}
+						// Command = new Command {
+						// 	Name = "chocolatey.open",
+						// 	Title = title,
+						// 	Arguments = new JArray(url)
+						// },
 						// Edit = new WorkspaceEdit
 						// {
 						// 	Changes = 

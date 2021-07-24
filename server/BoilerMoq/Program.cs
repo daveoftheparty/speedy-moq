@@ -26,6 +26,7 @@ namespace BoilerMoq
 				.WithHandler<TextDocumentHandler>()
 				// .WithHandler<CommandHandler>() // out of curiosity, leave this registered even though it's not working/doing anything...
 				.WithHandler<AllCommandsHandler>()
+				.WithHandler<CodeActionHandler>()
 				);
 
 			await server.WaitForExit;
