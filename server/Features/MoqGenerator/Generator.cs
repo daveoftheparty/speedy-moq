@@ -16,6 +16,17 @@ namespace Features.MoqGenerator
 		public async Task<FullTextReplaceResponse> GetReplacementAsync(string filePath, string text)
 		{
 			/*
+				main behavior of this class outside of services it calls is to perform the text replacement
+				it shouldn't need to know anything about calculating changes or compilation syntax, just, if there
+				are changes to make to the incoming text, make the changes and return the new text..
+
+
+				decompose:
+					IMockText.GetChanges();
+
+					then perform text replaces...
+
+				older thoughts:
 				if ! bool IHasFileChanged(uri fileUri, string text) // store a dictionary of file URI and MD5?
 					return orig text / text + IsChanged bool sentinel?
 

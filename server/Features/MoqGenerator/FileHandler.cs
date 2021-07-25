@@ -10,6 +10,7 @@ namespace Features.MoqGenerator
 {
 	public class FileHandler : IFileHandler
 	{
+		#warning when working on IMockText implementation, I realized the LSP will send a doc version, should use that instead of calc hash... I put a version property on the FileText model
 		private readonly Dictionary<string, string> _md5ByPath = new();
 		
 		public async Task<bool> HasFileChangedAsync(string filePath, string text)
