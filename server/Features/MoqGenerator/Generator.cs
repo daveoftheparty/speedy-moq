@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
 using Features.Interfaces;
+using Features.Model;
 
 namespace Features.MoqGenerator
 {
 	public class Generator : IFullTextReplace
 	{
-		public async Task<string> GetReplacementAsync(string text)
+		public async Task<FullTextReplaceResponse> GetReplacementAsync(string filePath, string text)
 		{
 			/*
 				if ! bool IHasFileChanged(uri fileUri, string text) // store a dictionary of file URI and MD5?
@@ -18,7 +19,7 @@ namespace Features.MoqGenerator
 				
 				insert mockText into original input text and return...
 			*/
-			return await Task.FromResult(text);
+			return await Task.FromResult( new FullTextReplaceResponse() { IsChanged = true, Text = text });
 		}
 	}
 }

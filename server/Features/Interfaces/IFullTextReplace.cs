@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using Features.Model;
 
 namespace Features.Interfaces
 {
 	public interface IFullTextReplace
 	{
-		Task<string> GetReplacementAsync(string text);
+		Task<FullTextReplaceResponse> GetReplacementAsync(string filePath, string text);
 	}
 }

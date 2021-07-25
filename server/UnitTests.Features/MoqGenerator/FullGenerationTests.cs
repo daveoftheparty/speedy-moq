@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,8 +15,11 @@ namespace UnitTests.Features.MoqGenerator
 		public async Task Go((string input, string expected, string testId) test)
 		{
 			var generator = new Generator();
-			var actual = await generator.GetReplacementAsync(test.input);
-			Assert.AreEqual(test.expected, actual, $"TestId: {test.testId}");
+			var actual = await generator.GetReplacementAsync(Guid.NewGuid().ToString(), test.input);
+			
+			var testMessage = $"TestId: {test.testId}";
+			Assert.IsTrue(actual.IsChanged, testMessage);
+			Assert.AreEqual(test.expected, actual.Text, testMessage);
 		}
 
 		public static IEnumerable<(string input, string expected, string testId)> FileTests
