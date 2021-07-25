@@ -1,17 +1,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 using NUnit.Framework;
+
+using Generator = Features.MoqGenerator.Generator;
 
 namespace UnitTests.Features.MoqGenerator
 {
 	public class FullGenerationTests
 	{
 		[TestCaseSource(nameof(FileTests))]
-		public void Go((string input, string expected, string testId) test)
+		public async Task Go((string input, string expected, string testId) test)
 		{
-			Assert.AreEqual(test.expected, test.input, $"TestId: {test.testId}");
+			var generator = new Generator();
+			var actual = await generator.GetReplacementAsync(test.input);
+			Assert.AreEqual(test.expected, actual, $"TestId: {test.testId}");
 		}
 
 		public static IEnumerable<(string input, string expected, string testId)> FileTests
