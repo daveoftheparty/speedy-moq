@@ -5,5 +5,7 @@
 	"typescript.preferences.quoteStyle": "single",
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": true
-	}
+	},
+	"dotnet-test-explorer.testProjectPath": "**/*Tests.*.csproj"
 }
+

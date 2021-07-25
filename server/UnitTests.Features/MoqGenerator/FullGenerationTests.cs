@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-
-using Generator = Features.MoqGenerator.Generator;
+using Features.MoqGenerator;
 
 namespace UnitTests.Features.MoqGenerator
 {
