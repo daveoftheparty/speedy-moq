@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-
+using System.Threading.Tasks;
 using Features.Interfaces;
 
 namespace Features.MoqGenerator
@@ -10,9 +11,10 @@ namespace Features.MoqGenerator
 	public class FileHandler : IFileHandler
 	{
 		private readonly Dictionary<string, string> _md5ByPath = new();
-		public bool HasFileChanged(string filePath, string text)
+		
+		public async Task<bool> HasFileChangedAsync(string filePath, string text)
 		{
-			var hash = GetMd5(text);
+			var hash = await GetMd5Async(text);
 
 			if(!_md5ByPath.TryGetValue(filePath, out var md5))
 			{
@@ -29,12 +31,15 @@ namespace Features.MoqGenerator
 			return false;
 		}
 
-		private string GetMd5(string text)
+		private async Task<string> GetMd5Async(string text)
 		{
 			using (var md5 = MD5.Create())
 			{
-				var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(text));
-				return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+				using(var stream = new MemoryStream(Encoding.UTF8.GetBytes(text)))
+				{
+					var hash = await md5.ComputeHashAsync(stream);
+					return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+				}
 			}
 		}
 	}

@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Features.Interfaces
 {
 	public interface IFileHandler
 	{
-		bool HasFileChanged(string filePath, string text);
+		Task<bool> HasFileChangedAsync(string filePath, string text);
 	}
 }

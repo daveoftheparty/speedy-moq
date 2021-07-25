@@ -1,39 +1,40 @@
 using NUnit.Framework;
 using Features.MoqGenerator;
+using System.Threading.Tasks;
 
 namespace UnitTests.Features.MoqGenerator
 {
 	public class FileHandlerTests
 	{
 		[Test]
-		public void FirstFileReturnsTrue()
+		public async Task FirstFileReturnsTrue()
 		{
 			var handler = new FileHandler();
-			Assert.IsTrue(handler.HasFileChanged("somefile.txt", "abc"));
+			Assert.IsTrue(await handler.HasFileChangedAsync("somefile.txt", "abc"));
 		}
 
 		[Test]
-		public void SameFileReturnsFalse()
+		public async Task SameFileReturnsFalse()
 		{
 			var handler = new FileHandler();
-			Assert.IsTrue(handler.HasFileChanged("somefile.txt", "abc"));
-			Assert.IsFalse(handler.HasFileChanged("somefile.txt", "abc"));
+			Assert.IsTrue(await handler.HasFileChangedAsync("somefile.txt", "abc"));
+			Assert.IsFalse(await handler.HasFileChangedAsync("somefile.txt", "abc"));
 		}
 
 		[Test]
-		public void DifferentFileSameTextReturnsTrue()
+		public async Task DifferentFileSameTextReturnsTrue()
 		{
 			var handler = new FileHandler();
-			Assert.IsTrue(handler.HasFileChanged("somefile.txt", "abc"));
-			Assert.IsTrue(handler.HasFileChanged("other.txt", "abc"));
+			Assert.IsTrue(await handler.HasFileChangedAsync("somefile.txt", "abc"));
+			Assert.IsTrue(await handler.HasFileChangedAsync("other.txt", "abc"));
 		}
 
 		[Test]
-		public void NewTextReturnsTrue()
+		public async Task NewTextReturnsTrue()
 		{
 			var handler = new FileHandler();
-			Assert.IsTrue(handler.HasFileChanged("somefile.txt", "abc"));
-			Assert.IsTrue(handler.HasFileChanged("somefile.txt", "abc defg"));
+			Assert.IsTrue(await handler.HasFileChangedAsync("somefile.txt", "abc"));
+			Assert.IsTrue(await handler.HasFileChangedAsync("somefile.txt", "abc defg"));
 		}
 	}
 }
