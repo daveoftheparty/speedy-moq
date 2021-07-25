@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Features.Model;
 
-namespace Features.Interfaces
+namespace Features.Interfaces.Lsp
 {
 	public interface IFullTextReplace
 	{

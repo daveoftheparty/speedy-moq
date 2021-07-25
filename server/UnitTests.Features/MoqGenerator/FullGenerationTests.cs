@@ -13,8 +13,7 @@ namespace UnitTests.Features.MoqGenerator
 		[TestCaseSource(nameof(FileTests))]
 		public async Task Go((string input, string expected, string testId) test)
 		{
-			var fileHandler = GeneratorMocks.GetFileHandlerMock(true);
-			var generator = new Generator(fileHandler.mock.Object);
+			var generator = new Generator();
 
 			var actual = await generator.GetReplacementAsync(Guid.NewGuid().ToString(), test.input);
 			

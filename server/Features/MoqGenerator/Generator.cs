@@ -1,18 +1,11 @@
 using System.Threading.Tasks;
-using Features.Interfaces;
+using Features.Interfaces.Lsp;
 using Features.Model;
 
 namespace Features.MoqGenerator
 {
 	public class Generator : IFullTextReplace
 	{
-		private readonly IFileHandler _fileHandler;
-
-		public Generator(IFileHandler fileHandler)
-		{
-			_fileHandler = fileHandler;
-		}
-
 		public async Task<FullTextReplaceResponse> GetReplacementAsync(string filePath, string text)
 		{
 			/*
@@ -39,12 +32,8 @@ namespace Features.MoqGenerator
 				
 				insert mockText into original input text and return...
 			*/
-			if(!await _fileHandler.HasFileChangedAsync(filePath, text))
-			{
-				return new FullTextReplaceResponse() { IsChanged = false, Text = text };
-			}
 
-			return new FullTextReplaceResponse() { IsChanged = true, Text = text };
+			return await Task.FromResult(new FullTextReplaceResponse() { IsChanged = true, Text = text });
 		}
 	}
 }

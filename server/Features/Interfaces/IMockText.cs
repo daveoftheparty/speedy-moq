@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
 using Features.Model;
+using Features.Model.Lsp;
 
 namespace Features.Interfaces
 {
 	public interface IMockText
 	{
-		Task<GetInterfaceNamesResponse> GetInterfaceNamesAsync(FileText fileText);
-		// Task<bool> AlreadyMockedAsync(GetAlreadyMockedRequest request);
-		Task<GetMockTextResponse> GetMockTextAsync(GetMockTextRequest request);
+		Task<GetMockTextResponse> GetMockTextAsync(TextDocumentItem item);
 	}
 }
