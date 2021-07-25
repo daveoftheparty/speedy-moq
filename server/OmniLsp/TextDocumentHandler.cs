@@ -1,15 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
+
 using Microsoft.Extensions.Logging;
+
+using MediatR;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using System.Collections.Generic;
-using System;
 
 namespace OmniLsp
 {
@@ -56,6 +59,8 @@ namespace OmniLsp
 		{
 			_logger.LogInformation($"hey got a callback in DidChangeTextDocumentParams!");
 
+			DumpRequest<DidChangeTextDocumentParams>(request);
+			
 			PublishDiagnostics(request.TextDocument.Uri, "DidChangeTextDocumentParams");
 			return Unit.Task;
 		}
@@ -63,6 +68,8 @@ namespace OmniLsp
 		public override Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
 		{
 			_logger.LogInformation($"hey got a callback in DidSaveTextDocumentParams!");
+
+			DumpRequest<DidSaveTextDocumentParams>(request);
 			PublishDiagnostics(request.TextDocument.Uri, "DidSaveTextDocumentParams");
 			return Unit.Task;
 		}
@@ -73,6 +80,38 @@ namespace OmniLsp
 		}
 
 		#endregion TextDocumentSyncHandlerBase overrides
+
+
+		private void DumpRequest<T>(T request)
+		{
+			_logger.LogInformation($"request from {typeof(T).Name} event");
+			_logger.LogInformation(JsonSerializer.Serialize(request));
+
+
+			/*
+			an example request:
+				{
+					"TextDocument": {
+						"Version": 26,
+						"Uri": {
+						"Scheme": "file",
+						"Authority": "",
+						"Path": "/e:/temp/junk.cs",
+						"Query": "",
+						"Fragment": ""
+						}
+					},
+					"ContentChanges": [
+						{
+						"Range": null,
+						"RangeLength": 0,
+						"Text": "namespace Wtf public class WtfChuck (full file here...)"
+						}
+					]
+				}
+			*/
+		}
+
 
 		private bool _alreadyDoneDidIt = false;
 		private void PublishDiagnostics(DocumentUri uri, string who)
