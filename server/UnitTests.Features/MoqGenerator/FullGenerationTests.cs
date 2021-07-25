@@ -22,7 +22,7 @@ namespace UnitTests.Features.MoqGenerator
 		{
 			get
 			{
-				const string path = "TestData/";
+				const string path = "TestData/FullGenerationTests/";
 
 				var files = Directory
 					.EnumerateFiles(path)
