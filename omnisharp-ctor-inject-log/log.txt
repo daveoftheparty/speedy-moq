@@ -1,0 +1,1428 @@
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 756,
+  "Command": "/v2/getcodeactions",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 8,
+    "Column": 42
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (2.6496ms) ************ 
+{
+  "Request_seq": 756,
+  "Command": "/v2/getcodeactions",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "CodeActions": [
+      {
+        "Identifier": "Generate Equals(object)",
+        "Name": "Generate Equals(object)"
+      },
+      {
+        "Identifier": "Generate Equals and GetHashCode",
+        "Name": "Generate Equals and GetHashCode"
+      },
+      {
+        "Identifier": "Encapsulate field: '_toldYouSo' (and use property)",
+        "Name": "Encapsulate field: '_toldYouSo' (and use property)"
+      },
+      {
+        "Identifier": "Encapsulate field: '_toldYouSo' (but still use field)",
+        "Name": "Encapsulate field: '_toldYouSo' (but still use field)"
+      },
+      {
+        "Identifier": "Add parameters to 'Hi(IMakeItSo)'",
+        "Name": "Add parameters to 'Hi(IMakeItSo)'"
+      },
+      {
+        "Identifier": "Add optional parameters to 'Hi(IMakeItSo)'",
+        "Name": "Add optional parameters to 'Hi(IMakeItSo)'"
+      },
+      {
+        "Identifier": "Generate constructor 'Hi(IToldYouSo)'",
+        "Name": "Generate constructor 'Hi(IToldYouSo)'"
+      },
+      {
+        "Identifier": "Extract base class...",
+        "Name": "Extract base class..."
+      }
+    ]
+  },
+  "Seq": 3755,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 757,
+  "Command": "/v2/getcodeactions",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 8,
+    "Column": 42
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (2.5238ms) ************ 
+{
+  "Request_seq": 757,
+  "Command": "/v2/getcodeactions",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "CodeActions": [
+      {
+        "Identifier": "Generate Equals(object)",
+        "Name": "Generate Equals(object)"
+      },
+      {
+        "Identifier": "Generate Equals and GetHashCode",
+        "Name": "Generate Equals and GetHashCode"
+      },
+      {
+        "Identifier": "Encapsulate field: '_toldYouSo' (and use property)",
+        "Name": "Encapsulate field: '_toldYouSo' (and use property)"
+      },
+      {
+        "Identifier": "Encapsulate field: '_toldYouSo' (but still use field)",
+        "Name": "Encapsulate field: '_toldYouSo' (but still use field)"
+      },
+      {
+        "Identifier": "Add parameters to 'Hi(IMakeItSo)'",
+        "Name": "Add parameters to 'Hi(IMakeItSo)'"
+      },
+      {
+        "Identifier": "Add optional parameters to 'Hi(IMakeItSo)'",
+        "Name": "Add optional parameters to 'Hi(IMakeItSo)'"
+      },
+      {
+        "Identifier": "Generate constructor 'Hi(IToldYouSo)'",
+        "Name": "Generate constructor 'Hi(IToldYouSo)'"
+      },
+      {
+        "Identifier": "Extract base class...",
+        "Name": "Extract base class..."
+      }
+    ]
+  },
+  "Seq": 3770,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 758,
+  "Command": "/codecheck",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.3175ms) ************ 
+{
+  "Request_seq": 758,
+  "Command": "/codecheck",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": []
+  },
+  "Seq": 3778,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 759,
+  "Command": "/codecheck",
+  "Arguments": {
+    "FileName": null
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.6295ms) ************ 
+{
+  "Request_seq": 759,
+  "Command": "/codecheck",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "C:\\Users\\dave\\.nuget\\packages\\microsoft.net.test.sdk\\16.5.0\\build\\netcoreapp2.1\\Microsoft.NET.Test.Sdk.Program.cs",
+        "Line": 1,
+        "Column": 0,
+        "EndLine": 1,
+        "EndColumn": 13,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\obj\\Debug\\netcoreapp3.1\\HowCtorInjectWorks.AssemblyInfo.cs",
+        "Line": 11,
+        "Column": 0,
+        "EndLine": 11,
+        "EndColumn": 24,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\obj\\Debug\\netcoreapp3.1\\HowCtorInjectWorks.AssemblyInfo.cs",
+        "Line": 10,
+        "Column": 0,
+        "EndLine": 10,
+        "EndColumn": 13,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 3790,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 760,
+  "Command": "/v2/runcodeaction",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 8,
+    "Column": 42,
+    "Identifier": "Add parameters to 'Hi(IMakeItSo)'",
+    "WantsTextChanges": true,
+    "WantsAllCodeActionOperations": true,
+    "ApplyTextChanges": false
+  }
+}
+[info]: OmniSharp.Roslyn.CSharp.Services.Refactoring.V2.RunCodeActionService
+        Applying code action: Add parameters to 'Hi(IMakeItSo)'
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (880.3237ms) ************ 
+{
+  "Request_seq": 760,
+  "Command": "/v2/runcodeaction",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "Changes": [
+      {
+        "Buffer": null,
+        "Changes": [
+          {
+            "NewText": "\t_toldYouSo = toldYouSo;\n\t\t",
+            "StartLine": 14,
+            "StartColumn": 2,
+            "EndLine": 14,
+            "EndColumn": 2
+          },
+          {
+            "NewText": ", IToldYouSo toldYouSo",
+            "StartLine": 11,
+            "StartColumn": 30,
+            "EndLine": 11,
+            "EndColumn": 30
+          }
+        ],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "ModificationType": 0
+      }
+    ]
+  },
+  "Seq": 3841,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 761,
+  "Command": "/updatebuffer",
+  "Arguments": {
+    "Buffer": "namespace HowCtorInjectWorks\n{\n    public interface IMakeItSo {}\n\n    public interface IToldYouSo {}\n\n    public class Hi\n    {\n        private readonly IToldYouSo _toldYouSo;\n        private readonly IMakeItSo _makeItSo;\n\n\t\tpublic Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)\n\t\t{\n\t\t\t_makeItSo = makeItSo;\n\t\t\t_toldYouSo = toldYouSo;\n\t\t}\n\t}\n}",
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Roslyn.BufferManager
+        Updating file e:\temp\HowCtorInjectWorks\Hi.cs with new text:
+namespace HowCtorInjectWorks
+{
+    public interface IMakeItSo {}
+
+    public interface IToldYouSo {}
+
+    public class Hi
+    {
+        private readonly IToldYouSo _toldYouSo;
+        private readonly IMakeItSo _makeItSo;
+
+		public Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)
+		{
+			_makeItSo = makeItSo;
+			_toldYouSo = toldYouSo;
+		}
+	}
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.4919ms) ************ 
+{
+  "Request_seq": 761,
+  "Command": "/updatebuffer",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": true,
+  "Seq": 3854,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 762,
+  "Command": "/v2/getcodeactions",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 8,
+    "Column": 42
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (7.8121ms) ************ 
+{
+  "Request_seq": 762,
+  "Command": "/v2/getcodeactions",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "CodeActions": [
+      {
+        "Identifier": "Generate Equals(object)",
+        "Name": "Generate Equals(object)"
+      },
+      {
+        "Identifier": "Generate Equals and GetHashCode",
+        "Name": "Generate Equals and GetHashCode"
+      },
+      {
+        "Identifier": "Encapsulate field: '_toldYouSo' (and use property)",
+        "Name": "Encapsulate field: '_toldYouSo' (and use property)"
+      },
+      {
+        "Identifier": "Encapsulate field: '_toldYouSo' (but still use field)",
+        "Name": "Encapsulate field: '_toldYouSo' (but still use field)"
+      },
+      {
+        "Identifier": "Generate constructor 'Hi(IToldYouSo)'",
+        "Name": "Generate constructor 'Hi(IToldYouSo)'"
+      },
+      {
+        "Identifier": "Extract base class...",
+        "Name": "Extract base class..."
+      }
+    ]
+  },
+  "Seq": 3858,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 763,
+  "Command": "/v2/blockstructure",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.3878ms) ************ 
+{
+  "Request_seq": 763,
+  "Command": "/v2/blockstructure",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "Spans": [
+      {
+        "Range": {
+          "Start": {
+            "Line": 0,
+            "Column": 28
+          },
+          "End": {
+            "Line": 17,
+            "Column": 1
+          }
+        },
+        "Kind": null
+      },
+      {
+        "Range": {
+          "Start": {
+            "Line": 2,
+            "Column": 31
+          },
+          "End": {
+            "Line": 2,
+            "Column": 33
+          }
+        },
+        "Kind": null
+      },
+      {
+        "Range": {
+          "Start": {
+            "Line": 4,
+            "Column": 32
+          },
+          "End": {
+            "Line": 4,
+            "Column": 34
+          }
+        },
+        "Kind": null
+      },
+      {
+        "Range": {
+          "Start": {
+            "Line": 6,
+            "Column": 19
+          },
+          "End": {
+            "Line": 16,
+            "Column": 2
+          }
+        },
+        "Kind": null
+      },
+      {
+        "Range": {
+          "Start": {
+            "Line": 11,
+            "Column": 53
+          },
+          "End": {
+            "Line": 15,
+            "Column": 3
+          }
+        },
+        "Kind": null
+      }
+    ]
+  },
+  "Seq": 3862,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 764,
+  "Command": "/v2/codestructure",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 765,
+  "Command": "/v2/codestructure",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.9551ms) ************ 
+{
+  "Request_seq": 764,
+  "Command": "/v2/codestructure",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "Elements": [
+      {
+        "Kind": "namespace",
+        "Name": "HowCtorInjectWorks",
+        "DisplayName": "HowCtorInjectWorks",
+        "Children": [
+          {
+            "Kind": "interface",
+            "Name": "IMakeItSo",
+            "DisplayName": "HowCtorInjectWorks.IMakeItSo",
+            "Children": null,
+            "Ranges": {
+              "name": {
+                "Start": {
+                  "Line": 2,
+                  "Column": 21
+                },
+                "End": {
+                  "Line": 2,
+                  "Column": 30
+                }
+              },
+              "full": {
+                "Start": {
+                  "Line": 2,
+                  "Column": 4
+                },
+                "End": {
+                  "Line": 2,
+                  "Column": 33
+                }
+              }
+            },
+            "Properties": {
+              "static": false,
+              "accessibility": "public"
+            }
+          },
+          {
+            "Kind": "interface",
+            "Name": "IToldYouSo",
+            "DisplayName": "HowCtorInjectWorks.IToldYouSo",
+            "Children": null,
+            "Ranges": {
+              "name": {
+                "Start": {
+                  "Line": 4,
+                  "Column": 21
+                },
+                "End": {
+                  "Line": 4,
+                  "Column": 31
+                }
+              },
+              "full": {
+                "Start": {
+                  "Line": 4,
+                  "Column": 4
+                },
+                "End": {
+                  "Line": 4,
+                  "Column": 34
+                }
+              }
+            },
+            "Properties": {
+              "static": false,
+              "accessibility": "public"
+            }
+          },
+          {
+            "Kind": "class",
+            "Name": "Hi",
+            "DisplayName": "HowCtorInjectWorks.Hi",
+            "Children": [
+              {
+                "Kind": "field",
+                "Name": "_toldYouSo",
+                "DisplayName": "_toldYouSo",
+                "Children": null,
+                "Ranges": {
+                  "name": {
+                    "Start": {
+                      "Line": 8,
+                      "Column": 36
+                    },
+                    "End": {
+                      "Line": 8,
+                      "Column": 46
+                    }
+                  },
+                  "full": {
+                    "Start": {
+                      "Line": 8,
+                      "Column": 36
+                    },
+                    "End": {
+                      "Line": 8,
+                      "Column": 46
+                    }
+                  }
+                },
+                "Properties": {
+                  "static": false,
+                  "accessibility": "private"
+                }
+              },
+              {
+                "Kind": "field",
+                "Name": "_makeItSo",
+                "DisplayName": "_makeItSo",
+                "Children": null,
+                "Ranges": {
+                  "name": {
+                    "Start": {
+                      "Line": 9,
+                      "Column": 35
+                    },
+                    "End": {
+                      "Line": 9,
+                      "Column": 44
+                    }
+                  },
+                  "full": {
+                    "Start": {
+                      "Line": 9,
+                      "Column": 35
+                    },
+                    "End": {
+                      "Line": 9,
+                      "Column": 44
+                    }
+                  }
+                },
+                "Properties": {
+                  "static": false,
+                  "accessibility": "private"
+                }
+              },
+              {
+                "Kind": "constructor",
+                "Name": "Hi",
+                "DisplayName": "Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)",
+                "Children": null,
+                "Ranges": {
+                  "name": {
+                    "Start": {
+                      "Line": 11,
+                      "Column": 9
+                    },
+                    "End": {
+                      "Line": 11,
+                      "Column": 11
+                    }
+                  },
+                  "full": {
+                    "Start": {
+                      "Line": 11,
+                      "Column": 2
+                    },
+                    "End": {
+                      "Line": 15,
+                      "Column": 3
+                    }
+                  }
+                },
+                "Properties": {
+                  "static": false,
+                  "accessibility": "public"
+                }
+              }
+            ],
+            "Ranges": {
+              "name": {
+                "Start": {
+                  "Line": 6,
+                  "Column": 17
+                },
+                "End": {
+                  "Line": 6,
+                  "Column": 19
+                }
+              },
+              "full": {
+                "Start": {
+                  "Line": 6,
+                  "Column": 4
+                },
+                "End": {
+                  "Line": 16,
+                  "Column": 2
+                }
+              }
+            },
+            "Properties": {
+              "static": false,
+              "accessibility": "public"
+            }
+          }
+        ],
+        "Ranges": {
+          "name": {
+            "Start": {
+              "Line": 0,
+              "Column": 10
+            },
+            "End": {
+              "Line": 0,
+              "Column": 28
+            }
+          },
+          "full": {
+            "Start": {
+              "Line": 0,
+              "Column": 0
+            },
+            "End": {
+              "Line": 17,
+              "Column": 1
+            }
+          }
+        },
+        "Properties": null
+      }
+    ]
+  },
+  "Seq": 3866,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.2435ms) ************ 
+{
+  "Request_seq": 765,
+  "Command": "/v2/codestructure",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "Elements": [
+      {
+        "Kind": "namespace",
+        "Name": "HowCtorInjectWorks",
+        "DisplayName": "HowCtorInjectWorks",
+        "Children": [
+          {
+            "Kind": "interface",
+            "Name": "IMakeItSo",
+            "DisplayName": "HowCtorInjectWorks.IMakeItSo",
+            "Children": null,
+            "Ranges": {
+              "name": {
+                "Start": {
+                  "Line": 2,
+                  "Column": 21
+                },
+                "End": {
+                  "Line": 2,
+                  "Column": 30
+                }
+              },
+              "full": {
+                "Start": {
+                  "Line": 2,
+                  "Column": 4
+                },
+                "End": {
+                  "Line": 2,
+                  "Column": 33
+                }
+              }
+            },
+            "Properties": {
+              "static": false,
+              "accessibility": "public"
+            }
+          },
+          {
+            "Kind": "interface",
+            "Name": "IToldYouSo",
+            "DisplayName": "HowCtorInjectWorks.IToldYouSo",
+            "Children": null,
+            "Ranges": {
+              "name": {
+                "Start": {
+                  "Line": 4,
+                  "Column": 21
+                },
+                "End": {
+                  "Line": 4,
+                  "Column": 31
+                }
+              },
+              "full": {
+                "Start": {
+                  "Line": 4,
+                  "Column": 4
+                },
+                "End": {
+                  "Line": 4,
+                  "Column": 34
+                }
+              }
+            },
+            "Properties": {
+              "static": false,
+              "accessibility": "public"
+            }
+          },
+          {
+            "Kind": "class",
+            "Name": "Hi",
+            "DisplayName": "HowCtorInjectWorks.Hi",
+            "Children": [
+              {
+                "Kind": "field",
+                "Name": "_toldYouSo",
+                "DisplayName": "_toldYouSo",
+                "Children": null,
+                "Ranges": {
+                  "name": {
+                    "Start": {
+                      "Line": 8,
+                      "Column": 36
+                    },
+                    "End": {
+                      "Line": 8,
+                      "Column": 46
+                    }
+                  },
+                  "full": {
+                    "Start": {
+                      "Line": 8,
+                      "Column": 36
+                    },
+                    "End": {
+                      "Line": 8,
+                      "Column": 46
+                    }
+                  }
+                },
+                "Properties": {
+                  "static": false,
+                  "accessibility": "private"
+                }
+              },
+              {
+                "Kind": "field",
+                "Name": "_makeItSo",
+                "DisplayName": "_makeItSo",
+                "Children": null,
+                "Ranges": {
+                  "name": {
+                    "Start": {
+                      "Line": 9,
+                      "Column": 35
+                    },
+                    "End": {
+                      "Line": 9,
+                      "Column": 44
+                    }
+                  },
+                  "full": {
+                    "Start": {
+                      "Line": 9,
+                      "Column": 35
+                    },
+                    "End": {
+                      "Line": 9,
+                      "Column": 44
+                    }
+                  }
+                },
+                "Properties": {
+                  "static": false,
+                  "accessibility": "private"
+                }
+              },
+              {
+                "Kind": "constructor",
+                "Name": "Hi",
+                "DisplayName": "Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)",
+                "Children": null,
+                "Ranges": {
+                  "name": {
+                    "Start": {
+                      "Line": 11,
+                      "Column": 9
+                    },
+                    "End": {
+                      "Line": 11,
+                      "Column": 11
+                    }
+                  },
+                  "full": {
+                    "Start": {
+                      "Line": 11,
+                      "Column": 2
+                    },
+                    "End": {
+                      "Line": 15,
+                      "Column": 3
+                    }
+                  }
+                },
+                "Properties": {
+                  "static": false,
+                  "accessibility": "public"
+                }
+              }
+            ],
+            "Ranges": {
+              "name": {
+                "Start": {
+                  "Line": 6,
+                  "Column": 17
+                },
+                "End": {
+                  "Line": 6,
+                  "Column": 19
+                }
+              },
+              "full": {
+                "Start": {
+                  "Line": 6,
+                  "Column": 4
+                },
+                "End": {
+                  "Line": 16,
+                  "Column": 2
+                }
+              }
+            },
+            "Properties": {
+              "static": false,
+              "accessibility": "public"
+            }
+          }
+        ],
+        "Ranges": {
+          "name": {
+            "Start": {
+              "Line": 0,
+              "Column": 10
+            },
+            "End": {
+              "Line": 0,
+              "Column": 28
+            }
+          },
+          "full": {
+            "Start": {
+              "Line": 0,
+              "Column": 0
+            },
+            "End": {
+              "Line": 17,
+              "Column": 1
+            }
+          }
+        },
+        "Properties": null
+      }
+    ]
+  },
+  "Seq": 3868,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 766,
+  "Command": "/findusages",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 2,
+    "Column": 21,
+    "OnlyThisFile": false,
+    "ExcludeDefinition": true
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 768,
+  "Command": "/findusages",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 6,
+    "Column": 17,
+    "OnlyThisFile": false,
+    "ExcludeDefinition": true
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 770,
+  "Command": "/findusages",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 9,
+    "Column": 35,
+    "OnlyThisFile": false,
+    "ExcludeDefinition": true
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 767,
+  "Command": "/findusages",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 4,
+    "Column": 21,
+    "OnlyThisFile": false,
+    "ExcludeDefinition": true
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 769,
+  "Command": "/findusages",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 8,
+    "Column": 36,
+    "OnlyThisFile": false,
+    "ExcludeDefinition": true
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 771,
+  "Command": "/findusages",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+    "Line": 11,
+    "Column": 9,
+    "OnlyThisFile": false,
+    "ExcludeDefinition": true
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (1.1825ms) ************ 
+{
+  "Request_seq": 771,
+  "Command": "/findusages",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": []
+  },
+  "Seq": 3882,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (1.2916ms) ************ 
+{
+  "Request_seq": 768,
+  "Command": "/findusages",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": []
+  },
+  "Seq": 3874,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (1.2428ms) ************ 
+{
+  "Request_seq": 767,
+  "Command": "/findusages",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "Line": 8,
+        "Column": 25,
+        "EndLine": 8,
+        "EndColumn": 35,
+        "Text": "private readonly IToldYouSo _toldYouSo;",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "Line": 11,
+        "Column": 32,
+        "EndLine": 11,
+        "EndColumn": 42,
+        "Text": "public Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 3877,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (14.4935ms) ************ 
+{
+  "Request_seq": 769,
+  "Command": "/findusages",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "Line": 14,
+        "Column": 3,
+        "EndLine": 14,
+        "EndColumn": 13,
+        "Text": "_toldYouSo = toldYouSo;",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 3881,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (14.4920ms) ************ 
+{
+  "Request_seq": 770,
+  "Command": "/findusages",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "Line": 13,
+        "Column": 3,
+        "EndLine": 13,
+        "EndColumn": 12,
+        "Text": "_makeItSo = makeItSo;",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 3878,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (31.4167ms) ************ 
+{
+  "Request_seq": 766,
+  "Command": "/findusages",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "Line": 9,
+        "Column": 25,
+        "EndLine": 9,
+        "EndColumn": 34,
+        "Text": "private readonly IMakeItSo _makeItSo;",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+        "Line": 11,
+        "Column": 12,
+        "EndLine": 11,
+        "EndColumn": 21,
+        "Text": "public Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 3872,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 772,
+  "Command": "/codecheck",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (0.4359ms) ************ 
+{
+  "Request_seq": 772,
+  "Command": "/codecheck",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": []
+  },
+  "Seq": 3906,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 773,
+  "Command": "/codecheck",
+  "Arguments": {
+    "FileName": null
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (1.4880ms) ************ 
+{
+  "Request_seq": 773,
+  "Command": "/codecheck",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "C:\\Users\\dave\\.nuget\\packages\\microsoft.net.test.sdk\\16.5.0\\build\\netcoreapp2.1\\Microsoft.NET.Test.Sdk.Program.cs",
+        "Line": 1,
+        "Column": 0,
+        "EndLine": 1,
+        "EndColumn": 13,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\obj\\Debug\\netcoreapp3.1\\HowCtorInjectWorks.AssemblyInfo.cs",
+        "Line": 11,
+        "Column": 0,
+        "EndLine": 11,
+        "EndColumn": 24,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\obj\\Debug\\netcoreapp3.1\\HowCtorInjectWorks.AssemblyInfo.cs",
+        "Line": 10,
+        "Column": 0,
+        "EndLine": 10,
+        "EndColumn": 13,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 3918,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 774,
+  "Command": "/filesChanged",
+  "Arguments": [
+    {
+      "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs",
+      "changeType": "Change"
+    }
+  ]
+}
+[dbug]: OmniSharp.Roslyn.BufferManager
+        Read file contents:
+namespace HowCtorInjectWorks
+{
+    public interface IMakeItSo {}
+
+    public interface IToldYouSo {}
+
+    public class Hi
+    {
+        private readonly IToldYouSo _toldYouSo;
+        private readonly IMakeItSo _makeItSo;
+
+		public Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)
+		{
+			_makeItSo = makeItSo;
+			_toldYouSo = toldYouSo;
+		}
+	}
+}
+[dbug]: OmniSharp.Roslyn.BufferManager
+        Updating file e:\temp\HowCtorInjectWorks\Hi.cs with new text:
+namespace HowCtorInjectWorks
+{
+    public interface IMakeItSo {}
+
+    public interface IToldYouSo {}
+
+    public class Hi
+    {
+        private readonly IToldYouSo _toldYouSo;
+        private readonly IMakeItSo _makeItSo;
+
+		public Hi(IMakeItSo makeItSo, IToldYouSo toldYouSo)
+		{
+			_makeItSo = makeItSo;
+			_toldYouSo = toldYouSo;
+		}
+	}
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (9.0443ms) ************ 
+{
+  "Request_seq": 774,
+  "Command": "/filesChanged",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {},
+  "Seq": 4000,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 775,
+  "Command": "/codecheck",
+  "Arguments": {
+    "FileName": "e:\\temp\\HowCtorInjectWorks\\Hi.cs"
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (2.7460ms) ************ 
+{
+  "Request_seq": 775,
+  "Command": "/codecheck",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": []
+  },
+  "Seq": 4022,
+  "Type": "response"
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************ Request ************
+{
+  "Type": "request",
+  "Seq": 776,
+  "Command": "/codecheck",
+  "Arguments": {
+    "FileName": null
+  }
+}
+[dbug]: OmniSharp.Stdio.Host
+        ************  Response (1.4608ms) ************ 
+{
+  "Request_seq": 776,
+  "Command": "/codecheck",
+  "Running": true,
+  "Success": true,
+  "Message": null,
+  "Body": {
+    "QuickFixes": [
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "C:\\Users\\dave\\.nuget\\packages\\microsoft.net.test.sdk\\16.5.0\\build\\netcoreapp2.1\\Microsoft.NET.Test.Sdk.Program.cs",
+        "Line": 1,
+        "Column": 0,
+        "EndLine": 1,
+        "EndColumn": 13,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\obj\\Debug\\netcoreapp3.1\\HowCtorInjectWorks.AssemblyInfo.cs",
+        "Line": 11,
+        "Column": 0,
+        "EndLine": 11,
+        "EndColumn": 24,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      },
+      {
+        "LogLevel": "Hidden",
+        "Id": "CS8019",
+        "Tags": [],
+        "FileName": "e:\\temp\\HowCtorInjectWorks\\obj\\Debug\\netcoreapp3.1\\HowCtorInjectWorks.AssemblyInfo.cs",
+        "Line": 10,
+        "Column": 0,
+        "EndLine": 10,
+        "EndColumn": 13,
+        "Text": "Unnecessary using directive.",
+        "Projects": [
+          "HowCtorInjectWorks"
+        ]
+      }
+    ]
+  },
+  "Seq": 4034,
+  "Type": "response"
+}
