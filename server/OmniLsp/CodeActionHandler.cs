@@ -40,10 +40,8 @@ namespace OmniLsp
 			var container = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic.Source.Equals("boilerMoq", StringComparison.OrdinalIgnoreCase))
 				.Select(diagnostic => {
-					var url = $"http://google.com";
-					var title = $"Click for more information {url}";
 					return new CommandOrCodeAction(new CodeAction {
-						Title = title,
+						Title = "Pimp This Code!",
 						Diagnostics = new [] { diagnostic },
 						Kind = CodeActionKind.QuickFix,
 						Edit = new WorkspaceEdit
@@ -56,7 +54,7 @@ namespace OmniLsp
 									{
 										new TextEdit
 										{
-											NewText = "fuckit!!!",
+											NewText = "FOOBAR",
 											Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(new Position(2,3), new Position(2,9))
 										}
 									}
