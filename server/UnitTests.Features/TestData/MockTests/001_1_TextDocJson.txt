@@ -1,0 +1,8 @@
+{
+	"Identifier": {
+		"Uri": "file:///somewhere/a.txt",
+		"Version": 0
+	},
+	"LanguageId": "csharp",
+	"Text": ""
+}

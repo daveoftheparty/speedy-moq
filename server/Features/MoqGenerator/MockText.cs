@@ -12,9 +12,9 @@ namespace Features.MoqGenerator
 	{
 		// private readonly Dictionary<TextDocumentIdentifier, HashSet<InterfaceName>> _alreadyMocked = new();
 
-		public Task<GetMockTextResponse> GetMockTextAsync(TextDocumentItem item)
+		public async Task<GetMockTextResponse> GetMockTextAsync(TextDocumentItem item)
 		{
-			throw new NotImplementedException();
+			return await Task.FromResult(new GetMockTextResponse());
 		}
 
 		#region IMockText

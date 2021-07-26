@@ -10,7 +10,7 @@ namespace UnitTests.Features.MoqGenerator
 {
 	public class FullGenerationTests
 	{
-		[TestCaseSource(nameof(FileTests))]
+		[TestCaseSource(nameof(FullGenerationTestFiles))]
 		public async Task Go((string testId, string input, string expected) test)
 		{
 			var generator = new Generator();
@@ -21,7 +21,7 @@ namespace UnitTests.Features.MoqGenerator
 			Assert.AreEqual(test.expected, actual.Text, test.testId);
 		}
 
-		public static IEnumerable<(string input, string expected, string testId)> FileTests
+		public static IEnumerable<(string input, string expected, string testId)> FullGenerationTestFiles
 		{
 			get
 			{
