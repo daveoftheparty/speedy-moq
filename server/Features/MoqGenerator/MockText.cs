@@ -12,7 +12,7 @@ namespace Features.MoqGenerator
 {
 	public class MockText : IMockText
 	{
-		private const int _indentationLevel = 5;
+		private const int _indentationLevel = 3;
 		private readonly ILogger<MockText> _logger;
 		private readonly IInterfaceStore _interfaceStore;
 
@@ -84,7 +84,7 @@ namespace Features.MoqGenerator
 				);
 
 
-			if(definition.Methods.Count > 0)
+			if(definition.Methods.Count > 1)
 				results.Add("");
 
 			var verifyQueue = new Queue<string>();
@@ -103,10 +103,14 @@ namespace Features.MoqGenerator
 					$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
 				);
 
+
+				// stringAnalyzer
+				//	.Setup(howManyItems)
 				results.Add(
-					// stringAnalyzer
-					//	.Setup(howManyItems)
-					$"{mockName}.Setup({camelName})"
+					$"{mockName}"
+				);
+				results.Add(
+					$"	.Setup({camelName})"
 				);
 
 				// string patient, char charToCount
@@ -136,7 +140,6 @@ namespace Features.MoqGenerator
 			}
 			
 			// add mock.Verify() asserts
-			results.Add("");
 			while(verifyQueue.Count > 0)
 				results.Add(verifyQueue.Dequeue());
 
