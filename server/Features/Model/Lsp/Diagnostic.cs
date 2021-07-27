@@ -8,7 +8,7 @@ namespace Features.Model.Lsp
 		string Code,
 		string Source,
 		string Message,
-		string Data // should be valid json, anything extra we want to send to/process in code action provider
+		string Data // anything extra we want to send to/process in code action provider, could format as json and deserialize as necessary if more than one value
 	);
 
 	public enum DiagnosticSeverity
@@ -18,6 +18,4 @@ namespace Features.Model.Lsp
 		Information = 3,
 		Hint = 4
 	}
-
-	public record DiagnosticData(string InterfaceName);
 }

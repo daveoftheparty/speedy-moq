@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +21,7 @@ namespace Features.MoqGenerator
 			_interfaceStore = interfaceStore;
 		}
 
-		public async Task<string> GetMockTextAsync(TextDocumentIdentifier textDocumentIdentifier, DiagnosticData data)
+		public string GetMockText(TextDocumentIdentifier textDocumentIdentifier, string interfaceName)
 		{
 			/*
 				if our dictionary of implementations is empty, go compile the whole project...
@@ -33,11 +32,11 @@ namespace Features.MoqGenerator
 				might be some weirdness for the user if they open a doc that needs the replacement right away, but, the injected
 				info isn't ready yet. not much we can do about that...
 			*/
-			var definition = _interfaceStore.GetInterfaceDefinition(data.InterfaceName);
+			var definition = _interfaceStore.GetInterfaceDefinition(interfaceName);
 			if(definition == null)
 			{
-				_logger.LogError($"Unable to retrieve interface definition for '{data.InterfaceName}'. Text document we are working with is: {textDocumentIdentifier.Uri}");
-				return await Task.FromResult((string)null);	
+				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'. Text document we are working with is: {textDocumentIdentifier.Uri}");
+				return (string)null;
 			}
 				
 
@@ -71,7 +70,6 @@ namespace Features.MoqGenerator
 			*/
 			var results = new List<string>();
 
-			var interfaceName = definition.InterfaceName;
 			var mockName = interfaceName;
 			if(mockName.StartsWith('I'))
 				mockName = mockName.Substring(1);
@@ -151,7 +149,7 @@ namespace Features.MoqGenerator
 				);
 
 
-			return await Task.FromResult(string.Join(Environment.NewLine, lines));
+			return string.Join(Environment.NewLine, lines);
 		}
 
 		private string Camelify(string input)

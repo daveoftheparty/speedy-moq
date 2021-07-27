@@ -18,7 +18,7 @@ namespace UnitTests.Features.MoqGenerator
 	{
 
 		[Test]
-		public async Task NoInterfaceDefinitionShouldLog()
+		public void NoInterfaceDefinitionShouldLog()
 		{
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(new Dictionary<string, InterfaceDefinition>
@@ -30,9 +30,8 @@ namespace UnitTests.Features.MoqGenerator
 			var uri = "uri:somefile.txt";
 			var interfaceName = "asdf";
 			var docId = new TextDocumentIdentifier(uri, 13);
-			var diagnosticData = new DiagnosticData(interfaceName);
 			
-			var actual = await mockText.GetMockTextAsync(docId, diagnosticData);
+			var actual = mockText.GetMockText(docId, interfaceName);
 			
 			Assert.IsNull(actual);
 			Assert.IsTrue(
@@ -50,7 +49,7 @@ namespace UnitTests.Features.MoqGenerator
 		}
 
 		[TestCaseSource(nameof(MockTestFiles))]
-		public async Task GoMocks((string testId, string textDocJson, string diagnosticDataJson, string expected) test)
+		public void GoMocks((string testId, string textDocJson, string interfaceName, string expected) test)
 		{
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
@@ -58,9 +57,8 @@ namespace UnitTests.Features.MoqGenerator
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
 			var docId = JsonSerializer.Deserialize<TextDocumentIdentifier>(test.textDocJson);
-			var diagnosticData = JsonSerializer.Deserialize<DiagnosticData>(test.diagnosticDataJson);
 			
-			var actual = await mockText.GetMockTextAsync(docId, diagnosticData);
+			var actual = mockText.GetMockText(docId, test.interfaceName);
 			
 			if(test.expected != actual)
 			{
@@ -129,7 +127,7 @@ namespace UnitTests.Features.MoqGenerator
 			};
 		}
 
-		public static IEnumerable<(string testId, string textDocJson, string textDocText, string expected)> MockTestFiles
+		public static IEnumerable<(string testId, string textDocJson, string interfaceName, string expected)> MockTestFiles
 		{
 			get
 			{

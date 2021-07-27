@@ -80,8 +80,7 @@ namespace OmniLsp
 
 		private void PublishDiagnostics(Features.Model.Lsp.TextDocumentItem textDoc, DocumentUri uri, string who)
 		{
-			// let's publish some diagnostics...
-			_logger.LogInformation($"trying to publish, yo, from: {who}");
+			_logger.LogTrace($"trying to publish, yo, from: {who}");
 
 			try
 			{

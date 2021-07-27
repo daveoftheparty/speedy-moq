@@ -25,5 +25,14 @@ namespace OmniLsp
 				doc.ContentChanges.First().Text
 			);
 		}
+
+		public static Features.Model.Lsp.TextDocumentIdentifier From(OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentIdentifier documentIdentifier)
+		{
+			return new Features.Model.Lsp.TextDocumentIdentifier
+			(
+				documentIdentifier.Uri.ToString(),
+				0 // hopefully we never need this version!!! 
+			);
+		}
 	}
 }

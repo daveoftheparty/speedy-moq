@@ -37,5 +37,40 @@ namespace OmniLsp
 				Data = diagnostic.Data
 			};
 		}
+
+		// well, I wrote this method thinking I needed it. And as of now, I don't, but I don't want to write it again:
+		public static Features.Model.Lsp.Diagnostic From(OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic diagnostic)
+		{
+			Features.Model.Lsp.DiagnosticSeverity severity = Features.Model.Lsp.DiagnosticSeverity.Error;
+			switch(diagnostic.Severity)
+			{
+				case DiagnosticSeverity.Error:
+					severity = Features.Model.Lsp.DiagnosticSeverity.Error;
+					break;
+				case DiagnosticSeverity.Warning:
+					severity = Features.Model.Lsp.DiagnosticSeverity.Warning;
+					break;
+				case DiagnosticSeverity.Information:
+					severity = Features.Model.Lsp.DiagnosticSeverity.Information;
+					break;
+				case DiagnosticSeverity.Hint:
+					severity = Features.Model.Lsp.DiagnosticSeverity.Hint;
+					break;
+			}
+
+			return new Features.Model.Lsp.Diagnostic
+			(
+				new Features.Model.Lsp.Range
+				(
+					new Features.Model.Lsp.Position((uint)diagnostic.Range.Start.Line, (uint)diagnostic.Range.Start.Character),
+					new Features.Model.Lsp.Position((uint)diagnostic.Range.End.Line, (uint)diagnostic.Range.End.Character)
+				),
+				severity,
+				diagnostic.Code,
+				diagnostic.Source,
+				diagnostic.Message,
+				diagnostic.Data.ToString()
+			);
+		}
 	}
 }
