@@ -53,9 +53,7 @@ namespace UnitTests.Features.MoqGenerator
 		public async Task GoMocks((string testId, string textDocJson, string diagnosticDataJson, string expected) test)
 		{
 			var logMock = new LoggerDouble<MockText>();
-			var storeMock = GetInterfaceStoreMock(new Dictionary<string, InterfaceDefinition>
-			{
-			});
+			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
@@ -64,6 +62,11 @@ namespace UnitTests.Features.MoqGenerator
 			
 			var actual = await mockText.GetMockTextAsync(docId, diagnosticData);
 			
+			if(test.expected != actual)
+			{
+				Console.WriteLine("Here's the actual output we got from MockText:");
+				Console.WriteLine(actual);
+			}
 			Assert.AreEqual(test.expected, actual, test.testId);
 		}
 
@@ -88,6 +91,43 @@ namespace UnitTests.Features.MoqGenerator
 			return (mock, getDefinition);
 		}
 
+
+
+		private Dictionary<string, InterfaceDefinition> GetInterfaceDefinitions()
+		{
+			return new Dictionary<string, InterfaceDefinition>
+			{
+				{
+					/*
+						public interface IStringAnalyzer
+						{
+							int HowManyItems(string patient, char charToCount);
+						}
+					*/
+					"IStringAnalyzer",
+					new InterfaceDefinition
+					(
+						"IStringAnalyzer",
+						"IStringAnalyzer.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"HowManyItems",
+									"int",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("string", "patient", "string patient"),
+										new InterfaceMethodParameter("char", "charToCount", "char charToCount"),
+									}
+								)
+							}
+						}
+					)
+				}
+			};
+		}
 
 		public static IEnumerable<(string testId, string textDocJson, string textDocText, string expected)> MockTestFiles
 		{

@@ -4,14 +4,19 @@ namespace Features.Model
 {
 	public record InterfaceDefinition
 	(
-			string SourceFile,
-			string InterfaceName,
-			string ReturnType,
-			string MethodName,
-			IEnumerable<InterfaceDefinitionParameters> Parameters
+		string InterfaceName,
+		string SourceFile,
+		IReadOnlyList<InterfaceMethod> Methods
 	);
 
-	public record InterfaceDefinitionParameters
+	public record InterfaceMethod
+	(
+		string MethodName,
+		string ReturnType,
+		IReadOnlyList<InterfaceMethodParameter> Parameters
+	);
+
+	public record InterfaceMethodParameter
 	(
 		string ParameterType,
 		string ParameterName,

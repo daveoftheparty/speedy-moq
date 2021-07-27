@@ -1,12 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Features.Interfaces;
 using Features.Model.Lsp;
-using Microsoft.Extensions.Logging;
 
 namespace Features.MoqGenerator
 {
 	public class MockText : IMockText
 	{
+		private const int _indentationLevel = 5;
 		private readonly ILogger<MockText> _logger;
 		private readonly IInterfaceStore _interfaceStore;
 
@@ -35,7 +41,124 @@ namespace Features.MoqGenerator
 			}
 				
 
-			return await Task.FromResult("hey, how YOU doin??");
+
+			/*
+
+				given the interface method:
+
+					public interface IStringAnalyzer
+					{
+						int HowManyItems(string patient, char charToCount);
+					}
+				
+				we want to return the following:
+
+					var stringAnalyzer = new Mock<IStringAnalyzer>();
+					Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+					stringAnalyzer
+						.Setup(howManyItems)
+						.Returns((string patient, char charToCount) =>
+						{
+							return 0;
+						});
+
+					stringAnalyzer.Verify(howManyItems, Times.Once);
+
+				for interfaces with multiple methods, we'll inject an extra blank line between the new Mock<T> declaration and
+				each given Expression/Setup pair
+
+				we will just let the mock.Verify() methods be one line after another with no additional whitespace
+			*/
+			var results = new List<string>();
+
+			var interfaceName = definition.InterfaceName;
+			var mockName = interfaceName;
+			if(mockName.StartsWith('I'))
+				mockName = mockName.Substring(1);
+
+			mockName = Camelify(mockName);
+
+			results.Add(
+				// var stringAnalyzer = new Mock<IStringAnalyzer>();
+				$"var {mockName} = new Mock<{interfaceName}>();"
+				);
+
+
+			if(definition.Methods.Count > 0)
+				results.Add("");
+
+			var verifyQueue = new Queue<string>();
+			foreach(var method in definition.Methods)
+			{
+
+				var methodName = method.MethodName;
+				var camelName = Camelify(methodName);
+				
+				var parameterDeclaration = string.Join(", ", 
+					method.Parameters.Select(p => $"It.IsAny<{p.ParameterType}>()"));
+
+
+				results.Add(
+					// Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+					$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
+				);
+
+				results.Add(
+					// stringAnalyzer
+					//	.Setup(howManyItems)
+					$"{mockName}.Setup({camelName})"
+				);
+
+				// string patient, char charToCount
+				var callbackDeclaration = string.Join(", ", 
+					method.Parameters.Select(p => $"{p.ParameterDefinition}"
+					));
+
+				results.Add(
+					//	.Returns((string patient, char charToCount) =>
+					$"	.Returns(({callbackDeclaration}) =>"
+				);
+
+				
+				//	{
+				//		return;
+				//	}
+				//	);
+				
+				results.Add("	{");
+				results.Add($"		return;");
+				results.Add("	});");
+				results.Add("");
+
+
+				// stringAnalyzer.Verify(howManyItems, Times.Once);
+				verifyQueue.Enqueue($"{mockName}.Verify({camelName}, Times.Once);");
+			}
+			
+			// add mock.Verify() asserts
+			results.Add("");
+			while(verifyQueue.Count > 0)
+				results.Add(verifyQueue.Dequeue());
+
+
+			var lines =  results.Select(l => 
+				l.Length > 0
+				? new string('\t', _indentationLevel) + l
+				: l
+				);
+
+
+			return await Task.FromResult(string.Join(Environment.NewLine, lines));
+		}
+
+		private string Camelify(string input)
+		{
+			if(input == null || input.Length == 0)
+				return input;
+
+			var orig = input.ToCharArray();
+			orig[0] = char.ToLowerInvariant(orig[0]);
+			return new string(orig);
 		}
 	}
 }
