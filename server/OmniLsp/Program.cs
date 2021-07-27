@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using Features.Interfaces.Lsp;
+using Features.MoqGenerator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -32,6 +33,7 @@ namespace OmniLsp
 
 		static void ConfigureServices(IServiceCollection services)
 		{
+			services.AddTransient<IDiagnoser, Diagnoser>();
 		}
 	}
 }

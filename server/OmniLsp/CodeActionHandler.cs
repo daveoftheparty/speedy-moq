@@ -33,12 +33,10 @@ namespace OmniLsp
 
 		public Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
 		{
-			_logger.LogWarning("Code action isn't setup yet!!!");
-			
-			#warning boilerMoq magic string...
-			
-			var container = request.Context.Diagnostics?
-				.Where(diagnostic => diagnostic.Source.Equals("boilerMoq", StringComparison.OrdinalIgnoreCase))
+			_logger.LogInformation("Code action firing...");
+
+			var actions = request.Context.Diagnostics?
+				.Where(diagnostic => diagnostic.Source.Equals(Features.Constants.DiagnosticSource, StringComparison.OrdinalIgnoreCase))
 				.Select(diagnostic => {
 					return new CommandOrCodeAction(new CodeAction {
 						Title = "Pimp This Code!",
@@ -54,8 +52,8 @@ namespace OmniLsp
 									{
 										new TextEdit
 										{
-											NewText = "FOOBAR",
-											Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(new Position(2,3), new Position(2,9))
+											NewText = "var x = \"Hello, world!\";",
+											Range = diagnostic.Range
 										}
 									}
 								}
@@ -64,7 +62,14 @@ namespace OmniLsp
 					});
 				}).ToArray() ?? Array.Empty<CommandOrCodeAction>();
 
-			return Task.FromResult(new CommandOrCodeActionContainer(container));
+
+			actions
+				.SelectMany(a => a.CodeAction.Edit.Changes.Values.SelectMany(v => v))
+				.ToList()
+				.ForEach(e => _logger.LogInformation($"Start ({e.Range.Start.Line}, {e.Range.Start.Character}), End ({e.Range.End.Line}, {e.Range.End.Character})"))
+				;
+
+			return Task.FromResult(new CommandOrCodeActionContainer(actions));
 		}
 		#endregion ICodeActionHandler
 	}

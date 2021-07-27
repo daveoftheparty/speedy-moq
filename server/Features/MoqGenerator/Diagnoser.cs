@@ -71,7 +71,7 @@ namespace Features.MoqGenerator
 							new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
 							new Position((uint)roslynRange.EndLinePosition.Line, (uint)roslynRange.EndLinePosition.Character)
 						),
-						DiagnosticSeverity.Hint,
+						DiagnosticSeverity.Error,
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],

@@ -4,6 +4,8 @@ namespace Features
 {
 	public static class Constants
 	{
+
+		public static string FileGlob = "**/*.cs";
 		public static string LanguageId = "csharp";
 		public static string DiagnosticSource = "BoilerMoq";
 		public static string DiagnosticCode_CanMoq = "BoilerMoq001";
