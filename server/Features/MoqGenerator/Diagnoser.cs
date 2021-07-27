@@ -16,6 +16,7 @@ namespace Features.MoqGenerator
 			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 		};
 
+#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method
 		public async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(TextDocumentItem item)
 		{
 			/*
