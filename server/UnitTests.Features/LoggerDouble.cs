@@ -52,5 +52,25 @@ namespace UnitTests.Features
 		public EventId EventId { get; }
 		public object State { get; }
 		public Exception Exception { get; }
+
+		public override string ToString()
+		{
+			var messages = State as IEnumerable<KeyValuePair<string, object>>;
+			if(messages == null)
+				throw new Exception("Logging is too hard!! This is NOT coming from YOU calling _logger.Log<T>!");
+
+			var message = messages
+				.FirstOrDefault(m => m.Key == "{OriginalFormat}")
+			;
+
+			if(message.Key == null)
+				throw new Exception("Logging is too hard!! The dictionary of log messages isn't right, and it's not YOUR fault!");
+			
+			var sMessage = message.Value as string;
+			if(sMessage == null)
+				throw new Exception("Logging is too hard!! Why can't it be easier!?!");
+
+			return sMessage;
+		}
 	}
 }
