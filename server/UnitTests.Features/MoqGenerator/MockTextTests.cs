@@ -10,43 +10,6 @@ namespace UnitTests.Features.MoqGenerator
 {
 	public class MockTextTests
 	{
-		#warning clean me up later when/if no longer needed....
-		[Test]
-		public void RecordFoo()
-		{
-			var expected = new TextDocumentItem(
-				new TextDocumentIdentifier("file:///somewhere/a.txt", 0),
-				"csharp",
-				@"using System;
-using System.Linq.Expressions;
-
-using Moq;
-using NUnit.Framework;
-
-namespace UnitTests.Features.TestData
-{
-	public interface IStringAnalyzer
-	{
-		int HowManyItems(string patient, char charToCount);
-	}
-
-	public class StringAnalyzerTests
-	{
-		[Test]
-		public void HappyPath()
-		{
-			IStringAnalyzer
-		}
-	}
-}"
-				);
-			var expectedJson = JsonSerializer.Serialize(expected);
-			var actual = JsonSerializer.Deserialize<TextDocumentItem>(expectedJson);
-			Assert.AreEqual(expected, actual);
-			Console.WriteLine(expectedJson);
-		}
-	
-	
 		[TestCaseSource(nameof(MockTestFiles))]
 		public async Task GoMocks((string testId, string textDocJson, string diagnosticDataJson, string expected) test)
 		{

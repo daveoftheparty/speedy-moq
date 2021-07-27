@@ -6,6 +6,8 @@ namespace Features.MoqGenerator
 {
 	public class Generator : IFullTextReplace
 	{
+
+		#warning my guess is this whole class and associated interface, response, tests is going to get deleted....
 		public async Task<FullTextReplaceResponse> GetReplacementAsync(string filePath, string text)
 		{
 			/*
