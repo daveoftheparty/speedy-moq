@@ -18,4 +18,6 @@ namespace Features.Model.Lsp
 		Information = 3,
 		Hint = 4
 	}
+
+	public record DiagnosticData(string InterfaceName);
 }

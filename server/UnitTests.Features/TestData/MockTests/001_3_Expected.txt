@@ -1,1 +1,10 @@
-fill in this bad boy...
+			var stringAnalyzer = new Mock<IStringAnalyzer>();
+			Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+			stringAnalyzer
+				.Setup(howManyItems)
+				.Returns((string patient, char charToCount) =>
+				{
+					return 0;
+				});
+
+			stringAnalyzer.Verify(howManyItems, Times.Once);

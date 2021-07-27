@@ -6,6 +6,6 @@ namespace Features.Interfaces
 {
 	public interface IMockText
 	{
-		Task<GetMockTextResponse> GetMockTextAsync(TextDocumentItem item);
+		Task<string> GetMockTextAsync(TextDocumentIdentifier textDocumentIdentifier, DiagnosticData data);
 	}
 }

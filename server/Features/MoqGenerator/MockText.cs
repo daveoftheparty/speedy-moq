@@ -12,10 +12,16 @@ namespace Features.MoqGenerator
 	{
 		// private readonly Dictionary<TextDocumentIdentifier, HashSet<InterfaceName>> _alreadyMocked = new();
 
-		public async Task<GetMockTextResponse> GetMockTextAsync(TextDocumentItem item)
+		// public async Task<GetMockTextResponse> GetMockTextAsync(TextDocumentItem item)
+		// {
+		// 	return await Task.FromResult(new GetMockTextResponse());
+		// }
+
+		public async Task<string> GetMockTextAsync(TextDocumentIdentifier textDocumentIdentifier, DiagnosticData data)
 		{
-			return await Task.FromResult(new GetMockTextResponse());
+			return await Task.FromResult("hey, how YOU doin??");
 		}
+		
 
 		#region IMockText
 

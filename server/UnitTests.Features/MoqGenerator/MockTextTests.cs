@@ -48,16 +48,15 @@ namespace UnitTests.Features.TestData
 	
 	
 		[TestCaseSource(nameof(MockTestFiles))]
-		public async Task GoMocks((string testId, string textDocJson, string textDocText, string expected) test)
+		public async Task GoMocks((string testId, string textDocJson, string diagnosticDataJson, string expected) test)
 		{
 			var mockText = new MockText();
 
-			var noTextDoc = JsonSerializer.Deserialize<TextDocumentItem>(test.textDocJson);
-			var doc = noTextDoc with { Text = test.textDocText };
-
-			var actualResponse = await mockText.GetMockTextAsync(doc);
-			var actual = JsonSerializer.Serialize(actualResponse);
-
+			var docId = JsonSerializer.Deserialize<TextDocumentIdentifier>(test.textDocJson);
+			var diagnosticData = JsonSerializer.Deserialize<DiagnosticData>(test.diagnosticDataJson);
+			
+			var actual = await mockText.GetMockTextAsync(docId, diagnosticData);
+			
 			Assert.AreEqual(test.expected, actual, test.testId);
 		}
 
