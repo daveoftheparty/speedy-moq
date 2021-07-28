@@ -10,10 +10,7 @@ import { LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, T
 import { Trace } from 'vscode-jsonrpc';
 import { join } from 'path';
 import { release } from 'os';
-
-const vsCodeName = 'boilerMoq';
-const friendlyName = 'Boiler Moq';
-const CSharpPackageName = 'OmniLsp';
+import { vsCodeName, friendlyName, CSharpPackageName } from './constants/Constants';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -58,9 +55,9 @@ export function activate(context: vscode.ExtensionContext) {
     const lsp = client.start();
 
 
-    const goBoiler = vscode.commands.registerCommand('boilerMoq.go', () => {
-        vscode.window.showInformationMessage('Hello World from boilerMoq.go!');
-        client.sendNotification("boilerMoq.go");
+    const goBoiler = vscode.commands.registerCommand(`${vsCodeName}.go`, () => {
+        vscode.window.showInformationMessage(`Hello World from ${vsCodeName}.go!`);
+        client.sendNotification(`${vsCodeName}.go`);
     });
 
     // Push the disposable to the context's subscriptions so that the
