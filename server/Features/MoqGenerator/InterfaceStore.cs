@@ -53,6 +53,9 @@ namespace Features.MoqGenerator
 		}
 
 
+		#warning here's an interesting question. If I open a folder in VSCode that already has a .cs file open, will we get a notification for textDocument/didOpen!?!?!
+		#warning change some/all LogInformation to LogTraces later... want it to show in messages for now while I'm actively debugging
+
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
 			// this file may or may not contain interface definitions, and there's no way to tell until we parse it
@@ -68,21 +71,21 @@ namespace Features.MoqGenerator
 			var model = compilation.GetSemanticModel(tree);
 
 			// load our interface dict...
-			foreach(var definition in GetInterfaceDefinitions(new[] { model }))
+			var definitions = GetInterfaceDefinitions(new[] { model });
+			foreach(var definition in definitions)
 			{
 				_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
-				_logger.LogInformation($"{nameof(InterfaceStore)} in method {nameof(LoadCsInterfaceIfNecessaryAsync)} received/is loading for uri {textDocItem.Identifier.Uri}");
+			}
+
+			if(definitions.Count > 0)
+			{
+				_logger.LogInformation($"method {nameof(LoadCsInterfaceIfNecessaryAsync)} loaded for uri {textDocItem.Identifier.Uri}");
+				LogDefinitions(nameof(LoadCsInterfaceIfNecessaryAsync));
 			}
 			
-			LogDefinitions(nameof(LoadCsInterfaceIfNecessaryAsync));
 			await Task.CompletedTask;
 		}
 
-		private void LogDefinitions(string v)
-		{
-			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. CsProjs loaded: {string.Join('|', _csProjectsAlreadyLoaded)}");
-			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}");
-		}
 
 		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
@@ -95,48 +98,8 @@ namespace Features.MoqGenerator
 		}
 
 
-		#warning here's an interesting question. If I open a folder in VSCode that already has a .cs file open, will we get a notification for textDocument/didOpen!?!?!
-
-		private string GetCsProjFromCsFile(string uri)
-		{
-			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
-			// if we can't find one, traverse backwards until we do... or don't
-
-			#warning change these LogInformation to LogTraces later... want it to show in messages for now while I'm actively debugging
-
-			var path = uri.Replace("file:///", "");
-			_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is looking for a .csproj related to file {path}");
-			
-			path = Path.GetDirectoryName(path);
-			while(!string.IsNullOrWhiteSpace(path))
-			{
-				_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is searching for a .csproj in {path}");
-				
-				var csProjFile = Directory
-					.EnumerateFiles(path)
-					.Select(f => new FileInfo(f))
-					.FirstOrDefault(x => x.Extension == ".csproj") // I have no idea why there would be more than one csproj in a directory, or if it's even possible
-					;
-
-				if(csProjFile != null)
-				{
-					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
-					return csProjFile.FullName;
-				}
-
-				path = Directory.GetParent(path).FullName;
-			}
-
-			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
-			return null;
-		}
-
 		private async Task LoadCSProjAsync(string csProjPath)
 		{
-			// probably need to be called from the client the first time a .cs file is opened,
-			// and again, each time a new .cs file is opened to see if it is attached to the same 
-			// or new .csproj
-
 			var manager = new AnalyzerManager();
 			var analyzer = manager.GetProject(csProjPath);
 			var workspace = new AdhocWorkspace();
@@ -144,12 +107,13 @@ namespace Features.MoqGenerator
 			
 			var compilations = await Task.WhenAll(workspace.CurrentSolution.Projects.Select(x => x.GetCompilationAsync()));
 
-			var definitions = compilations
+			var models = compilations
 				.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
 				;
 
 				// load our interface dict...
-				foreach(var definition in GetInterfaceDefinitions(definitions))
+				var definitions = GetInterfaceDefinitions(models);
+				foreach(var definition in definitions)
 				{
 					_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
 				}
@@ -157,10 +121,12 @@ namespace Features.MoqGenerator
 				// and finally, load up our hashset so that we don't have to do this again
 				_csProjectsAlreadyLoaded.Add(csProjPath);
 
-				LogDefinitions(nameof(LoadCSProjAsync));
+				if(definitions.Count > 0)
+					LogDefinitions(nameof(LoadCSProjAsync));
 		}
 
-		private IEnumerable<(string InterfaceName, InterfaceDefinition InterfaceDefinition)> GetInterfaceDefinitions(IEnumerable<SemanticModel> models)
+
+		private List<(string InterfaceName, InterfaceDefinition InterfaceDefinition)> GetInterfaceDefinitions(IEnumerable<SemanticModel> models)
 		{
 			return models
 				.SelectMany(
@@ -215,7 +181,48 @@ namespace Features.MoqGenerator
 							.ToList()
 					)
 				})
-				.Select(tuple => (tuple.InterfaceName, tuple.InterfaceDefinition));
+				.Select(tuple => (tuple.InterfaceName, tuple.InterfaceDefinition))
+				.ToList();
+		}
+
+
+		private string GetCsProjFromCsFile(string uri)
+		{
+			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
+			// if we can't find one, traverse backwards until we do... or don't
+
+			var path = uri.Replace("file:///", "");
+			_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is looking for a .csproj related to file {path}");
+			
+			path = Path.GetDirectoryName(path);
+			while(!string.IsNullOrWhiteSpace(path))
+			{
+				_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is searching for a .csproj in {path}");
+				
+				var csProjFile = Directory
+					.EnumerateFiles(path)
+					.Select(f => new FileInfo(f))
+					.FirstOrDefault(x => x.Extension == ".csproj") // I have no idea why there would be more than one csproj in a directory, or if it's even possible
+					;
+
+				if(csProjFile != null)
+				{
+					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
+					return csProjFile.FullName;
+				}
+
+				path = Directory.GetParent(path).FullName;
+			}
+
+			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
+			return null;
+		}
+
+
+		private void LogDefinitions(string v)
+		{
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. CsProjs loaded: {string.Join('|', _csProjectsAlreadyLoaded)}");
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}");
 		}
 	}
 }
