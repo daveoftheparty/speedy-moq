@@ -7,7 +7,7 @@ namespace UnitTests.Features.MoqGenerator
 {
 	public class TestDataReader
 	{
-		public static IEnumerable<(string testId, string[] tests)> GetTests(string path)
+		public static IEnumerable<(string testIdMessage, string[] testInputs)> GetTestInputs(string path)
 		{
 			if(!path.EndsWith('/') && !path.EndsWith('\\'))
 				throw new ArgumentOutOfRangeException(nameof(path), path, "Use a trailing slash or this won't work the way you want!");

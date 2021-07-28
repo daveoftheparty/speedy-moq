@@ -1,0 +1,4 @@
+{
+	"CurrentIndentationLevel": 3,
+	"IndentString": "\t"
+}
