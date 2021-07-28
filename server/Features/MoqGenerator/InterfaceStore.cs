@@ -37,6 +37,7 @@ namespace Features.MoqGenerator
 			await Task.WhenAll(csProjTask, csInterfaceFileTask);
 		}
 
+		public bool Exists(string interfaceName) => _definitionsByInterfaceName.ContainsKey(interfaceName);
 
 		#endregion IInterfaceStore
 

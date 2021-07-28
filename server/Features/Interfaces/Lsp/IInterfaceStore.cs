@@ -9,5 +9,6 @@ namespace Features.Interfaces.Lsp
 		InterfaceDefinition GetInterfaceDefinition(string interfaceName);
 
 		Task LoadDefinitionsIfNecessaryAsync(TextDocumentItem textDocItem);
+		bool Exists(string interfaceName);
 	}
 }

@@ -9,6 +9,13 @@ namespace Features.MoqGenerator
 {
 	public class Diagnoser : IDiagnoser
 	{
+		private readonly IInterfaceStore _interfaceStore;
+
+		public Diagnoser(IInterfaceStore interfaceStore)
+		{
+			_interfaceStore = interfaceStore;
+		}
+
 		private readonly HashSet<string> _testFrameworks = new()
 		{
 			"using NUnit.Framework;",
@@ -79,9 +86,14 @@ namespace Features.MoqGenerator
 						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length)
 					);
 				})
+				.ToList()
 				;
 
-			return await Task.FromResult(diagnostics);
+			// make sure the interfaces we want to look for have actually already been loaded!
+			if(diagnostics.All(d => _interfaceStore.Exists(d.Data)))
+				return await Task.FromResult(diagnostics);
+
+			return await Task.FromResult(new List<Diagnostic>());
 		}
 	}
 }
