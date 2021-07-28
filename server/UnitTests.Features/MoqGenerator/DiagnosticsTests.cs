@@ -24,7 +24,13 @@ namespace UnitTests.Features.MoqGenerator
 				.Setup(x => x.Exists(It.IsAny<string>()))
 				.Returns(true);
 
-			var diagnoser = new Diagnoser(interfaceStore.Object);
+			var mockText = new Mock<IMockText>();
+			mockText
+				.Setup(x => x.GetMockText(It.IsAny<string>()))
+				.Returns("-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --")
+				;
+
+			var diagnoser = new Diagnoser(interfaceStore.Object, mockText.Object);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, test.input);
 			var actual = await diagnoser.GetDiagnosticsAsync(textDoc);
 

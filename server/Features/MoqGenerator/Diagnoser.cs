@@ -10,10 +10,12 @@ namespace Features.MoqGenerator
 	public class Diagnoser : IDiagnoser
 	{
 		private readonly IInterfaceStore _interfaceStore;
+		private readonly IMockText _mockText;
 
-		public Diagnoser(IInterfaceStore interfaceStore)
+		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText)
 		{
 			_interfaceStore = interfaceStore;
+			_mockText = mockText;
 		}
 
 		private readonly HashSet<string> _testFrameworks = new()
@@ -23,7 +25,7 @@ namespace Features.MoqGenerator
 			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 		};
 
-#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method
+#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method?
 		public async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(TextDocumentItem item)
 		{
 			/*
@@ -71,6 +73,10 @@ namespace Features.MoqGenerator
 				)
 				.Select(x =>
 				{
+					// Location refers to the substring indices of the text document
+					// we need those to get the interfaceName, we also need them
+					// to calculate the range in the document where we want to eventually
+					// request our TextEdit when publishing a QuickFix from CodeActionHandler
 					var roslynRange = x.Location.GetLineSpan();
 					return new Diagnostic
 					(
@@ -83,17 +89,23 @@ namespace Features.MoqGenerator
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length)
+						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length) // interfaceName
 					);
 				})
 				.ToList()
 				;
 
-			// make sure the interfaces we want to look for have actually already been loaded!
-			if(diagnostics.All(d => _interfaceStore.Exists(d.Data)))
-				return await Task.FromResult(diagnostics);
 
-			return await Task.FromResult(new List<Diagnostic>());
+			var publishableDiagnostics = diagnostics
+				.Where(candidate => _interfaceStore.Exists(candidate.Data)) // can't gen text if the interface hasn't been loaded
+				.Select(loadable =>
+				{
+					var newText = _mockText.GetMockText(loadable.Data);
+					return loadable with { Data = newText };
+				})
+				;
+
+			return await Task.FromResult(publishableDiagnostics);
 		}
 	}
 }

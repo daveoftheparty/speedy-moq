@@ -4,6 +4,6 @@ namespace Features.Interfaces.Lsp
 {
 	public interface IMockText
 	{
-		string GetMockText(TextDocumentIdentifier textDocumentIdentifier, string interfaceName);
+		string GetMockText(string interfaceName);
 	}
 }

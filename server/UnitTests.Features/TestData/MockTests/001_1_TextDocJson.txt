@@ -1,6 +1,0 @@
-{
-	"Identifier": {
-		"Uri": "file:///somewhere/a.txt",
-		"Version": 0
-	}
-}

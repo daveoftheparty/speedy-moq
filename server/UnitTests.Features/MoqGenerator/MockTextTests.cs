@@ -29,11 +29,8 @@ namespace UnitTests.Features.MoqGenerator
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var uri = "uri:somefile.txt";
 			var interfaceName = "asdf";
-			var docId = new TextDocumentIdentifier(uri, 13);
-			
-			var actual = mockText.GetMockText(docId, interfaceName);
+			var actual = mockText.GetMockText(interfaceName);
 			
 			Assert.IsNull(actual);
 			Assert.IsTrue(
@@ -44,23 +41,20 @@ namespace UnitTests.Features.MoqGenerator
 						var message = entry.ToString();
 						return
 							entry.LogLevel == LogLevel.Error
-							&& message.Contains(uri)
 							&& message.Contains(interfaceName);
 					})
 			);
 		}
 
 		[TestCaseSource(nameof(MockTestFiles))]
-		public void GoMocks((string testId, string textDocJson, string interfaceName, string expected) test)
+		public void GoMocks((string testId, string interfaceName, string expected) test)
 		{
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var docId = JsonSerializer.Deserialize<TextDocumentIdentifier>(test.textDocJson);
-			
-			var actual = mockText.GetMockText(docId, test.interfaceName);
+			var actual = mockText.GetMockText(test.interfaceName);
 			
 			if(test.expected != actual)
 			{
@@ -129,7 +123,7 @@ namespace UnitTests.Features.MoqGenerator
 			};
 		}
 
-		public static IEnumerable<(string testId, string textDocJson, string interfaceName, string expected)> MockTestFiles
+		public static IEnumerable<(string testId, string interfaceName, string expected)> MockTestFiles
 		{
 			get
 			{
@@ -138,7 +132,7 @@ namespace UnitTests.Features.MoqGenerator
 
 				foreach(var test in data)
 				{
-					yield return (test.testId, test.tests[0], test.tests[1], test.tests[2]);
+					yield return (test.testId, test.tests[0], test.tests[1]);
 				}
 			}
 		}

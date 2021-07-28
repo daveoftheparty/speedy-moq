@@ -21,7 +21,7 @@ namespace Features.MoqGenerator
 			_interfaceStore = interfaceStore;
 		}
 
-		public string GetMockText(TextDocumentIdentifier textDocumentIdentifier, string interfaceName)
+		public string GetMockText(string interfaceName)
 		{
 			/*
 				if our dictionary of implementations is empty, go compile the whole project...
@@ -35,7 +35,8 @@ namespace Features.MoqGenerator
 			var definition = _interfaceStore.GetInterfaceDefinition(interfaceName);
 			if(definition == null)
 			{
-				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'. Text document we are working with is: {textDocumentIdentifier.Uri}");
+				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
+				#warning check this null on the other side!!!
 				return (string)null;
 			}
 				
