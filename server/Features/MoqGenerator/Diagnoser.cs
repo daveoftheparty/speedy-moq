@@ -76,7 +76,7 @@ namespace Features.MoqGenerator
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						null
+						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length)
 					);
 				})
 				;

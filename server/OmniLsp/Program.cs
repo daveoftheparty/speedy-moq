@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Features.Interfaces.Lsp;
-using Features.MoqGenerator;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using OmniSharp.Extensions.LanguageServer.Server;
+
+using Features.Interfaces.Lsp;
+using Features.MoqGenerator;
 
 namespace OmniLsp
 {
@@ -34,6 +36,8 @@ namespace OmniLsp
 		static void ConfigureServices(IServiceCollection services)
 		{
 			services.AddTransient<IDiagnoser, Diagnoser>();
+			services.AddTransient<IMockText, MockText>();
+			services.AddTransient<IInterfaceStore, InterfaceStore>();
 		}
 	}
 }

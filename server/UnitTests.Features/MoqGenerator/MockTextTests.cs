@@ -3,14 +3,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Features.Model.Lsp;
+
 using NUnit.Framework;
-using Features.MoqGenerator;
+
 using Microsoft.Extensions.Logging;
 using Moq;
-using Features.Interfaces;
+
+using Features.Interfaces.Lsp;
 using Features.Model;
+using Features.Model.Lsp;
+using Features.MoqGenerator;
 
 namespace UnitTests.Features.MoqGenerator
 {

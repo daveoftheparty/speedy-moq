@@ -14,6 +14,6 @@
     "Code": "BoilerMoq001",
     "Source": "BoilerMoq",
     "Message": "We can generate basic Moq code for you from this interface name!",
-    "Data": null
+    "Data": "IStringAnalyzer"
   }
 ]

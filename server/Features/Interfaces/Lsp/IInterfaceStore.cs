@@ -1,6 +1,6 @@
 using Features.Model;
 
-namespace Features.Interfaces
+namespace Features.Interfaces.Lsp
 {
 	public interface IInterfaceStore
 	{

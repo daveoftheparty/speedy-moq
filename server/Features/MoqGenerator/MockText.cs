@@ -4,7 +4,7 @@ using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
-using Features.Interfaces;
+using Features.Interfaces.Lsp;
 using Features.Model.Lsp;
 
 namespace Features.MoqGenerator
