@@ -1,10 +1,4 @@
-{
-	"Identifier": {
-		"Uri": "file:///somewhere/a.txt",
-		"Version": 0
-	},
-	"LanguageId": "csharp",
-	"Text": "using System;
+using System;
 using System.Linq.Expressions;
 
 using Moq;
@@ -25,5 +19,4 @@ namespace UnitTests.Features.TestData
 			IStringAnalyzer
 		}
 	}
-}"
 }

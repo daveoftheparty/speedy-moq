@@ -31,6 +31,7 @@ namespace UnitTests.Features.MoqGenerator
 					{
 						TestId = g.Key,
 						Files = g
+							.OrderBy(name => name.FileName)
 							.Select(n => File.ReadAllText(path + n.FileName))
 							.ToArray()
 					};
