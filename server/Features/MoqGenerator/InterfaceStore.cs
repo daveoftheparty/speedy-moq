@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Logging;
 
 using Buildalyzer;
 using Buildalyzer.Workspaces;
@@ -36,19 +38,46 @@ namespace Features.MoqGenerator
 
 		private readonly Dictionary<string, InterfaceDefinition> _definitionsByInterfaceName = new();
 		private readonly HashSet<string> _csProjectsAlreadyLoaded = new();
+		private readonly ILogger<InterfaceStore> _logger;
+
+		public InterfaceStore(ILogger<InterfaceStore> logger)
+		{
+			_logger = logger;
+		}
 
 
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
-			// this file may or may not contain interface definitions...
-			throw new NotImplementedException();
+			// this file may or may not contain interface definitions, and there's no way to tell until we parse it
+
+			// we might want to convert this method to a Task.Run() so it can actually be run in parallel...
+
+			var tree = CSharpSyntaxTree.ParseText(textDocItem.Text);
+			var root = tree.GetCompilationUnitRoot();
+			var compilation = CSharpCompilation
+				.Create(null)
+				.AddSyntaxTrees(tree);
+			
+			var model = compilation.GetSemanticModel(tree);
+
+			// load our interface dict...
+			foreach(var definition in GetInterfaceDefinitions(new[] { model }))
+			{
+				_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
+				_logger.LogInformation($"{nameof(InterfaceStore)} in method {nameof(LoadCsInterfaceIfNecessaryAsync)} received/is loading for uri {textDocItem.Identifier.Uri}");
+			}
+			
+			await Task.CompletedTask;
 		}
 
 		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
 			// the csProj may or may not have been loaded already. if it's in our HashSet, no reason to load,
 			// because we'll detect changes on individual files with the LoadCsInterfaceIfNecessaryAsync method
-			throw new NotImplementedException();
+
+			var csProjPath = GetCsProjFromCsFile(textDocItem.Identifier.Uri);
+			if(!_csProjectsAlreadyLoaded.Contains(csProjPath))
+				await LoadCSProjAsync(csProjPath);
 		}
 
 
@@ -56,7 +85,8 @@ namespace Features.MoqGenerator
 
 		private string GetCsProjFromCsFile(string uri)
 		{
-			throw new NotImplementedException();
+			_logger.LogInformation($"{nameof(InterfaceStore)} in method {nameof(GetCsProjFromCsFile)} is returning empty string for csproj, triggered by file: {uri}");
+			return "";
 		}
 
 		private async Task LoadCSProjAsync(string csProjPath)
@@ -74,6 +104,21 @@ namespace Features.MoqGenerator
 
 			var definitions = compilations
 				.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
+				;
+
+				// load our interface dict...
+				foreach(var definition in GetInterfaceDefinitions(definitions))
+				{
+					_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
+				}
+
+				// and finally, load up our hashset so that we don't have to do this again
+				_csProjectsAlreadyLoaded.Add(csProjPath);
+		}
+
+		private IEnumerable<(string InterfaceName, InterfaceDefinition InterfaceDefinition)> GetInterfaceDefinitions(IEnumerable<SemanticModel> models)
+		{
+			return models
 				.SelectMany(
 					semanticModel => semanticModel
 						.SyntaxTree
@@ -125,16 +170,8 @@ namespace Features.MoqGenerator
 							))
 							.ToList()
 					)
-				});
-
-				// load our interface dict...
-				foreach(var definition in definitions)
-				{
-					_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
-				}
-
-				// and finally, load up our hashset so that we don't have to do this again
-				_csProjectsAlreadyLoaded.Add(csProjPath);
+				})
+				.Select(tuple => (tuple.InterfaceName, tuple.InterfaceDefinition));
 		}
 	}
 }
