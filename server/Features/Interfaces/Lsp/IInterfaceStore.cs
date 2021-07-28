@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using Features.Model;
+using Features.Model.Lsp;
 
 namespace Features.Interfaces.Lsp
 {
@@ -6,8 +8,6 @@ namespace Features.Interfaces.Lsp
 	{
 		InterfaceDefinition GetInterfaceDefinition(string interfaceName);
 
-		/*
-			TBD: a method for updating an interface definition when textDocument/didChange fires and changes an interface
-		*/
+		Task LoadDefinitionsIfNecessaryAsync(TextDocumentItem textDocItem);
 	}
 }

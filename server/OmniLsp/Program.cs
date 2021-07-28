@@ -24,7 +24,7 @@ namespace OmniLsp
 						.AddLanguageProtocolLogging()
 						.SetMinimumLevel(LogLevel.Debug)
 				)
-				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
+				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Error))) // I bumped this up to see if we could filter out Omnisharp, it filtered absolutely nothing....
 				.WithServices(ConfigureServices)
 				.WithHandler<TextDocumentHandler>()
 				.WithHandler<CodeActionHandler>()
@@ -37,7 +37,7 @@ namespace OmniLsp
 		{
 			services.AddTransient<IDiagnoser, Diagnoser>();
 			services.AddTransient<IMockText, MockText>();
-			services.AddTransient<IInterfaceStore, InterfaceStore>();
+			services.AddSingleton<IInterfaceStore, InterfaceStore>();
 		}
 	}
 }

@@ -21,14 +21,17 @@ namespace OmniLsp
 		private readonly ILogger<TextDocumentHandler> _logger;
 		private readonly ILanguageServerFacade _router;
 		private readonly IDiagnoser _diagnoser;
-
-		public TextDocumentHandler(ILogger<TextDocumentHandler> logger, ILanguageServerFacade router, IDiagnoser diagnoser)
+		private readonly IInterfaceStore _interfaceStore;
+		private readonly string _thisInstance = Guid.NewGuid().ToString();
+		
+		public TextDocumentHandler(ILogger<TextDocumentHandler> logger, ILanguageServerFacade router, IDiagnoser diagnoser, IInterfaceStore interfaceStore)
 		{
 			_logger = logger;
 			_router = router;
 			_diagnoser = diagnoser;
+			_interfaceStore = interfaceStore;
 
-			_logger.LogTrace($"hello from {nameof(TextDocumentHandler)} ctor...");
+			_logger.LogError($"hello from {nameof(TextDocumentHandler)}:{_thisInstance} ctor...");
 		}
 
 		#region TextDocumentSyncHandlerBase overrides
@@ -48,8 +51,11 @@ namespace OmniLsp
 
 		public override Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
 		{
+			var textDoc = TextDocAdapter.From(request.TextDocument);
+			Task.Run(() => _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc));
+
 			PublishDiagnostics(
-				TextDocAdapter.From(request.TextDocument),
+				textDoc,
 				request.TextDocument.Uri,
 				"textDocument/didOpen");
 			return Unit.Task;
@@ -57,8 +63,11 @@ namespace OmniLsp
 
 		public override Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
 		{
+			var textDoc = TextDocAdapter.From(request, Features.Constants.LanguageId);
+			Task.Run(() => _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc));
+
 			PublishDiagnostics(
-				TextDocAdapter.From(request, Features.Constants.LanguageId),
+				textDoc,
 				request.TextDocument.Uri,
 				"textDocument/didChange");
 			return Unit.Task;

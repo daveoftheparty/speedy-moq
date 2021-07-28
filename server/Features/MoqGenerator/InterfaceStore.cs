@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,6 +24,9 @@ namespace Features.MoqGenerator
 		public InterfaceDefinition GetInterfaceDefinition(string interfaceName)
 		{
 			_definitionsByInterfaceName.TryGetValue(interfaceName, out var result);
+			_logger.LogInformation($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
+			$" Interface Source file:{result?.SourceFile ?? "not found"}" +
+			$" First Method Name per interface: {string.Join('|', _definitionsByInterfaceName.Values.Select(v => v.Methods.First().MethodName))}");
 			return result;
 		}
 
@@ -39,10 +43,12 @@ namespace Features.MoqGenerator
 		private readonly Dictionary<string, InterfaceDefinition> _definitionsByInterfaceName = new();
 		private readonly HashSet<string> _csProjectsAlreadyLoaded = new();
 		private readonly ILogger<InterfaceStore> _logger;
+		private readonly string _thisInstance = Guid.NewGuid().ToString();
 
 		public InterfaceStore(ILogger<InterfaceStore> logger)
 		{
 			_logger = logger;
+			_logger.LogError($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 		}
 
 
@@ -67,7 +73,14 @@ namespace Features.MoqGenerator
 				_logger.LogInformation($"{nameof(InterfaceStore)} in method {nameof(LoadCsInterfaceIfNecessaryAsync)} received/is loading for uri {textDocItem.Identifier.Uri}");
 			}
 			
+			LogDefinitions(nameof(LoadCsInterfaceIfNecessaryAsync));
 			await Task.CompletedTask;
+		}
+
+		private void LogDefinitions(string v)
+		{
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. CsProjs loaded: {string.Join('|', _csProjectsAlreadyLoaded)}");
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}");
 		}
 
 		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
@@ -76,7 +89,7 @@ namespace Features.MoqGenerator
 			// because we'll detect changes on individual files with the LoadCsInterfaceIfNecessaryAsync method
 
 			var csProjPath = GetCsProjFromCsFile(textDocItem.Identifier.Uri);
-			if(!_csProjectsAlreadyLoaded.Contains(csProjPath))
+			if(csProjPath != null && !_csProjectsAlreadyLoaded.Contains(csProjPath))
 				await LoadCSProjAsync(csProjPath);
 		}
 
@@ -85,8 +98,36 @@ namespace Features.MoqGenerator
 
 		private string GetCsProjFromCsFile(string uri)
 		{
-			_logger.LogInformation($"{nameof(InterfaceStore)} in method {nameof(GetCsProjFromCsFile)} is returning empty string for csproj, triggered by file: {uri}");
-			return "";
+			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
+			// if we can't find one, traverse backwards until we do... or don't
+
+			#warning change these LogInformation to LogTraces later... want it to show in messages for now while I'm actively debugging
+
+			var path = uri.Replace("file:///", "");
+			_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is looking for a .csproj related to file {path}");
+			
+			path = Path.GetDirectoryName(path);
+			while(!string.IsNullOrWhiteSpace(path))
+			{
+				_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is searching for a .csproj in {path}");
+				
+				var csProjFile = Directory
+					.EnumerateFiles(path)
+					.Select(f => new FileInfo(f))
+					.FirstOrDefault(x => x.Extension == ".csproj") // I have no idea why there would be more than one csproj in a directory, or if it's even possible
+					;
+
+				if(csProjFile != null)
+				{
+					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
+					return csProjFile.FullName;
+				}
+
+				path = Directory.GetParent(path).FullName;
+			}
+
+			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
+			return null;
 		}
 
 		private async Task LoadCSProjAsync(string csProjPath)
@@ -114,6 +155,8 @@ namespace Features.MoqGenerator
 
 				// and finally, load up our hashset so that we don't have to do this again
 				_csProjectsAlreadyLoaded.Add(csProjPath);
+
+				LogDefinitions(nameof(LoadCSProjAsync));
 		}
 
 		private IEnumerable<(string InterfaceName, InterfaceDefinition InterfaceDefinition)> GetInterfaceDefinitions(IEnumerable<SemanticModel> models)
