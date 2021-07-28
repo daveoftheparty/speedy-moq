@@ -9,6 +9,13 @@ namespace Features.MoqGenerator
 {
 	public class Diagnoser : IDiagnoser
 	{
+		private readonly IInterfaceStore _interfaceStore;
+
+		public Diagnoser(IInterfaceStore interfaceStore)
+		{
+			_interfaceStore = interfaceStore;
+		}
+
 		private readonly HashSet<string> _testFrameworks = new()
 		{
 			"using NUnit.Framework;",
@@ -16,6 +23,7 @@ namespace Features.MoqGenerator
 			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 		};
 
+#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method
 		public async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(TextDocumentItem item)
 		{
 			/*
@@ -75,12 +83,17 @@ namespace Features.MoqGenerator
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						null
+						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length)
 					);
 				})
+				.ToList()
 				;
 
-			return await Task.FromResult(diagnostics);
+			// make sure the interfaces we want to look for have actually already been loaded!
+			if(diagnostics.All(d => _interfaceStore.Exists(d.Data)))
+				return await Task.FromResult(diagnostics);
+
+			return await Task.FromResult(new List<Diagnostic>());
 		}
 	}
 }

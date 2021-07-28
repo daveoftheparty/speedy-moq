@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Features.Interfaces.Lsp;
-using Features.MoqGenerator;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using OmniSharp.Extensions.LanguageServer.Server;
+
+using Features.Interfaces.Lsp;
+using Features.MoqGenerator;
 
 namespace OmniLsp
 {
@@ -22,7 +24,7 @@ namespace OmniLsp
 						.AddLanguageProtocolLogging()
 						.SetMinimumLevel(LogLevel.Debug)
 				)
-				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
+				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Error))) // I bumped this up to see if we could filter out Omnisharp, it filtered absolutely nothing....
 				.WithServices(ConfigureServices)
 				.WithHandler<TextDocumentHandler>()
 				.WithHandler<CodeActionHandler>()
@@ -34,6 +36,8 @@ namespace OmniLsp
 		static void ConfigureServices(IServiceCollection services)
 		{
 			services.AddTransient<IDiagnoser, Diagnoser>();
+			services.AddTransient<IMockText, MockText>();
+			services.AddSingleton<IInterfaceStore, InterfaceStore>();
 		}
 	}
 }

@@ -3,10 +3,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
+using Moq;
 
 using Features;
 using Features.Model.Lsp;
 using Features.MoqGenerator;
+using Features.Interfaces.Lsp;
 
 namespace UnitTests.Features.MoqGenerator
 {
@@ -17,7 +19,12 @@ namespace UnitTests.Features.MoqGenerator
 		{
 			var expected = JsonSerializer.Deserialize<IEnumerable<Diagnostic>>(test.expected);
 
-			var diagnoser = new Diagnoser();
+			var interfaceStore = new Mock<IInterfaceStore>();
+			interfaceStore
+				.Setup(x => x.Exists(It.IsAny<string>()))
+				.Returns(true);
+
+			var diagnoser = new Diagnoser(interfaceStore.Object);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, test.input);
 			var actual = await diagnoser.GetDiagnosticsAsync(textDoc);
 
