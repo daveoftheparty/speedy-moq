@@ -43,9 +43,6 @@ namespace Features.MoqGenerator
 
 			// oh boy. we have one of "those guys" that went to
 			// "I don't understand a tab" school. 
-			#warning call out the spaces-as-tabs user in generated mock text, because it'll be funny
-			
-
 
 			// I originally grabbed distinct counts, think it was going to be some
 			// sort of semi-complicated algorithm like if max(count) % min(count) == 0 and
