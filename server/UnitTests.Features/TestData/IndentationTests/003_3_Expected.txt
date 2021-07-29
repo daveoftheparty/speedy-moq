@@ -1,0 +1,5 @@
+{
+	"CurrentIndentationLevel": 12,
+	"IndentString": "       ",
+	"WorshipsFalseIndentGod": true
+}

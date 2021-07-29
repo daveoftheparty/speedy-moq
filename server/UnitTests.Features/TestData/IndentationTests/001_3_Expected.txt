@@ -1,4 +1,5 @@
 {
 	"CurrentIndentationLevel": 3,
-	"IndentString": "\t"
+	"IndentString": "\t",
+	"WorshipsFalseIndentGod": false
 }
