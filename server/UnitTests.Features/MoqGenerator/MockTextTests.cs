@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-using System.Text.Json;
 
 using NUnit.Framework;
 
@@ -29,11 +28,8 @@ namespace UnitTests.Features.MoqGenerator
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var uri = "uri:somefile.txt";
 			var interfaceName = "asdf";
-			var docId = new TextDocumentIdentifier(uri, 13);
-			
-			var actual = mockText.GetMockText(docId, interfaceName);
+			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
 			
 			Assert.IsNull(actual);
 			Assert.IsTrue(
@@ -44,32 +40,35 @@ namespace UnitTests.Features.MoqGenerator
 						var message = entry.ToString();
 						return
 							entry.LogLevel == LogLevel.Error
-							&& message.Contains(uri)
 							&& message.Contains(interfaceName);
 					})
 			);
 		}
 
-		[TestCaseSource(nameof(MockTestFiles))]
-		public void GoMocks((string testId, string textDocJson, string interfaceName, string expected) test)
+		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
+		public void Go((string testIdMessage, string[] testInputs) test)
 		{
+			var interfaceName = test.testInputs[0];
+			var expected = test.testInputs[1];
+
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var docId = JsonSerializer.Deserialize<TextDocumentIdentifier>(test.textDocJson);
+			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
 			
-			var actual = mockText.GetMockText(docId, test.interfaceName);
-			
-			if(test.expected != actual)
+			if(expected != actual)
 			{
 				Console.WriteLine("Here's the actual output we got from MockText:");
 				Console.WriteLine(actual);
 			}
-			Assert.AreEqual(test.expected, actual, test.testId);
+			Assert.AreEqual(expected, actual, test.testIdMessage);
 		}
 
+
+		private	IndentationConfig DefaultIndent() => new IndentationConfig(3, "\t", false);
+		
 		private
 		(
 			Mock<IInterfaceStore> mock,
@@ -127,20 +126,6 @@ namespace UnitTests.Features.MoqGenerator
 					)
 				}
 			};
-		}
-
-		public static IEnumerable<(string testId, string textDocJson, string interfaceName, string expected)> MockTestFiles
-		{
-			get
-			{
-				const string path = "TestData/MockTests/";
-				var data = TestDataReader.GetTests(path);
-
-				foreach(var test in data)
-				{
-					yield return (test.testId, test.tests[0], test.tests[1], test.tests[2]);
-				}
-			}
 		}
 	}
 }

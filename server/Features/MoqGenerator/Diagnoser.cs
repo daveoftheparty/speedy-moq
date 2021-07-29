@@ -10,10 +10,14 @@ namespace Features.MoqGenerator
 	public class Diagnoser : IDiagnoser
 	{
 		private readonly IInterfaceStore _interfaceStore;
+		private readonly IMockText _mockText;
+		private readonly IIndentation _indentation;
 
-		public Diagnoser(IInterfaceStore interfaceStore)
+		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText, IIndentation indentation)
 		{
 			_interfaceStore = interfaceStore;
+			_mockText = mockText;
+			_indentation = indentation;
 		}
 
 		private readonly HashSet<string> _testFrameworks = new()
@@ -23,7 +27,7 @@ namespace Features.MoqGenerator
 			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 		};
 
-#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method
+#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method?
 		public async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(TextDocumentItem item)
 		{
 			/*
@@ -71,6 +75,10 @@ namespace Features.MoqGenerator
 				)
 				.Select(x =>
 				{
+					// Location refers to the substring indices of the text document
+					// we need those to get the interfaceName, we also need them
+					// to calculate the range in the document where we want to eventually
+					// request our TextEdit when publishing a QuickFix from CodeActionHandler
 					var roslynRange = x.Location.GetLineSpan();
 					return new Diagnostic
 					(
@@ -83,17 +91,36 @@ namespace Features.MoqGenerator
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length)
+						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length) // interfaceName
 					);
 				})
 				.ToList()
 				;
 
-			// make sure the interfaces we want to look for have actually already been loaded!
-			if(diagnostics.All(d => _interfaceStore.Exists(d.Data)))
-				return await Task.FromResult(diagnostics);
+			
+			var publishableDiagnostics = diagnostics
+				.Where(candidate => _interfaceStore.Exists(candidate.Data)) // can't gen text if the interface hasn't been loaded
+				.Select(loadable =>
+				{
+					var config = _indentation.GetIndentationConfig(item.Text, loadable.Range);
+					var newText = _mockText.GetMockText(loadable.Data, config);
+					
+					// we're gonna reset the range start char to 0 so that the first
+					// line of our generated text doesn't get double-indented
 
-			return await Task.FromResult(new List<Diagnostic>());
+					return loadable with
+					{
+						Data = newText,
+						Range = new Range
+						(
+							new Position(loadable.Range.start.line, 0),
+							loadable.Range.end
+						)
+					};
+				})
+				;
+
+			return await Task.FromResult(publishableDiagnostics);
 		}
 	}
 }

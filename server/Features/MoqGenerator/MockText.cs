@@ -11,7 +11,6 @@ namespace Features.MoqGenerator
 {
 	public class MockText : IMockText
 	{
-		private const int _indentationLevel = 3;
 		private readonly ILogger<MockText> _logger;
 		private readonly IInterfaceStore _interfaceStore;
 
@@ -21,7 +20,7 @@ namespace Features.MoqGenerator
 			_interfaceStore = interfaceStore;
 		}
 
-		public string GetMockText(TextDocumentIdentifier textDocumentIdentifier, string interfaceName)
+		public string GetMockText(string interfaceName, IndentationConfig indentationConfig)
 		{
 			/*
 				if our dictionary of implementations is empty, go compile the whole project...
@@ -35,7 +34,8 @@ namespace Features.MoqGenerator
 			var definition = _interfaceStore.GetInterfaceDefinition(interfaceName);
 			if(definition == null)
 			{
-				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'. Text document we are working with is: {textDocumentIdentifier.Uri}");
+				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
+				#warning check this null on the other side!!!
 				return (string)null;
 			}
 				
@@ -69,6 +69,7 @@ namespace Features.MoqGenerator
 				we will just let the mock.Verify() methods be one line after another with no additional whitespace
 			*/
 			var results = new List<string>();
+			var tab = indentationConfig.IndentString;
 
 			var mockName = interfaceName;
 			if(mockName.StartsWith('I'))
@@ -108,7 +109,7 @@ namespace Features.MoqGenerator
 					$"{mockName}"
 				);
 				results.Add(
-					$"	.Setup({camelName})"
+					$"{tab}.Setup({camelName})"
 				);
 
 				// string patient, char charToCount
@@ -118,18 +119,35 @@ namespace Features.MoqGenerator
 
 				results.Add(
 					//	.Returns((string patient, char charToCount) =>
-					$"	.Returns(({callbackDeclaration}) =>"
+					$"{tab}.Returns(({callbackDeclaration}) =>"
 				);
 
-				
+
+				// and finally, this:
+
 				//	{
 				//		return;
 				//	}
 				//	);
+
+				// or, this, if the developer is a heathen:
+
+				//	{
+				//		// you should stop using an arbitrary number of space characters to represent an indent
+				//		return;
+				//	}
+				//	);
+
 				
-				results.Add("	{");
-				results.Add($"		return;");
-				results.Add("	});");
+
+				results.Add($"{tab}{{");
+				
+				#warning this is totally funny, but give user a setting to turn it off as well! 🤣
+				if(indentationConfig.WorshipsFalseIndentGod)
+					results.Add($"{tab}{tab}// you should stop using an arbitrary number of space characters to represent an indent");
+
+				results.Add($"{tab}{tab}return;");
+				results.Add($"{tab}}});");
 				results.Add("");
 
 
@@ -142,9 +160,14 @@ namespace Features.MoqGenerator
 				results.Add(verifyQueue.Dequeue());
 
 
+			
+			var currentIndentString = string.Join("",
+				Enumerable.Repeat(indentationConfig.IndentString, indentationConfig.CurrentIndentationLevel)
+				);
+
 			var lines =  results.Select(l => 
 				l.Length > 0
-				? new string('\t', _indentationLevel) + l
+				? currentIndentString + l
 				: l
 				);
 

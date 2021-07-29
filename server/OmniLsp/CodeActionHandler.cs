@@ -18,12 +18,10 @@ namespace OmniLsp
 	public class CodeActionHandler : ICodeActionHandler
 	{
 		private readonly ILogger<CodeActionHandler> _logger;
-		private readonly IMockText _mockText;
 
-		public CodeActionHandler(ILogger<CodeActionHandler> logger, IMockText mockText)
+		public CodeActionHandler(ILogger<CodeActionHandler> logger)
 		{
 			_logger = logger;
-			_mockText = mockText;
 		}
 
 		#region ICodeActionHandler
@@ -63,7 +61,7 @@ namespace OmniLsp
 									{
 										new TextEdit
 										{
-											NewText = _mockText.GetMockText(ourDocId, interfaceName),
+											NewText = diagnostic.Data.ToString(),
 											Range = diagnostic.Range
 										}
 									}

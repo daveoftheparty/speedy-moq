@@ -10,29 +10,18 @@ namespace UnitTests.Features.MoqGenerator
 {
 	public class FullGenerationTests
 	{
-		[TestCaseSource(nameof(FullGenerationTestFiles))]
-		public async Task Go((string testId, string input, string expected) test)
+		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/FullGenerationTests/"})]
+		public async Task Go((string testIdMessage, string[] testInputs) test)
 		{
+			var input = test.testInputs[0];
+			var expected = test.testInputs[1];
+
 			var generator = new Generator();
 
-			var actual = await generator.GetReplacementAsync(Guid.NewGuid().ToString(), test.input);
+			var actual = await generator.GetReplacementAsync(Guid.NewGuid().ToString(), input);
 			
-			Assert.IsTrue(actual.IsChanged, test.testId);
-			Assert.AreEqual(test.expected, actual.Text, test.testId);
-		}
-
-		public static IEnumerable<(string input, string expected, string testId)> FullGenerationTestFiles
-		{
-			get
-			{
-				const string path = "TestData/FullGenerationTests/";
-				var data = TestDataReader.GetTests(path);
-
-				foreach(var test in data)
-				{
-					yield return (test.testId, test.tests[1], test.tests[0]);
-				}
-			}
+			Assert.IsTrue(actual.IsChanged, test.testIdMessage);
+			Assert.AreEqual(expected, actual.Text, test.testIdMessage);
 		}
 	}
 }
