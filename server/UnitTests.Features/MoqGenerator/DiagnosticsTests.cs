@@ -9,6 +9,7 @@ using Features;
 using Features.Model.Lsp;
 using Features.MoqGenerator;
 using Features.Interfaces.Lsp;
+using ourRange = Features.Model.Lsp.Range;
 
 namespace UnitTests.Features.MoqGenerator
 {
@@ -27,11 +28,16 @@ namespace UnitTests.Features.MoqGenerator
 
 			var mockText = new Mock<IMockText>();
 			mockText
-				.Setup(x => x.GetMockText(It.IsAny<string>()))
+				.Setup(x => x.GetMockText(It.IsAny<string>(), It.IsAny<IndentationConfig>()))
 				.Returns("-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --")
 				;
 
-			var diagnoser = new Diagnoser(interfaceStore.Object, mockText.Object);
+			var mockIndentation = new Mock<IIndentation>();
+			mockIndentation
+				.Setup(x => x.GetIndentationConfig(It.IsAny<string>(), It.IsAny<ourRange>()))
+				.Returns(new IndentationConfig(3, "\t", false));
+
+			var diagnoser = new Diagnoser(interfaceStore.Object, mockText.Object, mockIndentation.Object);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);
 			var actual = await diagnoser.GetDiagnosticsAsync(textDoc);
 

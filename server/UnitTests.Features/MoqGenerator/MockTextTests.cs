@@ -10,6 +10,7 @@ using Moq;
 
 using Features.Interfaces.Lsp;
 using Features.Model;
+using Features.Model.Lsp;
 using Features.MoqGenerator;
 
 namespace UnitTests.Features.MoqGenerator
@@ -28,7 +29,7 @@ namespace UnitTests.Features.MoqGenerator
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
 			var interfaceName = "asdf";
-			var actual = mockText.GetMockText(interfaceName);
+			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
 			
 			Assert.IsNull(actual);
 			Assert.IsTrue(
@@ -55,7 +56,7 @@ namespace UnitTests.Features.MoqGenerator
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var actual = mockText.GetMockText(interfaceName);
+			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
 			
 			if(expected != actual)
 			{
@@ -65,6 +66,9 @@ namespace UnitTests.Features.MoqGenerator
 			Assert.AreEqual(expected, actual, test.testIdMessage);
 		}
 
+
+		private	IndentationConfig DefaultIndent() => new IndentationConfig(3, "\t", false);
+		
 		private
 		(
 			Mock<IInterfaceStore> mock,

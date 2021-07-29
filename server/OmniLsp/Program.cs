@@ -35,9 +35,12 @@ namespace OmniLsp
 
 		static void ConfigureServices(IServiceCollection services)
 		{
+			services.AddSingleton<IInterfaceStore, InterfaceStore>();
+
+
 			services.AddTransient<IDiagnoser, Diagnoser>();
 			services.AddTransient<IMockText, MockText>();
-			services.AddSingleton<IInterfaceStore, InterfaceStore>();
+			services.AddTransient<IIndentation, Indentation>();
 		}
 	}
 }

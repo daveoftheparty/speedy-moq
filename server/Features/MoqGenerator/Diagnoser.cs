@@ -11,11 +11,13 @@ namespace Features.MoqGenerator
 	{
 		private readonly IInterfaceStore _interfaceStore;
 		private readonly IMockText _mockText;
+		private readonly IIndentation _indentation;
 
-		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText)
+		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText, IIndentation indentation)
 		{
 			_interfaceStore = interfaceStore;
 			_mockText = mockText;
+			_indentation = indentation;
 		}
 
 		private readonly HashSet<string> _testFrameworks = new()
@@ -95,13 +97,26 @@ namespace Features.MoqGenerator
 				.ToList()
 				;
 
-
+			
 			var publishableDiagnostics = diagnostics
 				.Where(candidate => _interfaceStore.Exists(candidate.Data)) // can't gen text if the interface hasn't been loaded
 				.Select(loadable =>
 				{
-					var newText = _mockText.GetMockText(loadable.Data);
-					return loadable with { Data = newText };
+					var config = _indentation.GetIndentationConfig(item.Text, loadable.Range);
+					var newText = _mockText.GetMockText(loadable.Data, config);
+					
+					// we're gonna reset the range start char to 0 so that the first
+					// line of our generated text doesn't get double-indented
+
+					return loadable with
+					{
+						Data = newText,
+						Range = new Range
+						(
+							new Position(loadable.Range.start.line, 0),
+							loadable.Range.end
+						)
+					};
 				})
 				;
 

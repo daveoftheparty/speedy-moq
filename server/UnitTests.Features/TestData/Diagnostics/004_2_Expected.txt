@@ -3,7 +3,7 @@
     "Range": {
       "start": {
         "line": 13,
-        "character": 3
+        "character": 0
       },
       "end": {
         "line": 13,
