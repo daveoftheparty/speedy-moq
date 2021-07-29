@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-using System.Text.Json;
 
 using NUnit.Framework;
 
@@ -11,7 +10,6 @@ using Moq;
 
 using Features.Interfaces.Lsp;
 using Features.Model;
-using Features.Model.Lsp;
 using Features.MoqGenerator;
 
 namespace UnitTests.Features.MoqGenerator
@@ -46,22 +44,25 @@ namespace UnitTests.Features.MoqGenerator
 			);
 		}
 
-		[TestCaseSource(nameof(MockTestFiles))]
-		public void GoMocks((string testId, string interfaceName, string expected) test)
+		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
+		public void Go((string testIdMessage, string[] testInputs) test)
 		{
+			var interfaceName = test.testInputs[0];
+			var expected = test.testInputs[1];
+
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var actual = mockText.GetMockText(test.interfaceName);
+			var actual = mockText.GetMockText(interfaceName);
 			
-			if(test.expected != actual)
+			if(expected != actual)
 			{
 				Console.WriteLine("Here's the actual output we got from MockText:");
 				Console.WriteLine(actual);
 			}
-			Assert.AreEqual(test.expected, actual, test.testId);
+			Assert.AreEqual(expected, actual, test.testIdMessage);
 		}
 
 		private
@@ -121,20 +122,6 @@ namespace UnitTests.Features.MoqGenerator
 					)
 				}
 			};
-		}
-
-		public static IEnumerable<(string testId, string interfaceName, string expected)> MockTestFiles
-		{
-			get
-			{
-				const string path = "TestData/MockTests/";
-				var data = TestDataReader.GetTests(path);
-
-				foreach(var test in data)
-				{
-					yield return (test.testId, test.tests[0], test.tests[1]);
-				}
-			}
 		}
 	}
 }
