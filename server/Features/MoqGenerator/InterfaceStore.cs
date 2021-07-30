@@ -98,12 +98,38 @@ namespace Features.MoqGenerator
 		}
 
 
+		private void AddToWorkspace(AnalyzerManager manager, AdhocWorkspace workspace, Queue<string> projects, HashSet<string> projectsAdded)
+		{
+			if(projects.Count == 0)
+				return;
+
+			var projectName = projects.Dequeue();
+
+			if(!projectsAdded.Contains(projectName))
+			{
+				var project = manager.GetProject(projectName);
+				var buildResult = project.Build();
+
+				buildResult
+					.SelectMany(br => br.ProjectReferences)
+					.ToList()
+					.ForEach(pr => projects.Enqueue(pr))
+					;
+
+				project.AddToWorkspace(workspace);
+				projectsAdded.Add(projectName);
+			}
+			
+			AddToWorkspace(manager, workspace, projects, projectsAdded);
+		}
+
 		private async Task LoadCSProjAsync(string csProjPath)
 		{
 			var manager = new AnalyzerManager();
-			var analyzer = manager.GetProject(csProjPath);
 			var workspace = new AdhocWorkspace();
-			var project = analyzer.AddToWorkspace(workspace);
+
+			var projectQueue = new Queue<string>(new[] {csProjPath});
+			AddToWorkspace(manager, workspace, projectQueue, new HashSet<string>());
 			
 			var compilations = await Task.WhenAll(workspace.CurrentSolution.Projects.Select(x => x.GetCompilationAsync()));
 
