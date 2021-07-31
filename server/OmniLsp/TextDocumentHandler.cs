@@ -52,7 +52,7 @@ namespace OmniLsp
 		public override Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
 		{
 			var textDoc = TextDocAdapter.From(request.TextDocument);
-			Task.Run(() => _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc));
+			_ = _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc);
 
 			PublishDiagnostics(
 				textDoc,
@@ -64,7 +64,7 @@ namespace OmniLsp
 		public override Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
 		{
 			var textDoc = TextDocAdapter.From(request, Features.Constants.LanguageId);
-			Task.Run(() => _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc));
+			_ = _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc);
 
 			PublishDiagnostics(
 				textDoc,
@@ -93,9 +93,7 @@ namespace OmniLsp
 
 			try
 			{
-				var diagnosticTask = _diagnoser.GetDiagnosticsAsync(textDoc);
-				diagnosticTask.Wait();
-				var diagnostics = diagnosticTask.Result;
+				var diagnostics = _diagnoser.GetDiagnostics(textDoc);
 					
 				_router.TextDocument.PublishDiagnostics(new PublishDiagnosticsParams
 				{

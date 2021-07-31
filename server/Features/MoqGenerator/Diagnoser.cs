@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Features.Interfaces.Lsp;
 using Features.Model.Lsp;
 using Microsoft.CodeAnalysis.CSharp;
@@ -27,8 +26,7 @@ namespace Features.MoqGenerator
 			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 		};
 
-#warning there's really nothing awaitable in this method, and it's causing some weirdness / warnings where it's called by OmniLsp, so, refactor to synchronous method?
-		public async Task<IEnumerable<Diagnostic>> GetDiagnosticsAsync(TextDocumentItem item)
+		public IEnumerable<Diagnostic> GetDiagnostics(TextDocumentItem item)
 		{
 			/*
 				do we need to store a dict of the TextDocIdentifier, or are we always guaranteed to get a new version?
@@ -56,7 +54,7 @@ namespace Features.MoqGenerator
 			}
 			
 			if(!isTestFile)
-				return await Task.FromResult(new List<Diagnostic>());
+				return new List<Diagnostic>();
 
 			var compilation = CSharpCompilation
 				.Create(null)
@@ -120,7 +118,7 @@ namespace Features.MoqGenerator
 				})
 				;
 
-			return await Task.FromResult(publishableDiagnostics);
+			return publishableDiagnostics;
 		}
 	}
 }
