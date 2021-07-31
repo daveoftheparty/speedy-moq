@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 using NUnit.Framework;
 using Moq;
@@ -16,7 +15,7 @@ namespace UnitTests.Features.MoqGenerator
 	public class DiagnosticsTests
 	{
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/Diagnostics/"})]
-		public async Task Go((string testIdMessage, string[] testInputs) test)
+		public void Go((string testIdMessage, string[] testInputs) test)
 		{
 			var input = test.testInputs[0];
 			var expected = JsonSerializer.Deserialize<IEnumerable<Diagnostic>>(test.testInputs[1]);
@@ -39,7 +38,7 @@ namespace UnitTests.Features.MoqGenerator
 
 			var diagnoser = new Diagnoser(interfaceStore.Object, mockText.Object, mockIndentation.Object);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);
-			var actual = await diagnoser.GetDiagnosticsAsync(textDoc);
+			var actual = diagnoser.GetDiagnostics(textDoc);
 
 			CollectionAssert.AreEquivalent(expected, actual, test.testIdMessage);
 		}
