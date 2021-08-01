@@ -77,25 +77,32 @@ namespace Features.MoqGenerator
 				)
 				.Select(x =>
 				{
+					var candidateInterface = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
 					// Location refers to the substring indices of the text document
 					// we need those to get the interfaceName, we also need them
 					// to calculate the range in the document where we want to eventually
 					// request our TextEdit when publishing a QuickFix from CodeActionHandler
 					var roslynRange = x.Location.GetLineSpan();
-					return new Diagnostic
-					(
-						new Range
+					return new
+					{
+						candidateInterface,
+						Diagnostic = new Diagnostic
 						(
-							new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
-							new Position((uint)roslynRange.EndLinePosition.Line, (uint)roslynRange.EndLinePosition.Character)
-						),
-						DiagnosticSeverity.Error,
-						Constants.DiagnosticCode_CanMoq,
-						Constants.DiagnosticSource,
-						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length) // interfaceName
-					);
+							new Range
+							(
+								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
+								new Position((uint)roslynRange.EndLinePosition.Line, (uint)roslynRange.EndLinePosition.Character)
+							),
+							DiagnosticSeverity.Error,
+							Constants.DiagnosticCode_CanMoq,
+							Constants.DiagnosticSource,
+							Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
+							candidateInterface
+						)
+					};
 				})
+				.GroupBy(candidate => candidate.candidateInterface)
+				.Select(grp => grp.First().Diagnostic)
 				.ToList()
 				;
 
