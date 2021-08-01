@@ -124,7 +124,100 @@ namespace UnitTests.Features.MoqGenerator
 							}
 						}
 					)
-				}
+				},
+
+
+
+				{
+					/*
+					public interface INotSoSimple
+					{
+						Task<IEnumerable<SomeUserOutput>> GetStuffAsync(IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData);
+					}
+					*/
+					"INotSoSimple",
+					new InterfaceDefinition
+					(
+						"INotSoSimple",
+						"INotSoSimple.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"GetStuffAsync",
+									"Task<IEnumerable<SomeUserOutput>>",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<SomeUserInput>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData"),
+									}
+								)
+							}
+						}
+					)
+				},
+
+
+
+				{
+					/*
+					public interface IWassupNull
+					{
+						void Boom(DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls);
+					}
+					*/
+					"IWassupNull",
+					new InterfaceDefinition
+					(
+						"IWassupNull",
+						"IWassupNull.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"Boom",
+									"void",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("DateTime?", "mostFuLlStAcKeNgInEeRsTooStupidForNulls", "DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls"),
+									}
+								)
+							}
+						}
+					)
+				},
+
+
+
+				{
+					/*
+					public interface IMakeTupleYay
+					{
+						(string hello, bool valid) YouDontSay(char c);
+					}
+					*/
+					"IMakeTupleYay",
+					new InterfaceDefinition
+					(
+						"IMakeTupleYay",
+						"IMakeTupleYay.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"YouDontSay",
+									"(string hello, bool valid)",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("char", "c", "char c"),
+									}
+								)
+							}
+						}
+					)
+				},
 			};
 		}
 	}

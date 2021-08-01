@@ -114,6 +114,7 @@ namespace Features.MoqGenerator
 			return publishableDiagnostics;
 		}
 
+#warning DRY... combine this logic with the dupe StringReader logic in this sln and extract to own class...
 		private IEnumerable<string> SplitToTrimmedLines(string input)
 		{
 			if (input == null)
