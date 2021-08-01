@@ -23,7 +23,7 @@ namespace UnitTests.Features.MoqGenerator
 			var interfaceStore = new Mock<IInterfaceStore>();
 			interfaceStore
 				.Setup(x => x.Exists(It.IsAny<string>()))
-				.Returns(true);
+				.Returns((string name) => name == "IStringAnalyzer");
 
 			var mockText = new Mock<IMockText>();
 			mockText

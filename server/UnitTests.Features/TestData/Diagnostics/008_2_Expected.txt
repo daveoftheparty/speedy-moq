@@ -1,0 +1,19 @@
+[
+  {
+    "Range": {
+      "start": {
+        "line": 13,
+        "character": 0
+      },
+      "end": {
+        "line": 13,
+        "character": 18
+      }
+    },
+    "Severity": 1,
+    "Code": "BoilerMoq001",
+    "Source": "BoilerMoq",
+    "Message": "We can generate basic Moq code for you from this interface name!",
+    "Data": "-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
+  }
+]
