@@ -6,7 +6,8 @@ namespace Features.Model
 	(
 		string InterfaceName,
 		string SourceFile,
-		IReadOnlyList<InterfaceMethod> Methods
+		IReadOnlyList<InterfaceMethod> Methods,
+		IReadOnlyList<string> Properties
 	);
 
 	public record InterfaceMethod

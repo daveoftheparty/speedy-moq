@@ -122,7 +122,8 @@ namespace UnitTests.Features.MoqGenerator
 									}
 								)
 							}
-						}
+						},
+						new List<string>()
 					)
 				},
 
@@ -153,7 +154,8 @@ namespace UnitTests.Features.MoqGenerator
 									}
 								)
 							}
-						}
+						},
+						new List<string>()
 					)
 				},
 
@@ -184,7 +186,8 @@ namespace UnitTests.Features.MoqGenerator
 									}
 								)
 							}
-						}
+						},
+						new List<string>()
 					)
 				},
 
@@ -215,7 +218,8 @@ namespace UnitTests.Features.MoqGenerator
 									}
 								)
 							}
-						}
+						},
+						new List<string>()
 					)
 				},
 			};

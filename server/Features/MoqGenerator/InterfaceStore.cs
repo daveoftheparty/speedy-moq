@@ -204,7 +204,8 @@ namespace Features.MoqGenerator
 									))
 									.ToList()
 							))
-							.ToList()
+							.ToList(),
+						new List<string>()
 					)
 				})
 				.Select(tuple => (tuple.InterfaceName, tuple.InterfaceDefinition))
