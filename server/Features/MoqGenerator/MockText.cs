@@ -97,10 +97,20 @@ namespace Features.MoqGenerator
 					method.Parameters.Select(p => $"It.IsAny<{p.ParameterType}>()"));
 
 
-				results.Add(
-					// Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-					$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
-				);
+				if(method.ReturnType == "void")
+				{
+					results.Add(
+						// Expression<Action<IStringAnalyzer>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+						$"Expression<Action<{interfaceName}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
+					);
+				}
+				else
+				{
+					results.Add(
+						// Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+						$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
+					);
+				}
 
 
 				// stringAnalyzer
@@ -117,9 +127,15 @@ namespace Features.MoqGenerator
 					method.Parameters.Select(p => $"{p.ParameterDefinition}"
 					));
 
+				var setupType = 
+					method.ReturnType == "void"
+					? "Callback"
+					: "Returns"
+					;
+
 				results.Add(
 					//	.Returns((string patient, char charToCount) =>
-					$"{tab}.Returns(({callbackDeclaration}) =>"
+					$"{tab}.{setupType}(({callbackDeclaration}) =>"
 				);
 
 
