@@ -122,9 +122,176 @@ namespace UnitTests.Features.MoqGenerator
 									}
 								)
 							}
+						},
+						new List<string>()
+					)
+				},
+
+
+
+				{
+					/*
+					public interface INotSoSimple
+					{
+						Task<IEnumerable<SomeUserOutput>> GetStuffAsync(IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData);
+					}
+					*/
+					"INotSoSimple",
+					new InterfaceDefinition
+					(
+						"INotSoSimple",
+						"INotSoSimple.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"GetStuffAsync",
+									"Task<IEnumerable<SomeUserOutput>>",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<SomeUserInput>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData"),
+									}
+								)
+							}
+						},
+						new List<string>()
+					)
+				},
+
+
+
+				{
+					/*
+					public interface IWassupNull
+					{
+						void Boom(DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls);
+					}
+					*/
+					"IWassupNull",
+					new InterfaceDefinition
+					(
+						"IWassupNull",
+						"IWassupNull.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"Boom",
+									"void",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("DateTime?", "mostFuLlStAcKeNgInEeRsTooStupidForNulls", "DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls"),
+									}
+								)
+							}
+						},
+						new List<string>()
+					)
+				},
+
+
+
+				{
+					/*
+					public interface IMakeTupleYay
+					{
+						(string hello, bool valid) YouDontSay(char c);
+					}
+					*/
+					"IMakeTupleYay",
+					new InterfaceDefinition
+					(
+						"IMakeTupleYay",
+						"IMakeTupleYay.cs",
+						new List<InterfaceMethod>
+						{
+							{
+								new InterfaceMethod
+								(
+									"YouDontSay",
+									"(string hello, bool valid)",
+									new List<InterfaceMethodParameter>
+									{
+										new InterfaceMethodParameter("char", "c", "char c"),
+									}
+								)
+							}
+						},
+						new List<string>()
+					)
+				},
+
+
+
+				{
+					/*
+					public interface ISomeMagicSauce
+					{
+						public string SomeUrl { get; }
+						public DateTime SomeDate { get; }
+
+						void Boom(DateTime? someNullableTimeSlice);
+						(string hello, bool valid) ReturnSomeTuple(char c);
+						bool Exists(string interfaceName);
+						Task<IEnumerable<double>> GetStuffAsync(IReadOnlyDictionary<int, IEnumerable<double>> transformData);
+					}
+					*/
+					"ISomeMagicSauce",
+					new InterfaceDefinition
+					(
+						"ISomeMagicSauce",
+						"",
+						new List<InterfaceMethod>
+						{
+							new InterfaceMethod
+							(
+								"Boom",
+								"void",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("DateTime?", "someNullableTimeSlice", "DateTime? someNullableTimeSlice"),
+								}
+							),
+
+							new InterfaceMethod
+							(
+								"ReturnSomeTuple",
+								"(string hello, bool valid)",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("char", "c", "char c"),
+								}
+							),
+							
+							new InterfaceMethod
+							(
+								"Exists",
+								"bool",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("string", "interfaceName", "string interfaceName"),
+								}
+							),
+
+							new InterfaceMethod
+							(
+								"GetStuffAsync",
+								"Task<IEnumerable<double>>",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<double>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<double>> transformData"),
+								}
+							),
+						},
+						new List<string>
+						{
+							"SomeUrl",
+							"SomeDate"
 						}
 					)
-				}
+				},
 			};
 		}
 	}

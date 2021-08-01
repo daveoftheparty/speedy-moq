@@ -25,8 +25,7 @@ namespace Features.MoqGenerator
 		{
 			_definitionsByInterfaceName.TryGetValue(interfaceName, out var result);
 			_logger.LogInformation($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
-			$" Interface Source file:{result?.SourceFile ?? "not found"}" +
-			$" First Method Name per interface: {string.Join('|', _definitionsByInterfaceName.Values.Select(v => v.Methods.First().MethodName))}");
+			$" Interface Source file:{result?.SourceFile ?? "not found"}");
 			return result;
 		}
 
@@ -71,10 +70,10 @@ namespace Features.MoqGenerator
 			var model = compilation.GetSemanticModel(tree);
 
 			// load our interface dict...
-			var definitions = GetInterfaceDefinitions(new[] { model });
+			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model });
 			foreach(var definition in definitions)
 			{
-				_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
+				_definitionsByInterfaceName[definition.Key] = definition.Value;
 			}
 
 			if(definitions.Count > 0)
@@ -138,10 +137,10 @@ namespace Features.MoqGenerator
 				;
 
 				// load our interface dict...
-				var definitions = GetInterfaceDefinitions(models);
+				var definitions = GetInterfaceDefinitionsByName(models.ToList());
 				foreach(var definition in definitions)
 				{
-					_definitionsByInterfaceName[definition.InterfaceName] = definition.InterfaceDefinition;
+					_definitionsByInterfaceName[definition.Key] = definition.Value;
 				}
 
 				// and finally, load up our hashset so that we don't have to do this again
@@ -152,7 +151,35 @@ namespace Features.MoqGenerator
 		}
 
 
-		private List<(string InterfaceName, InterfaceDefinition InterfaceDefinition)> GetInterfaceDefinitions(IEnumerable<SemanticModel> models)
+		private Dictionary<string, InterfaceDefinition> GetInterfaceDefinitionsByName(List<SemanticModel> models)
+		{
+			var methods = GetInterfaceMethods(models);
+			var properties = GetInterfacePropertiesByName(models);
+
+			// merge the two dictionaries
+			var result = new Dictionary<string, InterfaceDefinition>();
+
+			var allKeys = methods.Keys.Concat(properties.Keys);
+
+			foreach (var key in allKeys)
+			{
+				if(methods.TryGetValue(key, out var methodDef))
+				{
+					if(properties.TryGetValue(key, out var propDef))
+					{
+						result[key] = methodDef with { Properties = propDef.Properties };
+					}
+					else
+						result[key] = methodDef;
+				}
+				else
+					result[key] = properties[key];
+			}
+
+			return result;
+		}
+
+		private Dictionary<string, InterfaceDefinition> GetInterfaceMethods(List<SemanticModel> models)
 		{
 			return models
 				.SelectMany(
@@ -204,13 +231,45 @@ namespace Features.MoqGenerator
 									))
 									.ToList()
 							))
-							.ToList()
+							.ToList(),
+						new List<string>()
 					)
 				})
-				.Select(tuple => (tuple.InterfaceName, tuple.InterfaceDefinition))
-				.ToList();
+				.ToDictionary(pair => pair.InterfaceName, pair => pair.InterfaceDefinition);
 		}
 
+		private Dictionary<string, InterfaceDefinition> GetInterfacePropertiesByName(List<SemanticModel> models)
+		{
+			return models
+				.SelectMany(
+					semanticModel => semanticModel
+						.SyntaxTree
+						.GetRoot()
+						.DescendantNodes()
+						.OfType<PropertyDeclarationSyntax>()
+						.Where(meth => meth.Parent.GetType() == typeof(InterfaceDeclarationSyntax))
+				)
+				.Select(node => new
+				{
+					InterfaceName = ((InterfaceDeclarationSyntax)((SyntaxNode)node).Parent).Identifier.Text,
+					SourceFile = node.Parent.SyntaxTree.FilePath,
+					PropertyName = node.Identifier.Text
+				}
+				)
+				.GroupBy(x => x.InterfaceName)
+				.Select(interfaceName => new
+				{
+					InterfaceName = interfaceName.Key,
+					InterfaceDefinition = new InterfaceDefinition
+					(
+						interfaceName.Key,
+						interfaceName.First().SourceFile,
+						new List<InterfaceMethod>(),
+						interfaceName.Select(p => p.PropertyName).ToList()
+					)
+				})
+				.ToDictionary(pair => pair.InterfaceName, pair => pair.InterfaceDefinition);
+		}
 
 		private string GetCsProjFromCsFile(string uri)
 		{

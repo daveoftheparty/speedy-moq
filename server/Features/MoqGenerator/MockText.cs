@@ -47,12 +47,16 @@ namespace Features.MoqGenerator
 
 					public interface IStringAnalyzer
 					{
+						public string SomeUrl { get; }
 						int HowManyItems(string patient, char charToCount);
 					}
 				
 				we want to return the following:
 
 					var stringAnalyzer = new Mock<IStringAnalyzer>();
+
+					stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
+
 					Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
 					stringAnalyzer
 						.Setup(howManyItems)
@@ -83,7 +87,17 @@ namespace Features.MoqGenerator
 				);
 
 
-			if(definition.Methods.Count > 1)
+			if(definition.Methods.Count + definition.Properties.Count > 1)
+				results.Add("");
+
+			foreach(var property in definition.Properties)
+			{
+				results.Add(
+					// stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
+					$"{mockName}.SetupGet(x => x.{property}).Returns(/* fill me in */);"
+				);
+			}
+			if(definition.Properties.Count > 0 && definition.Methods.Count > 0)
 				results.Add("");
 
 			var verifyQueue = new Queue<string>();
@@ -97,10 +111,20 @@ namespace Features.MoqGenerator
 					method.Parameters.Select(p => $"It.IsAny<{p.ParameterType}>()"));
 
 
-				results.Add(
-					// Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-					$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
-				);
+				if(method.ReturnType == "void")
+				{
+					results.Add(
+						// Expression<Action<IStringAnalyzer>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+						$"Expression<Action<{interfaceName}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
+					);
+				}
+				else
+				{
+					results.Add(
+						// Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+						$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
+					);
+				}
 
 
 				// stringAnalyzer
@@ -117,9 +141,15 @@ namespace Features.MoqGenerator
 					method.Parameters.Select(p => $"{p.ParameterDefinition}"
 					));
 
+				var setupType = 
+					method.ReturnType == "void"
+					? "Callback"
+					: "Returns"
+					;
+
 				results.Add(
 					//	.Returns((string patient, char charToCount) =>
-					$"{tab}.Returns(({callbackDeclaration}) =>"
+					$"{tab}.{setupType}(({callbackDeclaration}) =>"
 				);
 
 
