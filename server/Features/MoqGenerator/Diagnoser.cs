@@ -69,6 +69,10 @@ namespace Features.MoqGenerator
 						d.Id == "CS0103" // The name '{0}' does not exist in the current context (such as The name 'IMyInterface'...)
 						||
 						d.Id == "CS0119" // '{0}' is a {1}, which is not valid in the given context (such as 'IMyInterface' is a type...)
+						||
+						d.Id == "CS0246" // The type or namespace name '{0}' could not be found (are you missing a using directive or an assembly reference?)
+						||
+						d.Id == "CS0518" // Predefined type '{0}' is not defined or imported
 					)
 				)
 				.Select(x =>
