@@ -5,6 +5,7 @@ using Features.Model.Lsp;
 using Features;
 using System.Text.Json;
 using Features.Model;
+using System;
 
 namespace UnitTests.Features.MoqGenerator
 {
@@ -32,10 +33,22 @@ namespace UnitTests.Features.MoqGenerator
 			Assert.IsTrue(store.Exists(interfaceName), test.testIdMessage);
 			var actual = store.GetInterfaceDefinition(interfaceName);
 
-			Assert.AreEqual(expected.InterfaceName, actual.InterfaceName, test.testIdMessage);
-			Assert.AreEqual(expected.SourceFile, actual.SourceFile, test.testIdMessage);
-			CollectionAssert.AreEquivalent(expected.Methods, actual.Methods, test.testIdMessage);
-			CollectionAssert.AreEquivalent(expected.Properties, actual.Properties, test.testIdMessage);
+			try
+			{
+				// surprisingly??, the new record type in C# 9.0 isn't "smart enough" to do nested collection asserts...
+				
+				// Assert.AreEqual(expected.InterfaceName, actual.InterfaceName, test.testIdMessage);
+				// Assert.AreEqual(expected.SourceFile, actual.SourceFile, test.testIdMessage);
+				// CollectionAssert.AreEquivalent(expected.Methods, actual.Methods, test.testIdMessage);
+				// CollectionAssert.AreEquivalent(expected.Properties, actual.Properties, test.testIdMessage);
+				Assert.AreEqual(JsonSerializer.Serialize(expected), JsonSerializer.Serialize(actual), test.testIdMessage);
+			}
+			catch
+			{
+				Console.WriteLine("actual output:");
+				Console.WriteLine(JsonSerializer.Serialize(actual));
+				throw;
+			}
 		}
 	}
 }

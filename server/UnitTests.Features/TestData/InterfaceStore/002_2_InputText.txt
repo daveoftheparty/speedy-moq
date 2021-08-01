@@ -1,0 +1,13 @@
+namespace Foo
+{
+	public interface ISomeMagicSauce
+	{
+		public string SomeUrl { get; }
+		public DateTime SomeDate { get; }
+
+		void Boom(DateTime? someNullableTimeSlice);
+		(string hello, bool valid) ReturnSomeTuple(char c);
+		bool Exists(string interfaceName);
+		Task<IEnumerable<double>> GetStuffAsync(IReadOnlyDictionary<int, IEnumerable<double>> transformData);
+	}
+}
