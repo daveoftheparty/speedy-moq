@@ -31,7 +31,11 @@ namespace UnitTests.Features.MoqGenerator
 
 			Assert.IsTrue(store.Exists(interfaceName), test.testIdMessage);
 			var actual = store.GetInterfaceDefinition(interfaceName);
-			Assert.AreEqual(expected, actual, test.testIdMessage);
+
+			Assert.AreEqual(expected.InterfaceName, actual.InterfaceName, test.testIdMessage);
+			Assert.AreEqual(expected.SourceFile, actual.SourceFile, test.testIdMessage);
+			CollectionAssert.AreEquivalent(expected.Methods, actual.Methods, test.testIdMessage);
+			CollectionAssert.AreEquivalent(expected.Properties, actual.Properties, test.testIdMessage);
 		}
 	}
 }
