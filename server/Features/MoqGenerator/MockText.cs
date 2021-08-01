@@ -47,12 +47,16 @@ namespace Features.MoqGenerator
 
 					public interface IStringAnalyzer
 					{
+						public string SomeUrl { get; }
 						int HowManyItems(string patient, char charToCount);
 					}
 				
 				we want to return the following:
 
 					var stringAnalyzer = new Mock<IStringAnalyzer>();
+
+					stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
+
 					Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
 					stringAnalyzer
 						.Setup(howManyItems)
@@ -83,7 +87,17 @@ namespace Features.MoqGenerator
 				);
 
 
-			if(definition.Methods.Count > 1)
+			if(definition.Methods.Count + definition.Properties.Count > 1)
+				results.Add("");
+
+			foreach(var property in definition.Properties)
+			{
+				results.Add(
+					// stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
+					$"{mockName}.SetupGet(x => x.{property}).Returns(/* fill me in */);"
+				);
+			}
+			if(definition.Properties.Count > 0 && definition.Methods.Count > 0)
 				results.Add("");
 
 			var verifyQueue = new Queue<string>();
