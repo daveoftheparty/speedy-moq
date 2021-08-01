@@ -222,6 +222,76 @@ namespace UnitTests.Features.MoqGenerator
 						new List<string>()
 					)
 				},
+
+
+
+				{
+					/*
+					public interface ISomeMagicSauce
+					{
+						public string SomeUrl { get; }
+						public DateTime SomeDate { get; }
+
+						void Boom(DateTime? someNullableTimeSlice);
+						(string hello, bool valid) ReturnSomeTuple(char c);
+						bool Exists(string interfaceName);
+						Task<IEnumerable<double>> GetStuffAsync(IReadOnlyDictionary<int, IEnumerable<double>> transformData);
+					}
+					*/
+					"ISomeMagicSauce",
+					new InterfaceDefinition
+					(
+						"ISomeMagicSauce",
+						"",
+						new List<InterfaceMethod>
+						{
+							new InterfaceMethod
+							(
+								"Boom",
+								"void",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("DateTime?", "someNullableTimeSlice", "DateTime? someNullableTimeSlice"),
+								}
+							),
+
+							new InterfaceMethod
+							(
+								"ReturnSomeTuple",
+								"(string hello, bool valid)",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("char", "c", "char c"),
+								}
+							),
+							
+							new InterfaceMethod
+							(
+								"Exists",
+								"bool",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("string", "interfaceName", "string interfaceName"),
+								}
+							),
+
+							new InterfaceMethod
+							(
+								"GetStuffAsync",
+								"Task<IEnumerable<double>>",
+								new List<InterfaceMethodParameter>
+								{
+									new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<double>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<double>> transformData"),
+								}
+							),
+						},
+						new List<string>
+						{
+							"SomeUrl",
+							"SomeDate"
+						}
+					)
+				},
 			};
 		}
 	}
