@@ -1,0 +1,17 @@
+using System;
+using System.Linq.Expressions;
+
+using Moq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace UnitTests.Features.TestData
+{
+	public class StringAnalyzerTests
+	{
+		[Test]
+		public void HappyPath()
+		{
+			IDoNotExist
+		}
+	}
+}
