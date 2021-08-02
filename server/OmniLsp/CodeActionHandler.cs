@@ -48,7 +48,7 @@ namespace OmniLsp
 
 					return new CommandOrCodeAction(new CodeAction
 					{
-						Title = "Pimp This Code!",
+						Title = MoqGenerator.Constants.CodeActionFixTitle,
 						Diagnostics = new [] { diagnostic },
 						Kind = CodeActionKind.QuickFix,
 						Edit = new WorkspaceEdit
