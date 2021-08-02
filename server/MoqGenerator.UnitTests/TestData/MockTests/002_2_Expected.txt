@@ -4,7 +4,7 @@
 				.Setup(getStuffAsync)
 				.Returns((IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData) =>
 				{
-					return;
+					return default;
 				});
 
 			notSoSimple.Verify(getStuffAsync, Times.Once);
