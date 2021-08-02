@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Demo.Lib
+﻿namespace Demo.Lib
 {
 	public interface IStringAnalyzer
 	{
