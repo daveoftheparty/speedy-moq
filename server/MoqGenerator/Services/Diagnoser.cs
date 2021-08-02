@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model.Lsp;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
+using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
 {
@@ -37,7 +37,11 @@ namespace MoqGenerator.Services
 
 		public IEnumerable<Diagnostic> GetDiagnostics(TextDocumentItem item)
 		{
-			var lines = SplitToTrimmedLines(item.Text).ToList();
+			var splitter = new TextLineSplitter();
+			var lines = splitter
+				.SplitToLines(item.Text)
+				.Select(line => line.Trim())
+				.ToList();
 
 			// check if we're dealing with a test file, otherwise bail early...
 			if(!lines.Any(line => _testFrameworks.Contains(line)))
@@ -142,25 +146,6 @@ namespace MoqGenerator.Services
 			}
 
 			return result;
-		}
-
-
-#warning DRY... combine this logic with the dupe StringReader logic in this sln and extract to own class...
-		private IEnumerable<string> SplitToTrimmedLines(string input)
-		{
-			if (input == null)
-			{
-				yield break;
-			}
-
-			using (StringReader reader = new StringReader(input))
-			{
-				string line;
-				while ((line = reader.ReadLine()) != null)
-				{
-					yield return line.Trim();
-				}
-			}
 		}
 	}
 }

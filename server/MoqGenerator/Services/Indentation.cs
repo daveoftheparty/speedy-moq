@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model.Lsp;
+using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
 {
@@ -10,7 +9,10 @@ namespace MoqGenerator.Services
 	{
 		public IndentationConfig GetIndentationConfig(string text, Range range)
 		{
-			var leadingWhiteSpaceByLine = SplitToLines(text)
+			var splitter = new TextLineSplitter();
+			
+			var leadingWhiteSpaceByLine = splitter
+				.SplitToLines(text)
 				.Select((string line, int index) => new
 				{
 					LineNumber = (uint)index,
@@ -104,25 +106,6 @@ namespace MoqGenerator.Services
 				!developerIsAnIdiot,
 				i == 0 ? '\0' : (foundTabs ? '\t' : ' ')
 			);
-		}
-
-
-
-		private IEnumerable<string> SplitToLines(string input)
-		{
-			if (input == null)
-			{
-				yield break;
-			}
-
-			using (StringReader reader = new StringReader(input))
-			{
-				string line;
-				while ((line = reader.ReadLine()) != null)
-				{
-					yield return line;
-				}
-			}
 		}
 	}
 }
