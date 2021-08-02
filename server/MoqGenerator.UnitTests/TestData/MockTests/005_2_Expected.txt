@@ -16,7 +16,7 @@
 				.Setup(returnSomeTuple)
 				.Returns((char c) =>
 				{
-					return;
+					return default;
 				});
 
 			Expression<Func<ISomeMagicSauce, bool>> exists = x => x.Exists(It.IsAny<string>());
@@ -24,7 +24,7 @@
 				.Setup(exists)
 				.Returns((string interfaceName) =>
 				{
-					return;
+					return default;
 				});
 
 			Expression<Func<ISomeMagicSauce, Task<IEnumerable<double>>>> getStuffAsync = x => x.GetStuffAsync(It.IsAny<IReadOnlyDictionary<int, IEnumerable<double>>>());
@@ -32,7 +32,7 @@
 				.Setup(getStuffAsync)
 				.Returns((IReadOnlyDictionary<int, IEnumerable<double>> transformData) =>
 				{
-					return;
+					return default;
 				});
 
 			someMagicSauce.Verify(boom, Times.Once);

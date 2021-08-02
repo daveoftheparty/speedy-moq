@@ -176,7 +176,10 @@ namespace MoqGenerator.Services
 				if(indentationConfig.WorshipsFalseIndentGod)
 					results.Add($"{tab}{tab}// you should stop using an arbitrary number of space characters to represent an indent");
 
-				results.Add($"{tab}{tab}return;");
+				if(method.ReturnType == "void")
+					results.Add($"{tab}{tab}return;");
+				else
+					results.Add($"{tab}{tab}return default;");
 				results.Add($"{tab}}});");
 				results.Add("");
 

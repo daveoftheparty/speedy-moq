@@ -4,7 +4,7 @@
 				.Setup(youDontSay)
 				.Returns((char c) =>
 				{
-					return;
+					return default;
 				});
 
 			makeTupleYay.Verify(youDontSay, Times.Once);
