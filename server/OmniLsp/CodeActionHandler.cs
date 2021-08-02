@@ -11,7 +11,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
-using Features.Interfaces.Lsp;
+using MoqGenerator.Interfaces.Lsp;
 
 namespace OmniLsp
 {
@@ -29,7 +29,7 @@ namespace OmniLsp
 		{
 			return new CodeActionRegistrationOptions
 			{
-				DocumentSelector = new DocumentSelector(new DocumentFilter { Pattern = Features.Constants.FileGlob} ),
+				DocumentSelector = new DocumentSelector(new DocumentFilter { Pattern = MoqGenerator.Constants.FileGlob} ),
 				CodeActionKinds = new Container<CodeActionKind>(CodeActionKind.QuickFix),
 				ResolveProvider = false
 			};
@@ -40,7 +40,7 @@ namespace OmniLsp
 			_logger.LogTrace("Code action firing...");
 			
 			var actions = request.Context.Diagnostics?
-				.Where(diagnostic => diagnostic.Source.Equals(Features.Constants.DiagnosticSource, StringComparison.OrdinalIgnoreCase))
+				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.OrdinalIgnoreCase))
 				.Select(diagnostic =>
 				{
 					var ourDocId = TextDocAdapter.From(request.TextDocument);
@@ -48,7 +48,7 @@ namespace OmniLsp
 
 					return new CommandOrCodeAction(new CodeAction
 					{
-						Title = "Pimp This Code!",
+						Title = MoqGenerator.Constants.CodeActionFixTitle,
 						Diagnostics = new [] { diagnostic },
 						Kind = CodeActionKind.QuickFix,
 						Edit = new WorkspaceEdit

@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Features\Features.csproj" />
+    <ProjectReference Include="..\MoqGenerator\MoqGenerator.csproj" />
   </ItemGroup>
 
 </Project>

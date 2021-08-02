@@ -12,7 +12,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using Features.Interfaces.Lsp;
+using MoqGenerator.Interfaces.Lsp;
 
 namespace OmniLsp
 {
@@ -36,15 +36,15 @@ namespace OmniLsp
 
 		#region TextDocumentSyncHandlerBase overrides
 
-		private readonly DocumentSelector _documentSelector = new DocumentSelector(new DocumentFilter { Pattern = Features.Constants.FileGlob });
+		private readonly DocumentSelector _documentSelector = new DocumentSelector(new DocumentFilter { Pattern = MoqGenerator.Constants.FileGlob });
 
-		public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri) => new TextDocumentAttributes(uri, Features.Constants.LanguageId);
+		public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri) => new TextDocumentAttributes(uri, MoqGenerator.Constants.LanguageId);
 		
 		protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(SynchronizationCapability capability, ClientCapabilities clientCapabilities)
 		{
 			return new TextDocumentSyncRegistrationOptions
 			{
-				DocumentSelector = DocumentSelector.ForLanguage(Features.Constants.LanguageId),
+				DocumentSelector = DocumentSelector.ForLanguage(MoqGenerator.Constants.LanguageId),
 				Change = TextDocumentSyncKind.Full
 			};
 		}
@@ -63,7 +63,7 @@ namespace OmniLsp
 
 		public override Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
 		{
-			var textDoc = TextDocAdapter.From(request, Features.Constants.LanguageId);
+			var textDoc = TextDocAdapter.From(request, MoqGenerator.Constants.LanguageId);
 			_ = _interfaceStore.LoadDefinitionsIfNecessaryAsync(textDoc);
 
 			PublishDiagnostics(
@@ -87,7 +87,7 @@ namespace OmniLsp
 
 
 
-		private void PublishDiagnostics(Features.Model.Lsp.TextDocumentItem textDoc, DocumentUri uri, string who)
+		private void PublishDiagnostics(MoqGenerator.Model.Lsp.TextDocumentItem textDoc, DocumentUri uri, string who)
 		{
 			_logger.LogTrace($"trying to publish, yo, from: {who}");
 

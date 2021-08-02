@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 
 using OmniSharp.Extensions.LanguageServer.Server;
 
-using Features.Interfaces.Lsp;
-using Features.MoqGenerator;
+using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Services;
 
 namespace OmniLsp
 {
