@@ -1,0 +1,14 @@
+using System;
+using NUnit.Framework;
+
+namespace Foo.Bar
+{
+	public class StringAnalyzerTests
+	{
+		[Test]
+		public void HappyPath()
+		{
+			IStringAnalyzer
+		}
+	}
+}

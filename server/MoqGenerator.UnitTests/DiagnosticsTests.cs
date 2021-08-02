@@ -4,7 +4,6 @@ using System.Text.Json;
 using NUnit.Framework;
 using Moq;
 
-using MoqGenerator;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Services;
 using MoqGenerator.Interfaces.Lsp;
@@ -44,7 +43,7 @@ namespace MoqGenerator.UnitTests
 
 			try
 			{
-				CollectionAssert.AreEquivalent(expected, actual, test.testIdMessage);
+				Assert.AreEqual(JsonSerializer.Serialize(expected), JsonSerializer.Serialize(actual), test.testIdMessage);
 			}
 			catch
 			{
@@ -52,7 +51,6 @@ namespace MoqGenerator.UnitTests
 				Console.WriteLine(JsonSerializer.Serialize(actual));
 				throw;
 			}
-			
 		}
 	}
 }
