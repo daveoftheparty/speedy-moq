@@ -9,7 +9,7 @@ namespace MoqGenerator
 		public static string LanguageId = "csharp";
 		public static string DiagnosticSource = "BoilerMoq";
 		public static string DiagnosticCode_CanMoq = "BoilerMoq001";
-		public static string CodeActionFixTitle = "Pimp This Code!";
+		public static string CodeActionFixTitle = "Generate Moq Setups";
 		
 		public static Dictionary<string, string> MessagesByDiagnosticCode = new()
 		{
