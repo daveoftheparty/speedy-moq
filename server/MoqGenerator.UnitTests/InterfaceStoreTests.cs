@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
-using Features.MoqGenerator;
+using MoqGenerator.Services;
 using NUnit.Framework;
-using Features.Model.Lsp;
-using Features;
+using MoqGenerator.Model.Lsp;
+using MoqGenerator;
 using System.Text.Json;
-using Features.Model;
+using MoqGenerator.Model;
 using System;
+using MoqGenerator.UnitTests.Utils;
 
-namespace UnitTests.Features.MoqGenerator
+namespace MoqGenerator.UnitTests
 {
 	public class InterfaceStoreTests
 	{

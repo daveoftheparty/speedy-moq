@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace UnitTests.Features
+namespace MoqGenerator.UnitTests.Utils
 {
 	// thanks, Stack Overflow!!! https://stackoverflow.com/questions/52707702/how-do-you-mock-ilogger-loginformation
 

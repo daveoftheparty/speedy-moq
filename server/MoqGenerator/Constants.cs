@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Features
+namespace MoqGenerator
 {
 	public static class Constants
 	{

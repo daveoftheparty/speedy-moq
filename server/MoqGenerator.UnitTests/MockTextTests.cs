@@ -8,12 +8,13 @@ using NUnit.Framework;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-using Features.Interfaces.Lsp;
-using Features.Model;
-using Features.Model.Lsp;
-using Features.MoqGenerator;
+using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model;
+using MoqGenerator.Model.Lsp;
+using MoqGenerator.Services;
+using MoqGenerator.UnitTests.Utils;
 
-namespace UnitTests.Features.MoqGenerator
+namespace MoqGenerator.UnitTests
 {
 	public class MockTextTests
 	{

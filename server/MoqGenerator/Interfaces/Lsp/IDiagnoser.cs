@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Features.Model.Lsp;
+using MoqGenerator.Model.Lsp;
 
-namespace Features.Interfaces.Lsp
+namespace MoqGenerator.Interfaces.Lsp
 {
 	public interface IDiagnoser
 	{

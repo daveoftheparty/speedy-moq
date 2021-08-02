@@ -4,13 +4,14 @@ using System.Text.Json;
 using NUnit.Framework;
 using Moq;
 
-using Features;
-using Features.Model.Lsp;
-using Features.MoqGenerator;
-using Features.Interfaces.Lsp;
-using ourRange = Features.Model.Lsp.Range;
+using MoqGenerator;
+using MoqGenerator.Model.Lsp;
+using MoqGenerator.Services;
+using MoqGenerator.Interfaces.Lsp;
+using ourRange = MoqGenerator.Model.Lsp.Range;
+using MoqGenerator.UnitTests.Utils;
 
-namespace UnitTests.Features.MoqGenerator
+namespace MoqGenerator.UnitTests
 {
 	public class DiagnosticsTests
 	{

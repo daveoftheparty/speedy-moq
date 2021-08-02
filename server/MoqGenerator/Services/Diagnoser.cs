@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Features.Interfaces.Lsp;
-using Features.Model.Lsp;
+using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model.Lsp;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Features.MoqGenerator
+namespace MoqGenerator.Services
 {
 	public class Diagnoser : IDiagnoser
 	{

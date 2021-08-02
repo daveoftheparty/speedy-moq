@@ -6,29 +6,29 @@ namespace OmniLsp
 {
 	public class TextDocAdapter
 	{
-		public static Features.Model.Lsp.TextDocumentItem From(OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentItem doc)
+		public static MoqGenerator.Model.Lsp.TextDocumentItem From(OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentItem doc)
 		{
-			return new Features.Model.Lsp.TextDocumentItem
+			return new MoqGenerator.Model.Lsp.TextDocumentItem
 			(
-				new Features.Model.Lsp.TextDocumentIdentifier(doc.Uri.ToString(), doc.Version ?? 0),
+				new MoqGenerator.Model.Lsp.TextDocumentIdentifier(doc.Uri.ToString(), doc.Version ?? 0),
 				doc.LanguageId,
 				doc.Text
 			);
 		}
 
-		public static Features.Model.Lsp.TextDocumentItem From(DidChangeTextDocumentParams doc, string LanguageId)
+		public static MoqGenerator.Model.Lsp.TextDocumentItem From(DidChangeTextDocumentParams doc, string LanguageId)
 		{
-			return new Features.Model.Lsp.TextDocumentItem
+			return new MoqGenerator.Model.Lsp.TextDocumentItem
 			(
-				new Features.Model.Lsp.TextDocumentIdentifier(doc.TextDocument.Uri.ToString(), doc.TextDocument.Version ?? 0),
+				new MoqGenerator.Model.Lsp.TextDocumentIdentifier(doc.TextDocument.Uri.ToString(), doc.TextDocument.Version ?? 0),
 				LanguageId,
 				doc.ContentChanges.First().Text
 			);
 		}
 
-		public static Features.Model.Lsp.TextDocumentIdentifier From(OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentIdentifier documentIdentifier)
+		public static MoqGenerator.Model.Lsp.TextDocumentIdentifier From(OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentIdentifier documentIdentifier)
 		{
-			return new Features.Model.Lsp.TextDocumentIdentifier
+			return new MoqGenerator.Model.Lsp.TextDocumentIdentifier
 			(
 				documentIdentifier.Uri.ToString(),
 				0 // hopefully we never need this version!!! 

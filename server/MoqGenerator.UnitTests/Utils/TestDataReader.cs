@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace UnitTests.Features.MoqGenerator
+namespace MoqGenerator.UnitTests.Utils
 {
 	public class TestDataReader
 	{

@@ -1,4 +1,4 @@
-namespace Features.Model.Lsp
+namespace MoqGenerator.Model.Lsp
 {
 	
 	public record Diagnostic

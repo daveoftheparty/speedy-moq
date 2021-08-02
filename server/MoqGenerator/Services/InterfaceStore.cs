@@ -12,11 +12,11 @@ using Microsoft.Extensions.Logging;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
 
-using Features.Interfaces.Lsp;
-using Features.Model;
-using Features.Model.Lsp;
+using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model;
+using MoqGenerator.Model.Lsp;
 
-namespace Features.MoqGenerator
+namespace MoqGenerator.Services
 {
 	public class InterfaceStore : IInterfaceStore
 	{

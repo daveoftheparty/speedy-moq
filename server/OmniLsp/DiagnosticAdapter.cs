@@ -4,21 +4,21 @@ namespace OmniLsp
 {
 	public class DiagnosticAdapter
 	{
-		public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic From(Features.Model.Lsp.Diagnostic diagnostic)
+		public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic From(MoqGenerator.Model.Lsp.Diagnostic diagnostic)
 		{
 			DiagnosticSeverity severity = DiagnosticSeverity.Error;
 			switch(diagnostic.Severity)
 			{
-				case Features.Model.Lsp.DiagnosticSeverity.Error:
+				case MoqGenerator.Model.Lsp.DiagnosticSeverity.Error:
 					severity = DiagnosticSeverity.Error;
 					break;
-				case Features.Model.Lsp.DiagnosticSeverity.Warning:
+				case MoqGenerator.Model.Lsp.DiagnosticSeverity.Warning:
 					severity = DiagnosticSeverity.Warning;
 					break;
-				case Features.Model.Lsp.DiagnosticSeverity.Information:
+				case MoqGenerator.Model.Lsp.DiagnosticSeverity.Information:
 					severity = DiagnosticSeverity.Information;
 					break;
-				case Features.Model.Lsp.DiagnosticSeverity.Hint:
+				case MoqGenerator.Model.Lsp.DiagnosticSeverity.Hint:
 					severity = DiagnosticSeverity.Hint;
 					break;
 			}
@@ -39,31 +39,31 @@ namespace OmniLsp
 		}
 
 		// well, I wrote this method thinking I needed it. And as of now, I don't, but I don't want to write it again:
-		public static Features.Model.Lsp.Diagnostic From(OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic diagnostic)
+		public static MoqGenerator.Model.Lsp.Diagnostic From(OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic diagnostic)
 		{
-			Features.Model.Lsp.DiagnosticSeverity severity = Features.Model.Lsp.DiagnosticSeverity.Error;
+			MoqGenerator.Model.Lsp.DiagnosticSeverity severity = MoqGenerator.Model.Lsp.DiagnosticSeverity.Error;
 			switch(diagnostic.Severity)
 			{
 				case DiagnosticSeverity.Error:
-					severity = Features.Model.Lsp.DiagnosticSeverity.Error;
+					severity = MoqGenerator.Model.Lsp.DiagnosticSeverity.Error;
 					break;
 				case DiagnosticSeverity.Warning:
-					severity = Features.Model.Lsp.DiagnosticSeverity.Warning;
+					severity = MoqGenerator.Model.Lsp.DiagnosticSeverity.Warning;
 					break;
 				case DiagnosticSeverity.Information:
-					severity = Features.Model.Lsp.DiagnosticSeverity.Information;
+					severity = MoqGenerator.Model.Lsp.DiagnosticSeverity.Information;
 					break;
 				case DiagnosticSeverity.Hint:
-					severity = Features.Model.Lsp.DiagnosticSeverity.Hint;
+					severity = MoqGenerator.Model.Lsp.DiagnosticSeverity.Hint;
 					break;
 			}
 
-			return new Features.Model.Lsp.Diagnostic
+			return new MoqGenerator.Model.Lsp.Diagnostic
 			(
-				new Features.Model.Lsp.Range
+				new MoqGenerator.Model.Lsp.Range
 				(
-					new Features.Model.Lsp.Position((uint)diagnostic.Range.Start.Line, (uint)diagnostic.Range.Start.Character),
-					new Features.Model.Lsp.Position((uint)diagnostic.Range.End.Line, (uint)diagnostic.Range.End.Character)
+					new MoqGenerator.Model.Lsp.Position((uint)diagnostic.Range.Start.Line, (uint)diagnostic.Range.Start.Character),
+					new MoqGenerator.Model.Lsp.Position((uint)diagnostic.Range.End.Line, (uint)diagnostic.Range.End.Character)
 				),
 				severity,
 				diagnostic.Code,

@@ -1,9 +1,10 @@
 using System.Text.Json;
-using Features.Model.Lsp;
-using Features.MoqGenerator;
+using MoqGenerator.Model.Lsp;
+using MoqGenerator.Services;
 using NUnit.Framework;
+using MoqGenerator.UnitTests.Utils;
 
-namespace UnitTests.Features.MoqGenerator
+namespace MoqGenerator.UnitTests
 {
 	public class IndentationLevelTests
 	{

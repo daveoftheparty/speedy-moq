@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using Features.Model;
-using Features.Model.Lsp;
+using MoqGenerator.Model;
+using MoqGenerator.Model.Lsp;
 
-namespace Features.Interfaces.Lsp
+namespace MoqGenerator.Interfaces.Lsp
 {
 	public interface IInterfaceStore
 	{

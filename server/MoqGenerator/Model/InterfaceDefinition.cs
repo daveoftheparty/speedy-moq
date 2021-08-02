@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Features.Model
+namespace MoqGenerator.Model
 {
 	public record InterfaceDefinition
 	(

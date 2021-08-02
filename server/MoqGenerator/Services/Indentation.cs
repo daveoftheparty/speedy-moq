@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Features.Interfaces.Lsp;
-using Features.Model.Lsp;
+using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model.Lsp;
 
-namespace Features.MoqGenerator
+namespace MoqGenerator.Services
 {
 	public class Indentation : IIndentation
 	{
