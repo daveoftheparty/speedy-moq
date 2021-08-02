@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
-using MoqGenerator.Interfaces.Lsp;
+using OmniLsp.Adapters;
 
 namespace OmniLsp
 {
@@ -57,14 +58,7 @@ namespace OmniLsp
 							{
 								{
 									request.TextDocument.Uri,
-									new List<TextEdit>
-									{
-										new TextEdit
-										{
-											NewText = diagnostic.Data.ToString(),
-											Range = diagnostic.Range
-										}
-									}
+									JsonSerializer.Deserialize<IEnumerable<TextEdit>>(diagnostic.Data.ToString())
 								}
 							}
 						}

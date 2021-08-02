@@ -2,11 +2,11 @@
   {
     "Range": {
       "start": {
-        "line": 13,
+        "line": 10,
         "character": 3
       },
       "end": {
-        "line": 13,
+        "line": 10,
         "character": 18
       }
     },
@@ -18,15 +18,28 @@
       {
         "Range": {
           "start": {
-            "line": 13,
+            "line": 10,
             "character": 0
           },
           "end": {
-            "line": 13,
+            "line": 10,
             "character": 18
           }
         },
         "NewText": "-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
+      },
+      {
+        "Range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "NewText": "using System.Linq.Expressions;\r\nusing Moq;\r\n"
       }
     ]
   }

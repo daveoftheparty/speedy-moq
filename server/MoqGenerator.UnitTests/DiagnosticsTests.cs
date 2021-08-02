@@ -4,12 +4,12 @@ using System.Text.Json;
 using NUnit.Framework;
 using Moq;
 
-using MoqGenerator;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Services;
 using MoqGenerator.Interfaces.Lsp;
 using ourRange = MoqGenerator.Model.Lsp.Range;
 using MoqGenerator.UnitTests.Utils;
+using System;
 
 namespace MoqGenerator.UnitTests
 {
@@ -41,7 +41,16 @@ namespace MoqGenerator.UnitTests
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);
 			var actual = diagnoser.GetDiagnostics(textDoc);
 
-			CollectionAssert.AreEquivalent(expected, actual, test.testIdMessage);
+			try
+			{
+				Assert.AreEqual(JsonSerializer.Serialize(expected), JsonSerializer.Serialize(actual), test.testIdMessage);
+			}
+			catch
+			{
+				Console.WriteLine("actual output:");
+				Console.WriteLine(JsonSerializer.Serialize(actual));
+				throw;
+			}
 		}
 	}
 }

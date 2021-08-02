@@ -2,7 +2,7 @@ using System.Linq;
 
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
-namespace OmniLsp
+namespace OmniLsp.Adapters
 {
 	public class TextDocAdapter
 	{

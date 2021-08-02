@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
-namespace OmniLsp
+namespace OmniLsp.Adapters
 {
 	public class DiagnosticAdapter
 	{
@@ -23,6 +26,18 @@ namespace OmniLsp
 					break;
 			}
 
+			var omniData = diagnostic
+				.Data
+				.Select(te => new TextEdit
+				{
+					Range = new Range(
+						(int)te.Range.start.line,
+						(int)te.Range.start.character,
+						(int)te.Range.end.line,
+						(int)te.Range.end.character),
+					NewText = te.NewText
+				});
+
 			return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic
 			{
 				Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range
@@ -34,7 +49,7 @@ namespace OmniLsp
 				Code = diagnostic.Code,
 				Source = diagnostic.Source,
 				Message = diagnostic.Message,
-				Data = diagnostic.Data
+				Data = JsonSerializer.Serialize(omniData)
 			};
 		}
 
@@ -69,7 +84,7 @@ namespace OmniLsp
 				diagnostic.Code,
 				diagnostic.Source,
 				diagnostic.Message,
-				diagnostic.Data.ToString()
+				JsonSerializer.Deserialize<IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>(diagnostic.Data.ToString())
 			);
 		}
 	}

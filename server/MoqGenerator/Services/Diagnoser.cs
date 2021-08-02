@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model.Lsp;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
+using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
 {
@@ -27,20 +28,22 @@ namespace MoqGenerator.Services
 			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 		};
 
+		private readonly List<string> _requiredImports = new()
+		{
+			"using System;",
+			"using System.Linq.Expressions;",
+			"using Moq;",
+		};
+
 		public IEnumerable<Diagnostic> GetDiagnostics(TextDocumentItem item)
 		{
-			/*
-				do we need to store a dict of the TextDocIdentifier, or are we always guaranteed to get a new version?
+			var splitter = new TextLineSplitter();
+			var lines = splitter
+				.SplitToLines(item.Text)
+				.Select(line => line.Trim())
+				.ToList();
 
-				first, see if we're dealing with a "test" file-- because if we aren't, we should bail before
-				trying to fire up the roslyn libraries
-
-				if we are dealing with a test file, perform our analysis
-			*/
-
-			var lines = SplitToTrimmedLines(item.Text).ToList();
-
-			// check if we're dealing with a test file
+			// check if we're dealing with a test file, otherwise bail early...
 			if(!lines.Any(line => _testFrameworks.Contains(line)))
 				return new List<Diagnostic>();
 
@@ -68,68 +71,81 @@ namespace MoqGenerator.Services
 					return new
 					{
 						candidateInterface,
-						Diagnostic = new Diagnostic
-						(
-							new Range
+						diagnosticRange = new Model.Lsp.Range
 							(
 								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
 								new Position((uint)roslynRange.EndLinePosition.Line, (uint)roslynRange.EndLinePosition.Character)
-							),
-							DiagnosticSeverity.Error,
-							Constants.DiagnosticCode_CanMoq,
-							Constants.DiagnosticSource,
-							Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-							candidateInterface
-						)
+							)
 					};
 				})
-				.Where(isEntireLine => isEntireLine.Diagnostic.Data == lines[(int)isEntireLine.Diagnostic.Range.start.line])
+				.Where(isEntireLine => isEntireLine.candidateInterface == lines[(int)isEntireLine.diagnosticRange.start.line])
 				.GroupBy(candidate => candidate.candidateInterface)
-				.Select(grp => grp.First().Diagnostic)
+				.Select(grp => grp.First())
 				;
 
 			
 			var publishableDiagnostics = diagnostics
-				.Where(candidate => _interfaceStore.Exists(candidate.Data)) // can't gen text if the interface hasn't been loaded
+				.Where(candidate => _interfaceStore.Exists(candidate.candidateInterface)) // can't gen text if the interface hasn't been loaded
 				.Select(loadable =>
 				{
-					var config = _indentation.GetIndentationConfig(item.Text, loadable.Range);
-					var newText = _mockText.GetMockText(loadable.Data, config);
-					
-					// we're gonna reset the range start char to 0 so that the first
-					// line of our generated text doesn't get double-indented
+					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange);
+					var mockedText = _mockText.GetMockText(loadable.candidateInterface, config);
 
-					return loadable with
-					{
-						Data = newText,
-						Range = new Range
-						(
-							new Position(loadable.Range.start.line, 0),
-							loadable.Range.end
-						)
-					};
+					return new Diagnostic
+					(
+						loadable.diagnosticRange,
+						DiagnosticSeverity.Error,
+						Constants.DiagnosticCode_CanMoq,
+						Constants.DiagnosticSource,
+						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
+						GetEdits(loadable.diagnosticRange, mockedText, lines)
+					);
 				})
 				;
 
 			return publishableDiagnostics;
 		}
 
-#warning DRY... combine this logic with the dupe StringReader logic in this sln and extract to own class...
-		private IEnumerable<string> SplitToTrimmedLines(string input)
+		private List<TextEdit> GetEdits(Model.Lsp.Range diagnosticRange, string mockedText, List<string> trimmedLines)
 		{
-			if (input == null)
+			var result = new List<TextEdit>
 			{
-				yield break;
+				new TextEdit
+				(
+					new Model.Lsp.Range
+					(
+						// we're gonna reset the range start char to 0 so that the first
+						// line of our generated text doesn't get double-indented
+						new Position(diagnosticRange.start.line, 0),
+						diagnosticRange.end
+					),
+					mockedText
+				)
+			};
+
+
+			// check if we need to import any of our usings
+			var imports = string.Join(
+					Environment.NewLine,
+					_requiredImports
+						.Where(r => !trimmedLines.Contains(r))
+					);
+			
+			if(!string.IsNullOrWhiteSpace(imports))
+			{
+				result.Add
+				(
+					new TextEdit(
+						new Model.Lsp.Range(
+							new Position(0, 0),
+							new Position(0, 0)
+						),
+						$"{imports}{Environment.NewLine}"
+					)
+				);
 			}
 
-			using (StringReader reader = new StringReader(input))
-			{
-				string line;
-				while ((line = reader.ReadLine()) != null)
-				{
-					yield return line.Trim();
-				}
-			}
+			return result;
 		}
 	}
 }
