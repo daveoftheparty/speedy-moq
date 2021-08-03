@@ -27,7 +27,7 @@ namespace MoqGenerator.Services
 		{
 			_definitionsByInterfaceName.TryGetValue(interfaceName, out var result);
 			_logger.LogDebug($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}." +
-				" Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
+				$" Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
 				$" Interface Source file:{result?.SourceFile ?? "not found"}");
 			return result;
 		}
