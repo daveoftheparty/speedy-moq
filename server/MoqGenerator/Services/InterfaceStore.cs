@@ -64,6 +64,9 @@ namespace MoqGenerator.Services
 
 			// we might want to convert this method to a Task.Run() so it can actually be run in parallel...
 
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var tree = CSharpSyntaxTree.ParseText(textDocItem.Text);
 			var root = tree.GetCompilationUnitRoot();
 			var compilation = CSharpCompilation
@@ -71,9 +74,13 @@ namespace MoqGenerator.Services
 				.AddSyntaxTrees(tree);
 			
 			var model = compilation.GetSemanticModel(tree);
+			watch.StopAndLogDebug(_logger, "(single file) time to get semantic models: ");
 
 			// load our interface dict...
+			watch.Restart();
 			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model });
+			watch.StopAndLogDebug(_logger, "(single file) time to get interface definitions from semantic models: ");
+
 			foreach(var definition in definitions)
 			{
 				_definitionsByInterfaceName[definition.Key] = definition.Value;
@@ -157,7 +164,7 @@ namespace MoqGenerator.Services
 			watch.StopAndLogDebug(_logger, "time to get semantic models: ");
 
 			// load our interface dict...
-			watch.Reset(); watch.Start();
+			watch.Restart();
 			var definitions = GetInterfaceDefinitionsByName(models.ToList());
 			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
 
