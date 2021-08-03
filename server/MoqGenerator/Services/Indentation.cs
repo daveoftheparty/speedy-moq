@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Util;
@@ -7,6 +8,13 @@ namespace MoqGenerator.Services
 {
 	public class Indentation : IIndentation
 	{
+		private readonly ILogger<Indentation> _logger;
+
+		public Indentation(ILogger<Indentation> logger)
+		{
+			_logger = logger;
+		}
+
 		public IndentationConfig GetIndentationConfig(string text, Range range)
 		{
 			var splitter = new TextLineSplitter();
@@ -43,8 +51,22 @@ namespace MoqGenerator.Services
 			if(userTabStyle == '\t')
 				return new IndentationConfig(leadingWhiteSpaceByLine[range.start.line].count, "\t", false);
 
+
+
 			// oh boy. we have one of "those guys" that went to
 			// "I don't understand a tab" school. 
+
+			var allFakeTabsForLogging = leadingWhiteSpaceByLine
+				.Values
+				.Where(lwsc => lwsc.isValid && lwsc.count > 0 && lwsc.tabChar == ' ')
+				.Select(justCount => justCount.count)
+				.GroupBy(theCount => theCount)
+				.Select(stillJustTheCount => stillJustTheCount.Key)
+				.OrderBy(whelpStillJustTheCountHere => whelpStillJustTheCountHere)
+				.ToList()
+				;
+			
+			_logger.LogDebug($"FakeTabCounts = ({string.Join(", ", allFakeTabsForLogging)})");
 
 			// I originally grabbed distinct counts, think it was going to be some
 			// sort of semi-complicated algorithm like if max(count) % min(count) == 0 and
@@ -55,11 +77,7 @@ namespace MoqGenerator.Services
 			// that the 4 was the winner... so... min count == 4 should cover people who tab
 			// {4, 8, 12, 16, ...} and should also cover everything else like {9, 18, 27, 36, ...}
 
-			var fakeTabCount = leadingWhiteSpaceByLine
-				.Values
-				.Where(lwsc => lwsc.isValid && lwsc.count > 0 && lwsc.tabChar == ' ')
-				.Min(m => m.count)
-				;
+			var fakeTabCount = allFakeTabsForLogging.Min();
 
 			return new IndentationConfig(
 				leadingWhiteSpaceByLine[range.start.line].count / fakeTabCount,

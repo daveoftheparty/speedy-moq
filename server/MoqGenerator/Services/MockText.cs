@@ -22,20 +22,10 @@ namespace MoqGenerator.Services
 
 		public string GetMockText(string interfaceName, IndentationConfig indentationConfig)
 		{
-			/*
-				if our dictionary of implementations is empty, go compile the whole project...
-				whoops, can't do that... cuz we don't get the right info coming into this interface, and this interface 
-				IS RIGHT for what we need from CodeAction.... hmmm...
-
-				I guess we do the full project compilation on Language Server startup, and force this to have it DI injected?
-				might be some weirdness for the user if they open a doc that needs the replacement right away, but, the injected
-				info isn't ready yet. not much we can do about that...
-			*/
 			var definition = _interfaceStore.GetInterfaceDefinition(interfaceName);
 			if(definition == null)
 			{
 				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
-				#warning check this null on the other side!!!
 				return (string)null;
 			}
 				
@@ -62,7 +52,7 @@ namespace MoqGenerator.Services
 						.Setup(howManyItems)
 						.Returns((string patient, char charToCount) =>
 						{
-							return 0;
+							return default;
 						});
 
 					stringAnalyzer.Verify(howManyItems, Times.Once);

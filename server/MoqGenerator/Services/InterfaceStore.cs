@@ -24,7 +24,7 @@ namespace MoqGenerator.Services
 		public InterfaceDefinition GetInterfaceDefinition(string interfaceName)
 		{
 			_definitionsByInterfaceName.TryGetValue(interfaceName, out var result);
-			_logger.LogInformation($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
+			_logger.LogDebug($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
 			$" Interface Source file:{result?.SourceFile ?? "not found"}");
 			return result;
 		}
@@ -48,7 +48,7 @@ namespace MoqGenerator.Services
 		public InterfaceStore(ILogger<InterfaceStore> logger)
 		{
 			_logger = logger;
-			_logger.LogError($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
+			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 		}
 
 
