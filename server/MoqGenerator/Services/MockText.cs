@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model.Lsp;
+using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
 {
@@ -62,6 +64,10 @@ namespace MoqGenerator.Services
 
 				we will just let the mock.Verify() methods be one line after another with no additional whitespace
 			*/
+
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var results = new List<string>();
 			var tab = indentationConfig.IndentString;
 
@@ -194,7 +200,7 @@ namespace MoqGenerator.Services
 				: l
 				);
 
-
+			watch.StopAndLogDebug(_logger, "time to generate moq: ");
 			return string.Join(Environment.NewLine, lines);
 		}
 
