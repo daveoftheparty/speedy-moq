@@ -128,7 +128,8 @@ namespace MoqGenerator.Services
 			var workspace = new AdhocWorkspace();
 
 			var projectQueue = new Queue<string>(new[] {csProjPath});
-			AddToWorkspace(manager, workspace, projectQueue, new HashSet<string>());
+			var projectsAdded = new HashSet<string>();
+			AddToWorkspace(manager, workspace, projectQueue, projectsAdded);
 			
 			var compilations = await Task.WhenAll(workspace.CurrentSolution.Projects.Select(x => x.GetCompilationAsync()));
 
@@ -144,7 +145,8 @@ namespace MoqGenerator.Services
 				}
 
 				// and finally, load up our hashset so that we don't have to do this again
-				_csProjectsAlreadyLoaded.Add(csProjPath);
+				foreach(var proj in projectsAdded)
+					_csProjectsAlreadyLoaded.Add(proj);
 
 				if(definitions.Count > 0)
 					LogDefinitions(nameof(LoadCSProjAsync));
