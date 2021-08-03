@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using MoqGenerator.Interfaces.Lsp;
@@ -17,6 +18,9 @@ namespace MoqGenerator.Services
 
 		public IndentationConfig GetIndentationConfig(string text, Range range)
 		{
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var splitter = new TextLineSplitter();
 			
 			var leadingWhiteSpaceByLine = splitter
@@ -49,7 +53,10 @@ namespace MoqGenerator.Services
 			// this person understands that an indentation is created by
 			// a tab, rather than a sequence of generated spaces
 			if(userTabStyle == '\t')
+			{
+				watch.StopAndLogDebug(_logger, "tab detected as indent character in: ");
 				return new IndentationConfig(leadingWhiteSpaceByLine[range.start.line].count, "\t", false);
+			}
 
 
 
@@ -79,6 +86,7 @@ namespace MoqGenerator.Services
 
 			var fakeTabCount = allFakeTabsForLogging.Min();
 
+			watch.StopAndLogDebug(_logger, "spaces detected as indent 'character' in: ");
 			return new IndentationConfig(
 				leadingWhiteSpaceByLine[range.start.line].count / fakeTabCount,
 				new string(Enumerable.Repeat(' ', fakeTabCount).ToArray()),
@@ -106,7 +114,6 @@ namespace MoqGenerator.Services
 					foundNonWhiteSpace = true;
 					break;
 				}
-					
 			}
 
 			// this is basically here to protect against counting indents on lines that are otherwise empty:
