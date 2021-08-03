@@ -7,6 +7,7 @@ using System;
 using MoqGenerator.Util;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace MoqGenerator.Services
 {
@@ -41,6 +42,9 @@ namespace MoqGenerator.Services
 
 		public IEnumerable<Diagnostic> GetDiagnostics(TextDocumentItem item)
 		{
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var splitter = new TextLineSplitter();
 			var lines = splitter
 				.SplitToLines(item.Text)
@@ -51,9 +55,12 @@ namespace MoqGenerator.Services
 			if(!lines.Any(line => _testFrameworks.Contains(line)))
 			{
 				_logger.LogDebug($"{item.Identifier.Uri} does not appear to be a test file");
+				watch.StopAndLogDebug(_logger, $"discarding {item.Identifier.Uri} for not being a test file took: ");
 				return new List<Diagnostic>();
 			}
-				
+
+			watch.StopAndLogDebug(_logger, $"deciding that {item.Identifier.Uri} is a test file took: ");
+			watch.Restart();
 
 			// use roslyn to find any diagnostics for the file,
 			// will also do some of the heavy lifting for us on line location/range
@@ -64,6 +71,9 @@ namespace MoqGenerator.Services
 			var compilation = CSharpCompilation
 				.Create(null)
 				.AddSyntaxTrees(tree);
+
+			watch.StopAndLogDebug(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
+			watch.Restart();
 
 			var diagnostics = compilation
 				.GetDiagnostics()
@@ -121,6 +131,7 @@ namespace MoqGenerator.Services
 				_logger.LogDebug(JsonSerializer.Serialize(diagnostic));
 			}
 			
+			watch.StopAndLogDebug(_logger, $"calculating diagnostics from syntax tree for {item.Identifier.Uri} took: ");
 			return publishableDiagnostics;
 		}
 
