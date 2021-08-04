@@ -54,10 +54,6 @@ namespace MoqGenerator.Services
 			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 		}
 
-
-		#warning here's an interesting question. If I open a folder in VSCode that already has a .cs file open, will we get a notification for textDocument/didOpen!?!?!
-		#warning change some/all LogInformation to LogTraces later... want it to show in messages for now while I'm actively debugging
-
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
 			// this file may or may not contain interface definitions, and there's no way to tell until we parse it

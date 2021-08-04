@@ -30,8 +30,6 @@ namespace MoqGenerator.Services
 				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
 				return (string)null;
 			}
-				
-
 
 			/*
 
@@ -156,21 +154,7 @@ namespace MoqGenerator.Services
 				//	}
 				//	);
 
-				// or, this, if the developer is a heathen:
-
-				//	{
-				//		// you should stop using an arbitrary number of space characters to represent an indent
-				//		return;
-				//	}
-				//	);
-
-				
-
 				results.Add($"{tab}{{");
-				
-				#warning this is totally funny, but give user a setting to turn it off as well! 🤣
-				if(indentationConfig.WorshipsFalseIndentGod)
-					results.Add($"{tab}{tab}// you should stop using an arbitrary number of space characters to represent an indent");
 
 				if(method.ReturnType == "void")
 					results.Add($"{tab}{tab}return;");
