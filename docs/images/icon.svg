@@ -23,9 +23,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.6203867"
-     inkscape:cx="70.928864"
-     inkscape:cy="41.132647"
+     inkscape:zoom="1.8101934"
+     inkscape:cx="-33.191661"
+     inkscape:cy="141.35136"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -58,7 +58,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Design stuff"
-     style="display:inline"
+     style="display:none"
      sodipodi:insensitive="true">
     <g
        id="g879"
@@ -229,9 +229,11 @@
   <g
      inkscape:label="Ship it!"
      id="layer1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
-       style="fill:#f3f3f3;fill-opacity:1;stroke-width:0.4"
+       style="display:inline;fill:#f3f3f3;fill-opacity:1;stroke-width:0.4"
        id="rect941"
        width="128"
        height="128"
@@ -250,26 +252,27 @@
        sodipodi:insensitive="true" />
     <path
        id="path950"
-       style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:1.89298"
+       style="display:inline;opacity:1;fill:#252526;fill-opacity:1;stroke-width:1.89298"
        d="M 1.7109375,69.126953 A 62.499998,62.5 0 0 0 64,126.5 62.499998,62.5 0 0 0 126.28906,69.126953 Z"
        inkscape:label="moq text bg"
        sodipodi:insensitive="true" />
     <path
        id="rect954"
-       style="opacity:1;fill:#56cbb1;fill-opacity:1;stroke-width:0.432415"
+       style="display:inline;opacity:1;fill:#56cbb1;fill-opacity:1;stroke-width:0.432415"
        d="M 64,1 A 62.500001,62.999995 0 0 0 1.5,64 62.500001,62.999995 0 0 0 1.8964844,71.072266 H 126.10352 A 62.500001,62.999995 0 0 0 126.5,64 62.500001,62.999995 0 0 0 64,1 Z"
        inkscape:label="speedy text bg"
        sodipodi:insensitive="true" />
     <path
        id="path833"
-       style="display:inline;fill:#2d2d2d;fill-opacity:1;stroke-width:0.792809"
+       style="display:inline;fill:#56cbb1;fill-opacity:1;stroke-width:0.792809"
        inkscape:label="126x126 with 120x120 cuout"
        d="m 63.820312,1.000032 a 62.999998,63.000001 0 0 0 -62.820312,63 62.999998,63.000001 0 0 0 63,62.999998 62.999998,63.000001 0 0 0 63,-62.999998 62.999998,63.000001 0 0 0 -63,-63 62.999998,63.000001 0 0 0 -0.179688,0 z m 0.179688,3 a 59.999998,60.000001 0 0 1 60,60 59.999998,60.000001 0 0 1 -60,59.999998 59.999998,60.000001 0 0 1 -60,-59.999998 59.999998,60.000001 0 0 1 60,-60 z"
        sodipodi:insensitive="true" />
     <g
        id="g880"
        inkscape:label="moq font"
-       transform="matrix(0.17401374,0,0,0.17401374,64.901981,90.097462)">
+       transform="matrix(0.17401374,0,0,0.17401374,64.901981,90.097462)"
+       sodipodi:insensitive="true">
       <path
          id="path857"
          style="display:inline;fill:#f4be00;fill-opacity:1"
@@ -288,11 +291,12 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-style:italic;font-variant:normal;font-weight:900;font-stretch:normal;font-size:32px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI, Heavy Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;stroke:none;"
+       style="font-style:italic;font-variant:normal;font-weight:900;font-stretch:normal;font-size:32px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI, Heavy Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;stroke:none"
        x="7.8625002"
        y="55.751373"
        id="text841"
-       inkscape:label="speedy"><tspan
+       inkscape:label="speedy"
+       sodipodi:insensitive="true"><tspan
          sodipodi:role="line"
          id="tspan882"
          x="7.8625002"
