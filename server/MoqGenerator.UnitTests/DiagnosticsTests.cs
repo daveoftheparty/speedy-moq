@@ -37,7 +37,12 @@ namespace MoqGenerator.UnitTests
 				.Setup(x => x.GetIndentationConfig(It.IsAny<string>(), It.IsAny<ourRange>()))
 				.Returns(new IndentationConfig(3, "\t", false));
 
-			var diagnoser = new Diagnoser(interfaceStore.Object, mockText.Object, mockIndentation.Object);
+			var diagnoser = new Diagnoser(
+				interfaceStore.Object,
+				mockText.Object,
+				mockIndentation.Object,
+				new LoggerDouble<Diagnoser>()
+				);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);
 			var actual = diagnoser.GetDiagnostics(textDoc);
 

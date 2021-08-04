@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Buildalyzer.Workspaces;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model;
 using MoqGenerator.Model.Lsp;
+using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
 {
@@ -24,8 +26,9 @@ namespace MoqGenerator.Services
 		public InterfaceDefinition GetInterfaceDefinition(string interfaceName)
 		{
 			_definitionsByInterfaceName.TryGetValue(interfaceName, out var result);
-			_logger.LogInformation($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
-			$" Interface Source file:{result?.SourceFile ?? "not found"}");
+			_logger.LogDebug($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}." +
+				$" Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
+				$" Interface Source file:{result?.SourceFile ?? "not found"}");
 			return result;
 		}
 
@@ -48,7 +51,7 @@ namespace MoqGenerator.Services
 		public InterfaceStore(ILogger<InterfaceStore> logger)
 		{
 			_logger = logger;
-			_logger.LogError($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
+			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 		}
 
 
@@ -61,6 +64,9 @@ namespace MoqGenerator.Services
 
 			// we might want to convert this method to a Task.Run() so it can actually be run in parallel...
 
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var tree = CSharpSyntaxTree.ParseText(textDocItem.Text);
 			var root = tree.GetCompilationUnitRoot();
 			var compilation = CSharpCompilation
@@ -68,9 +74,13 @@ namespace MoqGenerator.Services
 				.AddSyntaxTrees(tree);
 			
 			var model = compilation.GetSemanticModel(tree);
+			watch.StopAndLogDebug(_logger, "(single file) time to get semantic models: ");
 
 			// load our interface dict...
+			watch.Restart();
 			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model });
+			watch.StopAndLogDebug(_logger, "(single file) time to get interface definitions from semantic models: ");
+
 			foreach(var definition in definitions)
 			{
 				_definitionsByInterfaceName[definition.Key] = definition.Value;
@@ -97,7 +107,8 @@ namespace MoqGenerator.Services
 		}
 
 
-		private void AddToWorkspace(AnalyzerManager manager, AdhocWorkspace workspace, Queue<string> projects, HashSet<string> projectsAdded)
+		private void AddToWorkspace(AnalyzerManager manager, AdhocWorkspace workspace, Queue<string> projects, HashSet<string> projectsAdded,
+			Stopwatch buildWatch, Stopwatch addToWorkspaceWatch)
 		{
 			if(projects.Count == 0)
 				return;
@@ -106,6 +117,7 @@ namespace MoqGenerator.Services
 
 			if(!projectsAdded.Contains(projectName))
 			{
+				buildWatch.Start();
 				var project = manager.GetProject(projectName);
 				var buildResult = project.Build();
 
@@ -114,12 +126,16 @@ namespace MoqGenerator.Services
 					.ToList()
 					.ForEach(pr => projects.Enqueue(pr))
 					;
+				buildWatch.Stop();
 
+				addToWorkspaceWatch.Start();
 				project.AddToWorkspace(workspace);
+				addToWorkspaceWatch.Stop();
+
 				projectsAdded.Add(projectName);
 			}
 			
-			AddToWorkspace(manager, workspace, projects, projectsAdded);
+			AddToWorkspace(manager, workspace, projects, projectsAdded, buildWatch, addToWorkspaceWatch);
 		}
 
 		private async Task LoadCSProjAsync(string csProjPath)
@@ -128,26 +144,41 @@ namespace MoqGenerator.Services
 			var workspace = new AdhocWorkspace();
 
 			var projectQueue = new Queue<string>(new[] {csProjPath});
-			AddToWorkspace(manager, workspace, projectQueue, new HashSet<string>());
+			var projectsAdded = new HashSet<string>();
+			var buildWatch = new Stopwatch();
+			var addToWorkspaceWatch = new Stopwatch();
+			AddToWorkspace(manager, workspace, projectQueue, projectsAdded, buildWatch, addToWorkspaceWatch);
 			
+			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
+			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
+
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var compilations = await Task.WhenAll(workspace.CurrentSolution.Projects.Select(x => x.GetCompilationAsync()));
 
 			var models = compilations
 				.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
 				;
 
-				// load our interface dict...
-				var definitions = GetInterfaceDefinitionsByName(models.ToList());
-				foreach(var definition in definitions)
-				{
-					_definitionsByInterfaceName[definition.Key] = definition.Value;
-				}
+			watch.StopAndLogDebug(_logger, "time to get semantic models: ");
 
-				// and finally, load up our hashset so that we don't have to do this again
-				_csProjectsAlreadyLoaded.Add(csProjPath);
+			// load our interface dict...
+			watch.Restart();
+			var definitions = GetInterfaceDefinitionsByName(models.ToList());
+			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
 
-				if(definitions.Count > 0)
-					LogDefinitions(nameof(LoadCSProjAsync));
+			foreach(var definition in definitions)
+			{
+				_definitionsByInterfaceName[definition.Key] = definition.Value;
+			}
+
+			// and finally, load up our hashset so that we don't have to do this again
+			foreach(var proj in projectsAdded)
+				_csProjectsAlreadyLoaded.Add(proj);
+
+			if(definitions.Count > 0)
+				LogDefinitions(nameof(LoadCSProjAsync));
 		}
 
 
@@ -273,6 +304,9 @@ namespace MoqGenerator.Services
 
 		private string GetCsProjFromCsFile(string uri)
 		{
+			var watch = new Stopwatch();
+			watch.Start();
+
 			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
 			// if we can't find one, traverse backwards until we do... or don't
 
@@ -292,6 +326,7 @@ namespace MoqGenerator.Services
 
 				if(csProjFile != null)
 				{
+					watch.StopAndLogDebug(_logger, "time to find csproj file: ");
 					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
 					return csProjFile.FullName;
 				}
@@ -300,6 +335,7 @@ namespace MoqGenerator.Services
 			}
 
 			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
+			watch.StopAndLogError(_logger, "time that we FAILED to find csproj file: ");
 			return null;
 		}
 

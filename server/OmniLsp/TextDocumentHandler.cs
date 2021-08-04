@@ -32,7 +32,7 @@ namespace OmniLsp
 			_diagnoser = diagnoser;
 			_interfaceStore = interfaceStore;
 
-			_logger.LogError($"hello from {nameof(TextDocumentHandler)}:{_thisInstance} ctor...");
+			_logger.LogTrace($"hello from {nameof(TextDocumentHandler)}:{_thisInstance} ctor...");
 		}
 
 		#region TextDocumentSyncHandlerBase overrides
@@ -90,10 +90,11 @@ namespace OmniLsp
 
 		private void PublishDiagnostics(MoqGenerator.Model.Lsp.TextDocumentItem textDoc, DocumentUri uri, string who)
 		{
-			_logger.LogTrace($"trying to publish, yo, from: {who}");
+			
 
 			try
 			{
+				_logger.LogTrace($"requesting diagnostics, triggered by {who}");
 				var diagnostics = _diagnoser.GetDiagnostics(textDoc);
 					
 				_router.TextDocument.PublishDiagnostics(new PublishDiagnosticsParams

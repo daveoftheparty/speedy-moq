@@ -5,6 +5,9 @@ using MoqGenerator.Model.Lsp;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 using MoqGenerator.Util;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using System.Diagnostics;
 
 namespace MoqGenerator.Services
 {
@@ -13,12 +16,14 @@ namespace MoqGenerator.Services
 		private readonly IInterfaceStore _interfaceStore;
 		private readonly IMockText _mockText;
 		private readonly IIndentation _indentation;
+		private readonly ILogger<Diagnoser> _logger;
 
-		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText, IIndentation indentation)
+		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText, IIndentation indentation, ILogger<Diagnoser> logger)
 		{
 			_interfaceStore = interfaceStore;
 			_mockText = mockText;
 			_indentation = indentation;
+			_logger = logger;
 		}
 
 		private readonly HashSet<string> _testFrameworks = new()
@@ -37,6 +42,9 @@ namespace MoqGenerator.Services
 
 		public IEnumerable<Diagnostic> GetDiagnostics(TextDocumentItem item)
 		{
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var splitter = new TextLineSplitter();
 			var lines = splitter
 				.SplitToLines(item.Text)
@@ -45,7 +53,14 @@ namespace MoqGenerator.Services
 
 			// check if we're dealing with a test file, otherwise bail early...
 			if(!lines.Any(line => _testFrameworks.Contains(line)))
+			{
+				_logger.LogDebug($"{item.Identifier.Uri} does not appear to be a test file");
+				watch.StopAndLogDebug(_logger, $"discarding {item.Identifier.Uri} for not being a test file took: ");
 				return new List<Diagnostic>();
+			}
+
+			watch.StopAndLogDebug(_logger, $"deciding that {item.Identifier.Uri} is a test file took: ");
+			watch.Restart();
 
 			// use roslyn to find any diagnostics for the file,
 			// will also do some of the heavy lifting for us on line location/range
@@ -56,6 +71,9 @@ namespace MoqGenerator.Services
 			var compilation = CSharpCompilation
 				.Create(null)
 				.AddSyntaxTrees(tree);
+
+			watch.StopAndLogDebug(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
+			watch.Restart();
 
 			var diagnostics = compilation
 				.GetDiagnostics()
@@ -101,8 +119,19 @@ namespace MoqGenerator.Services
 						GetEdits(loadable.diagnosticRange, mockedText, lines)
 					);
 				})
+				.ToList()
 				;
 
+
+			if(publishableDiagnostics.Count > 0)
+				_logger.LogDebug("Diagnostics we're going to publish:");
+
+			foreach(var diagnostic in publishableDiagnostics)
+			{
+				_logger.LogDebug(JsonSerializer.Serialize(diagnostic));
+			}
+			
+			watch.StopAndLogDebug(_logger, $"calculating diagnostics from syntax tree for {item.Identifier.Uri} took: ");
 			return publishableDiagnostics;
 		}
 
