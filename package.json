@@ -1,15 +1,34 @@
 {
-	"name": "lsp-sample",
-	"description": "A language server example",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
-	"version": "1.0.0",
+	"name": "speedy-moq",
+	"displayName": "Speedy Moq",
+	"description": "Code generation to speed up testing in C# using the Moq library.",
+	"publisher": "daveoftheparty",
+	"author": "Dave Speer",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/daveoftheparty/speedy-moq"
 	},
-	"publisher": "vscode-samples",
-	"categories": [],
+	"bugs": {
+		"url": "https://github.com/daveoftheparty/speedy-moq/issues"
+	},
+	"license": "MIT",
+	"version": "0.0.3",
+	"categories": [
+		"Programming Languages",
+		"Other"
+	],
+	"keywords": [
+		"C#",
+		"Moq",
+		"Testing",
+		"TDD",
+		"Generation"
+	],
+	"icon": "docs/images/icon.png",
+	"galleryBanner": {
+		"color": "#252526",
+		"theme": "dark"
+	},
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -22,7 +41,7 @@
 			"type": "object",
 			"title": "Log Settings",
 			"properties": {
-				"boilerMoq.trace.server": {
+				"speedyMoq.trace.server": {
 					"scope": "window",
 					"type": "string",
 					"enum": [
@@ -31,7 +50,7 @@
 						"verbose"
 					],
 					"default": "verbose",
-					"description": "Traces the communication between VS Code and the language server."
+					"description": "Traces the communication between VS Code and Speedy Moq."
 				}
 			}
 		}
@@ -42,9 +61,13 @@
 		"watch": "tsc -b -w",
 		"postinstall": "cd client && npm install && npm install && cd .."
 	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0"
+	},
 	"devDependencies": {
 		"@types/mocha": "^8.2.2",
 		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.43.0",
 		"@typescript-eslint/eslint-plugin": "^4.23.0",
 		"@typescript-eslint/parser": "^4.23.0",
 		"eslint": "^7.26.0",

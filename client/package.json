@@ -1,22 +1,22 @@
 {
-	"name": "lsp-sample-client",
-	"description": "VSCode part of a language server",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
-	"version": "0.0.1",
-	"publisher": "vscode",
+	"name": "speedy-moq",
+	"description": "Code generation to speed up testing in C# using the Moq library.",
+	"publisher": "daveoftheparty",
+	"author": "Dave Speer",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/daveoftheparty/speedy-moq"
 	},
+	"license": "MIT",
+	"version": "0.0.0",
 	"engines": {
-		"vscode": "^1.52.0"
+		"vscode": "^1.43.0"
 	},
 	"dependencies": {
 		"vscode-languageclient": "^7.0.0"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.52.0",
+		"@types/vscode": "^1.43.0",
 		"@vscode/test-electron": "^1.6.1"
 	}
 }
