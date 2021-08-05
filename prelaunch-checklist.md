@@ -5,4 +5,6 @@ package.json:
 	- speedyMoq.trace.server
 	- SpeedyMoq.trace.server
 version: use semver to go from 0.0.0 to 0.0.1?
-- i think i want to run vsce publish path -m "hey beta, it's your birthday"
+- i think i want to cd to main directory (speedy-moq) and run:
+	- vsce login daveoftheparty
+	- vsce publish patch -m "hey beta, it's your birthday"
