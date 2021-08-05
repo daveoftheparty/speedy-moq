@@ -11,8 +11,8 @@ import { Trace } from 'vscode-jsonrpc';
 import { join } from 'path';
 import { release } from 'os';
 
-const vsCodeName = 'boilerMoq';
-const friendlyName = 'Boiler Moq';
+const vsCodeName = 'speedyMoq';
+const friendlyName = 'Speedy Moq';
 const CSharpPackageName = 'OmniLsp';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -35,35 +35,26 @@ export function activate(context: vscode.ExtensionContext) {
     const clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
         documentSelector: [
-            // {
-            //     scheme: "file",
-            //     language: 'csharp'
-            // }
             {
-                pattern: "**/*.*"
+                scheme: "file",
+                language: 'csharp'
             }
         ],
-        synchronize: {
-            // Synchronize the setting section for our extension to the server
-            configurationSection: vsCodeName,
-            fileEvents: vscode.workspace.createFileSystemWatcher('**/*.cs')
-        },
+        // synchronize: {
+        //     // Synchronize the setting section for our extension to the server
+        //     configurationSection: vsCodeName,
+        //     fileEvents: vscode.workspace.createFileSystemWatcher('**/*.cs')
+        // },
     };
 
     // Create the language client and start the client.
     const client = new LanguageClient(vsCodeName, friendlyName, serverOptions, clientOptions);
 
-    console.log("whelp my extension typescript file is loggin', Dave...");
+    console.log("Speedy Moq is up and rollin...");
     client.trace = Trace.Verbose;
     const lsp = client.start();
 
-
-    const goBoiler = vscode.commands.registerCommand('boilerMoq.go', () => {
-        vscode.window.showInformationMessage('Hello World from boilerMoq.go!');
-        client.sendNotification("boilerMoq.go");
-    });
-
     // Push the disposable to the context's subscriptions so that the
     // client can be deactivated on extension deactivation
-    context.subscriptions.push(lsp, goBoiler);
+    context.subscriptions.push(lsp);
 }
