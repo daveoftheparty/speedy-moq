@@ -7,7 +7,7 @@ package.json:
 version: use semver to go from 0.0.0 to 0.0.1?
 - i think i want to cd to main directory (speedy-moq) and run:
 	- vsce login daveoftheparty
-	- vsce publish patch -m "hey beta, it's your birthday"
+	- vsce publish patch -m "publishing extension: is this thing on?"
 
 
 IT'S... ALIVE???
@@ -25,3 +25,6 @@ whelp... learned a couple things.
 3) server failed to start, error is: `* You intended to execute a .NET program, but dotnet-c:\Users\dave\.vscode\extensions\daveoftheparty.speedy-moq-0.0.3\server\OmniLsp.dll does not exist.`
 	- maybe I need to explicitly mention the "out" folder in extension.ts when building the path?
 	- actual path to dll is: C:\Users\dave\.vscode\extensions\daveoftheparty.speedy-moq-0.0.3\client\out\server
+4) install/uninstall locally:
+- code --install-extension C:\src\daveoftheparty\speedy-moq\speedy-moq-0.0.3.vsix
+- code --uninstall-extension daveoftheparty.speedy-moq
