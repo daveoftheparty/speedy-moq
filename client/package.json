@@ -2,7 +2,6 @@
 	"name": "speedy-moq",
 	"description": "Code generation to speed up testing in C# using the Moq library.",
 	"publisher": "daveoftheparty",
-
 	"author": "Dave Speer",
 	"repository": {
 		"type": "git",

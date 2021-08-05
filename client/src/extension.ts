@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     const serverExe = 'dotnet';
     
     const debugServerLocation = join("server", CSharpPackageName, "bin", "Debug", "net5.0", `${CSharpPackageName}.dll`);
-    const releaseServerLocation = join("server", CSharpPackageName, "bin", "Release", "net5.0", "publish", `${CSharpPackageName}.dll`);
+    const releaseServerLocation = join("server", `${CSharpPackageName}.dll`);
     const debugServer = context.asAbsolutePath(debugServerLocation);
     const releaseServer = context.asAbsolutePath(releaseServerLocation);
 
