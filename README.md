@@ -1,6 +1,6 @@
 # Speedy Moq
 
-A code generation library to speed up TDD in C# using the excellent [Moq](https://www.nuget.org/packages/Moq/) library.
+Code generation to speed up testing in C# using the excellent [Moq](https://www.nuget.org/packages/Moq/) library.
 
 ![Demo](docs/images/Demo.gif?raw=true "Demo")
 
