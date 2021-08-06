@@ -27,8 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions: ServerOptions = {
-        run: { command: serverExe, args: [releaseServer], transport: TransportKind.pipe },
-        debug: { command: serverExe, args: [debugServer], transport: TransportKind.pipe, runtime: "" }
+        run: { command: serverExe, args: [releaseServer, "true"], transport: TransportKind.pipe },
+        debug: { command: serverExe, args: [debugServer, "false"], transport: TransportKind.pipe, runtime: "" }
     };
 
     // Options to control the language client

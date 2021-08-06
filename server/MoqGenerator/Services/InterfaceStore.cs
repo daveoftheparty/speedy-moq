@@ -34,6 +34,9 @@ namespace MoqGenerator.Services
 
 		public async Task LoadDefinitionsIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
+			if(!_whoaCowboy.GiddyUp)
+				return;
+
 			var csProjTask = LoadCsProjAsyncIfNecessaryAsync(textDocItem);
 			var csInterfaceFileTask = LoadCsInterfaceIfNecessaryAsync(textDocItem);
 			await Task.WhenAll(csProjTask, csInterfaceFileTask);
@@ -47,11 +50,13 @@ namespace MoqGenerator.Services
 		private readonly HashSet<string> _csProjectsAlreadyLoaded = new();
 		private readonly ILogger<InterfaceStore> _logger;
 		private readonly string _thisInstance = Guid.NewGuid().ToString();
+		private readonly IWhoaCowboy _whoaCowboy;
 
-		public InterfaceStore(ILogger<InterfaceStore> logger)
+		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy)
 		{
 			_logger = logger;
 			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
+			_whoaCowboy = whoaCowboy;
 		}
 
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
