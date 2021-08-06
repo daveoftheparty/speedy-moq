@@ -15,6 +15,20 @@ namespace OmniLsp
 	{
 		static async Task Main(string[] args)
 		{
+			var giddyUp = false;
+			try
+			{
+				giddyUp = Convert.ToBoolean(args[0]);
+			}
+			catch
+			{
+				throw new ArgumentException(
+					"Pass in true or false for the first parameter. True means GO!" +
+					" False means halt until a debugger can be attached." +
+					$" Args passed (pipe delimited): [{string.Join('|', args)}]"
+					);
+			}
+
 			var server = await LanguageServer.From(options =>
 				options
 				.WithInput(Console.OpenStandardInput())
@@ -25,7 +39,7 @@ namespace OmniLsp
 						.SetMinimumLevel(LogLevel.Debug)
 				)
 				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Error))) // I bumped this up to see if we could filter out Omnisharp, it filtered absolutely nothing....
-				.WithServices(ConfigureServices)
+				.WithServices(x => ConfigureServices(x, giddyUp))
 				.WithHandler<TextDocumentHandler>()
 				.WithHandler<CodeActionHandler>()
 				);
@@ -33,8 +47,10 @@ namespace OmniLsp
 			await server.WaitForExit;
 		}
 
-		static void ConfigureServices(IServiceCollection services)
+		static void ConfigureServices(IServiceCollection services, bool giddyUp)
 		{
+			services.AddSingleton(typeof(IWhoaCowboy), new WhoaCowboy { GiddyUp = giddyUp });
+
 			services.AddSingleton<IInterfaceStore, InterfaceStore>();
 
 
