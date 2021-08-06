@@ -33,6 +33,7 @@ namespace MoqGenerator.IntegrationTests
 		public async Task TestDemo()
 		{
 			var uri = "../../../../Demo/Demo.Lib.UnitTests/StringAnalyzerTests.cs";
+			// C:\src\daveoftheparty\speedy-moq\server\Demo\Demo.Lib.UnitTests\Demo.Lib.UnitTests.csproj
 			var text = File.ReadAllText(uri);
 
 			var whoaCowboy = new Mock<IWhoaCowboy>();
@@ -51,7 +52,7 @@ namespace MoqGenerator.IntegrationTests
 			);
 
 			logMock.LogEntries.ForEach(e => Console.WriteLine(e.ToString()));
-			
+			#error deal with this WIP mess!!
 			Assert.Fail("this ain't a real test until there's an assert!");
 		}
 	}

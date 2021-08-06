@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -139,6 +140,59 @@ namespace MoqGenerator.Services
 			AddToWorkspace(manager, workspace, projects, projectsAdded, buildWatch, addToWorkspaceWatch);
 		}
 
+		private void AddToWorkspace2(AnalyzerManager manager, AdhocWorkspace workspace, Queue<string> projects, HashSet<string> projectsAdded,
+			Stopwatch buildWatch, Stopwatch addToWorkspaceWatch)
+		{
+			if(projects.Count == 0)
+				return;
+
+			var projectName = projects.Dequeue();
+
+			if(!projectsAdded.Contains(projectName))
+			{
+				buildWatch.Start();
+				var project = manager.GetProject(projectName);
+				
+				var root = XDocument.Load(projectName);
+				root
+					.Descendants("ProjectReference")
+					.Select(projRefPath => projRefPath.Attribute("Include").Value)
+					.Select(path => 
+					{
+						if(File.Exists(path))
+							return path;
+						
+						var parent = Directory.GetParent(projectName).FullName;
+						var checkAgain = Path.Combine(parent, path);
+						if(File.Exists(checkAgain))
+							return checkAgain;
+
+						throw new Exception($"yo can't find proj reference {path} from csproj {projectName}");
+					})
+					.ToList()
+					.ForEach(pr => projects.Enqueue(pr));
+				
+				/*
+				var buildResult = project.Build();
+
+				buildResult
+					.SelectMany(br => br.ProjectReferences)
+					.ToList()
+					.ForEach(pr => projects.Enqueue(pr))
+					;
+				*/
+				buildWatch.Stop();
+
+				addToWorkspaceWatch.Start();
+				project.AddToWorkspace(workspace);
+				addToWorkspaceWatch.Stop();
+
+				projectsAdded.Add(projectName);
+			}
+			
+			AddToWorkspace2(manager, workspace, projects, projectsAdded, buildWatch, addToWorkspaceWatch);
+		}
+
 		private async Task LoadCSProjAsync(string csProjPath)
 		{
 			var manager = new AnalyzerManager();
@@ -148,7 +202,7 @@ namespace MoqGenerator.Services
 			var projectsAdded = new HashSet<string>();
 			var buildWatch = new Stopwatch();
 			var addToWorkspaceWatch = new Stopwatch();
-			AddToWorkspace(manager, workspace, projectQueue, projectsAdded, buildWatch, addToWorkspaceWatch);
+			AddToWorkspace2(manager, workspace, projectQueue, projectsAdded, buildWatch, addToWorkspaceWatch);
 			
 			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
 			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
