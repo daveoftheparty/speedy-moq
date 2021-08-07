@@ -61,6 +61,8 @@ namespace MoqGenerator.UnitTests
 
 			var result = Directory
 				.EnumerateDirectories(testProjectsPath)
+				// .Where(dir => dir.Contains("LegacyFrameworkProjectWithReference"))
+				// .Where(dir => dir.Contains("FlatReferences"))
 				.ToList();
 
 			foreach(var dir in result)

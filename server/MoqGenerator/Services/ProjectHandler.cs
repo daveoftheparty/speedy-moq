@@ -70,7 +70,8 @@ namespace MoqGenerator.Services
 
 				var root = XDocument.Load(currProject);
 				root
-					.Descendants("ProjectReference")
+					.Descendants()
+					.Where(xl => xl.Name.LocalName == "ProjectReference")
 					.Select(projRefPath => projRefPath.Attribute("Include").Value)
 					.Select(refPath => 
 					{
