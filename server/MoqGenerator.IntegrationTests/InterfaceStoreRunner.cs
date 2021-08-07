@@ -13,7 +13,7 @@ namespace MoqGenerator.IntegrationTests
 	public class InterfaceStoreRunner
 	{
 		/*
-			not very scientific, but you can see the runtimes here when using BuildAlyzer.Build() to get project refs:
+			not very scientific, but you can see the runtimes here when using Buildalyzer.Build() to get project refs:
 			
 			hello from InterfaceStore:0c4d2d69-348e-45c9-b016-79fd49d87959 ctor...
 			method GetCsProjFromCsFile is looking for a .csproj related to file ../../../../Demo/Demo.Lib.UnitTests/StringAnalyzerTests.cs
@@ -28,6 +28,27 @@ namespace MoqGenerator.IntegrationTests
 			LogDefinitions was called by LoadCSProjAsync. Interfaces loaded: ISomeMagicSauce|IStringAnalyzer
 			(single file) time to get semantic models: 1ms
 			(single file) time to get interface definitions from semantic models: 0ms
+
+			and here's the runtimes for the new refactor, loading project references by reading the XML of the csproj themselves:
+
+			InterfaceStore Logger entries:
+			hello from InterfaceStore:eb50958c-1d0f-49c0-9106-c532e3ffe713 ctor...
+			time to build projs to get refs: 7ms
+			time to add projs to workspace: [ss.ms] 03.768
+			time to get semantic models: 942ms
+			time to get interface definitions from semantic models: 20ms
+			LogDefinitions was called by LoadCSProjAsync. CsProjs loaded: c:\src\daveoftheparty\speedy-moq\server\Demo\Demo.Lib.UnitTests\Demo.Lib.UnitTests.csproj|c:\src\daveoftheparty\speedy-moq\server\Demo\Demo.Lib\Demo.Lib.csproj
+			LogDefinitions was called by LoadCSProjAsync. Interfaces loaded: ISomeMagicSauce|IStringAnalyzer
+			(single file) time to get semantic models: 1ms
+			(single file) time to get interface definitions from semantic models: 0ms
+			
+			ProjectHandler Logger entries:
+			method GetCsProjFromCsFile is looking for a .csproj related to file ../../../../Demo/Demo.Lib.UnitTests/StringAnalyzerTests.cs
+			method GetCsProjFromCsFile is searching for a .csproj in ..\..\..\..\Demo\Demo.Lib.UnitTests
+			time to find csproj file: 1ms
+			method GetCsProjFromCsFile found ..\..\..\..\Demo\Demo.Lib.UnitTests\Demo.Lib.UnitTests.csproj
+			Loading project references for project c:\src\daveoftheparty\speedy-moq\server\Demo\Demo.Lib.UnitTests\Demo.Lib.UnitTests.csproj
+			Loading project references for project c:\src\daveoftheparty\speedy-moq\server\Demo\Demo.Lib\Demo.Lib.csproj
 		*/
 		[Test]
 		public async Task TestDemo()
@@ -39,9 +60,10 @@ namespace MoqGenerator.IntegrationTests
 			var whoaCowboy = new Mock<IWhoaCowboy>();
 			whoaCowboy.SetupGet(x => x.GiddyUp).Returns(true);
 
-			var logMock = new LoggerDouble<InterfaceStore>();
+			var storeLogger = new LoggerDouble<InterfaceStore>();
+			var projectHandlerLogger = new LoggerDouble<ProjectHandler>();
 
-			var store = new InterfaceStore(logMock, whoaCowboy.Object);
+			var store = new InterfaceStore(storeLogger, whoaCowboy.Object, new ProjectHandler(projectHandlerLogger));
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
@@ -51,9 +73,14 @@ namespace MoqGenerator.IntegrationTests
 				)
 			);
 
-			logMock.LogEntries.ForEach(e => Console.WriteLine(e.ToString()));
-			#error deal with this WIP mess!!
-			Assert.Fail("this ain't a real test until there's an assert!");
+			Assert.IsNotNull(store.GetInterfaceDefinition("IStringAnalyzer"));
+			Assert.IsNotNull(store.GetInterfaceDefinition("ISomeMagicSauce"));
+
+			Console.WriteLine("InterfaceStore Logger entries:");
+			storeLogger.LogEntries.ForEach(e => Console.WriteLine(e.ToString()));
+
+			Console.WriteLine("ProjectHandler Logger entries:");
+			projectHandlerLogger.LogEntries.ForEach(e => Console.WriteLine(e.ToString()));
 		}
 	}
 }

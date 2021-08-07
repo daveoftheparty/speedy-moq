@@ -32,7 +32,7 @@ namespace MoqGenerator.UnitTests
 
 			var logMock = new LoggerDouble<InterfaceStore>();
 
-			var store = new InterfaceStore(logMock, whoaCowboy.Object);
+			var store = new InterfaceStore(logMock, whoaCowboy.Object, new Mock<IProjectHandler>().Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
@@ -60,7 +60,7 @@ namespace MoqGenerator.UnitTests
 			var whoaCowboy = new Mock<IWhoaCowboy>();
 			whoaCowboy.SetupGet(x => x.GiddyUp).Returns(true);
 
-			var store = new InterfaceStore(logMock, whoaCowboy.Object);
+			var store = new InterfaceStore(logMock, whoaCowboy.Object, new Mock<IProjectHandler>().Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
