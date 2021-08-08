@@ -1,1 +1,1 @@
-ISomeMagicSauce
+Foo.ISomeMagicSauce

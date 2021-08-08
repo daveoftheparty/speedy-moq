@@ -1,5 +1,5 @@
 {
-	"InterfaceName": "IConfigProps",
+	"InterfaceName": "Foo.IConfigProps",
 	"SourceFile": "",
 	"Methods": [],
 	"Properties": [
