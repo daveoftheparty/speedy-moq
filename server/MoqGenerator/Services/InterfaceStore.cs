@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,12 +50,14 @@ namespace MoqGenerator.Services
 		private readonly ILogger<InterfaceStore> _logger;
 		private readonly string _thisInstance = Guid.NewGuid().ToString();
 		private readonly IWhoaCowboy _whoaCowboy;
+		private readonly IProjectHandler _projectHandler;
 
-		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy)
+		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy, IProjectHandler projectHandler)
 		{
 			_logger = logger;
 			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 			_whoaCowboy = whoaCowboy;
+			_projectHandler = projectHandler;
 		}
 
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
@@ -102,31 +103,29 @@ namespace MoqGenerator.Services
 			// the csProj may or may not have been loaded already. if it's in our HashSet, no reason to load,
 			// because we'll detect changes on individual files with the LoadCsInterfaceIfNecessaryAsync method
 
-			var csProjPath = GetCsProjFromCsFile(textDocItem.Identifier.Uri);
+			var csProjPath = _projectHandler.GetCsProjFromCsFile(textDocItem.Identifier.Uri);
 			if(csProjPath != null && !_csProjectsAlreadyLoaded.Contains(csProjPath))
 				await LoadCSProjAsync(csProjPath);
 		}
 
-
-		private void AddToWorkspace(AnalyzerManager manager, AdhocWorkspace workspace, Queue<string> projects, HashSet<string> projectsAdded,
-			Stopwatch buildWatch, Stopwatch addToWorkspaceWatch)
+		private (IReadOnlyList<string> projects, AdhocWorkspace workspace) GetProjectsAndWorkspace(string csProjPath)
 		{
-			if(projects.Count == 0)
-				return;
+			var manager = new AnalyzerManager();
+			var workspace = new AdhocWorkspace();
+			var projectsAdded = new List<string>();
 
-			var projectName = projects.Dequeue();
+			var buildWatch = new Stopwatch();
+			var addToWorkspaceWatch = new Stopwatch();
 
-			if(!projectsAdded.Contains(projectName))
+			var projects = _projectHandler.GetProjectAndProjectReferences(csProjPath);
+
+			foreach(var projectName in projects)
 			{
+				if(projectsAdded.Contains(projectName))
+					break;
+
 				buildWatch.Start();
 				var project = manager.GetProject(projectName);
-				var buildResult = project.Build();
-
-				buildResult
-					.SelectMany(br => br.ProjectReferences)
-					.ToList()
-					.ForEach(pr => projects.Enqueue(pr))
-					;
 				buildWatch.Stop();
 
 				addToWorkspaceWatch.Start();
@@ -135,23 +134,17 @@ namespace MoqGenerator.Services
 
 				projectsAdded.Add(projectName);
 			}
+
+			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
+			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
 			
-			AddToWorkspace(manager, workspace, projects, projectsAdded, buildWatch, addToWorkspaceWatch);
+			return (projectsAdded, workspace);
 		}
 
 		private async Task LoadCSProjAsync(string csProjPath)
 		{
-			var manager = new AnalyzerManager();
-			var workspace = new AdhocWorkspace();
 
-			var projectQueue = new Queue<string>(new[] {csProjPath});
-			var projectsAdded = new HashSet<string>();
-			var buildWatch = new Stopwatch();
-			var addToWorkspaceWatch = new Stopwatch();
-			AddToWorkspace(manager, workspace, projectQueue, projectsAdded, buildWatch, addToWorkspaceWatch);
-			
-			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
-			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
+			var (projectsAdded, workspace) = GetProjectsAndWorkspace(csProjPath);
 
 			var watch = new Stopwatch();
 			watch.Start();
@@ -303,42 +296,7 @@ namespace MoqGenerator.Services
 				.ToDictionary(pair => pair.InterfaceName, pair => pair.InterfaceDefinition);
 		}
 
-		private string GetCsProjFromCsFile(string uri)
-		{
-			var watch = new Stopwatch();
-			watch.Start();
 
-			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
-			// if we can't find one, traverse backwards until we do... or don't
-
-			var path = uri.Replace("file:///", "");
-			_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is looking for a .csproj related to file {path}");
-			
-			path = Path.GetDirectoryName(path);
-			while(!string.IsNullOrWhiteSpace(path))
-			{
-				_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is searching for a .csproj in {path}");
-				
-				var csProjFile = Directory
-					.EnumerateFiles(path)
-					.Select(f => new FileInfo(f))
-					.FirstOrDefault(x => x.Extension == ".csproj") // I have no idea why there would be more than one csproj in a directory, or if it's even possible
-					;
-
-				if(csProjFile != null)
-				{
-					watch.StopAndLogDebug(_logger, "time to find csproj file: ");
-					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
-					return csProjFile.FullName;
-				}
-
-				path = Directory.GetParent(path).FullName;
-			}
-
-			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
-			watch.StopAndLogError(_logger, "time that we FAILED to find csproj file: ");
-			return null;
-		}
 
 
 		private void LogDefinitions(string v)

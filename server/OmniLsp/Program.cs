@@ -57,6 +57,7 @@ namespace OmniLsp
 			services.AddTransient<IDiagnoser, Diagnoser>();
 			services.AddTransient<IMockText, MockText>();
 			services.AddTransient<IIndentation, Indentation>();
+			services.AddTransient<IProjectHandler, ProjectHandler>();
 		}
 	}
 }

@@ -13,16 +13,19 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
 using OmniLsp.Adapters;
+using MoqGenerator.Interfaces.Lsp;
 
 namespace OmniLsp
 {
 	public class CodeActionHandler : ICodeActionHandler
 	{
 		private readonly ILogger<CodeActionHandler> _logger;
+		private readonly IWhoaCowboy _whoaCowboy;
 
-		public CodeActionHandler(ILogger<CodeActionHandler> logger)
+		public CodeActionHandler(ILogger<CodeActionHandler> logger, IWhoaCowboy whoaCowboy)
 		{
 			_logger = logger;
+			_whoaCowboy = whoaCowboy;
 		}
 
 		#region ICodeActionHandler
@@ -38,10 +41,14 @@ namespace OmniLsp
 
 		public Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
 		{
+			if(!_whoaCowboy.GiddyUp)
+				return Task.FromResult(new CommandOrCodeActionContainer());
+
 			_logger.LogTrace("Code action firing...");
 			
 			var actions = request.Context.Diagnostics?
-				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.OrdinalIgnoreCase))
+				.Where(diagnostic => diagnostic?.Source != null)
+				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.Ordinal))
 				.Select(diagnostic =>
 				{
 					var ourDocId = TextDocAdapter.From(request.TextDocument);

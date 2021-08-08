@@ -28,7 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
     // Otherwise the run options are used
     const serverOptions: ServerOptions = {
         run: { command: serverExe, args: [releaseServer, "true"], transport: TransportKind.pipe },
-        debug: { command: serverExe, args: [debugServer, "false"], transport: TransportKind.pipe, runtime: "" }
+        debug: { command: serverExe, args: [debugServer, "true"], transport: TransportKind.pipe, runtime: "" }
+        // comment above, uncomment below if you want to debug the server:
+        // debug: { command: serverExe, args: [debugServer, "false"], transport: TransportKind.pipe, runtime: "" }
     };
 
     // Options to control the language client

@@ -1,0 +1,5 @@
+[
+	"SdkNetCoreProjectWithReference\\SdkNetCoreProjectWithReference\\SdkNetCoreProjectWithReference.c#proj",
+	"SdkNetCoreProjectWithReference\\SdkNetStandardProject\\SdkNetStandardProject.c#proj",
+	"SdkNetCoreProjectWithReference\\SdkNetStandardProjectWithPackageReference\\SdkNetStandardProjectWithPackageReference.c#proj"
+]

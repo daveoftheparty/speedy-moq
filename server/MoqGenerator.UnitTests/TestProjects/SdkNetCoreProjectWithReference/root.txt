@@ -1,0 +1,1 @@
+SdkNetCoreProjectWithReference\SdkNetCoreProjectWithReference.c#proj
