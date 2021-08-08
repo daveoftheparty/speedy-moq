@@ -28,7 +28,7 @@ While in a test file, type out the name of the interface you wish to generate co
     └── Demo.sln                       (sln not necessary)
 ```
 - If you don't get the codefix (the lightbulb), it may be one of these reasons:
-	- Extension isn't ready yet. It may take up to 10 seconds to read your code and prepare suggestions from the time a .cs file is first opened in the IDE. It's in the backlog to try to make that part faster.
+	- Extension isn't ready yet. It may take 3-5 seconds to read your code and prepare suggestions from the time a .cs file is first opened in the IDE.
 	- Your interface name is misspelled.
 	- Your test project does not yet reference the project where the interface is declared.
 	- The extension doesn't recognize the file you are editing as a test file. Currently test file detection is a simple matter of looking to see if any of these statements appear in your .cs file. If the extension is missing a test framework, please let me know.
@@ -41,4 +41,4 @@ While in a test file, type out the name of the interface you wish to generate co
 
 _\* I reserve the right to change the prompt from `Generate Moq Setups` to something more fun, or "on-brand"... just sayin'_
 
-Happy Testing! ✔
+✔ Happy Testing!
