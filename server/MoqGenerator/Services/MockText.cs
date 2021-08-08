@@ -24,12 +24,15 @@ namespace MoqGenerator.Services
 
 		public string GetMockText(string interfaceName, IndentationConfig indentationConfig)
 		{
-			var definition = _interfaceStore.GetInterfaceDefinition(interfaceName);
-			if(definition == null)
+			var namespaceDict = _interfaceStore.GetInterfaceDefinitionByNamespace(interfaceName);
+			if(namespaceDict == null)
 			{
 				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
 				return (string)null;
 			}
+
+			#warning: this is temporary during refactoring!!!
+			var definition = namespaceDict.Values.First();
 
 			/*
 

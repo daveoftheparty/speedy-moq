@@ -1,9 +1,0 @@
-{
-	"InterfaceName": "Foo.IConfigProps",
-	"SourceFile": "",
-	"Methods": [],
-	"Properties": [
-		"SomeUrl",
-		"SomeDate"
-	]
-}

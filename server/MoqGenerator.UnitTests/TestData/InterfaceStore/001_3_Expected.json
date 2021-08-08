@@ -1,0 +1,11 @@
+{
+	"Foo": {
+		"InterfaceName": "IConfigProps",
+		"SourceFile": "",
+		"Methods": [],
+		"Properties": [
+			"SomeUrl",
+			"SomeDate"
+		]
+	}
+}
