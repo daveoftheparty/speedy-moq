@@ -20,14 +20,11 @@ namespace MoqGenerator.UnitTests
 			var handler = new ProjectHandler(logger);
 
 			var testProjectsPath = GetTestProjectsPath();
-#warning need to "normalize" all path separators here to a single char for a proper cross-platform assert, or, do we need to do that in IProjectHandler??
 			CollectionAssert.AreEquivalent(
 				tests.expectedProjects.Select(e => testProjectsPath + e),
 				handler.GetProjectAndProjectReferences(tests.rootCsProj),
 				tests.testIdMessage);
 		}
-		
-#warning add tests with folder structures... projects in subfolders, etc...
 
 		public static string GetTestProjectsPath()
 		{
