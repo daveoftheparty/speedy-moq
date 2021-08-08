@@ -98,49 +98,6 @@ namespace MoqGenerator.Services
 		}
 
 
-		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
-		{
-			// the csProj may or may not have been loaded already. if it's in our HashSet, no reason to load,
-			// because we'll detect changes on individual files with the LoadCsInterfaceIfNecessaryAsync method
-
-			var csProjPath = _projectHandler.GetCsProjFromCsFile(textDocItem.Identifier.Uri);
-			if(csProjPath != null && !_csProjectsAlreadyLoaded.Contains(csProjPath))
-				await LoadCSProjAsync(csProjPath);
-		}
-
-		private (IReadOnlyList<string> projects, AdhocWorkspace workspace) GetProjectsAndWorkspace(string csProjPath)
-		{
-			var manager = new AnalyzerManager();
-			var workspace = new AdhocWorkspace();
-			var projectsAdded = new List<string>();
-
-			var buildWatch = new Stopwatch();
-			var addToWorkspaceWatch = new Stopwatch();
-
-			var projects = _projectHandler.GetProjectAndProjectReferences(csProjPath);
-
-			foreach(var projectName in projects)
-			{
-				if(projectsAdded.Contains(projectName))
-					break;
-
-				buildWatch.Start();
-				var project = manager.GetProject(projectName);
-				buildWatch.Stop();
-
-				addToWorkspaceWatch.Start();
-				project.AddToWorkspace(workspace);
-				addToWorkspaceWatch.Stop();
-
-				projectsAdded.Add(projectName);
-			}
-
-			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
-			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
-			
-			return (projectsAdded, workspace);
-		}
-
 		private async Task LoadCSProjAsync(string csProjPath)
 		{
 
@@ -175,34 +132,6 @@ namespace MoqGenerator.Services
 				LogDefinitions(nameof(LoadCSProjAsync));
 		}
 
-
-		private Dictionary<string, InterfaceDefinition> GetInterfaceDefinitionsByName(List<SemanticModel> models)
-		{
-			var methods = GetInterfaceMethods(models);
-			var properties = GetInterfacePropertiesByName(models);
-
-			// merge the two dictionaries
-			var result = new Dictionary<string, InterfaceDefinition>();
-
-			var allKeys = methods.Keys.Concat(properties.Keys);
-
-			foreach (var key in allKeys)
-			{
-				if(methods.TryGetValue(key, out var methodDef))
-				{
-					if(properties.TryGetValue(key, out var propDef))
-					{
-						result[key] = methodDef with { Properties = propDef.Properties };
-					}
-					else
-						result[key] = methodDef;
-				}
-				else
-					result[key] = properties[key];
-			}
-
-			return result;
-		}
 
 		private Dictionary<string, InterfaceDefinition> GetInterfaceMethods(List<SemanticModel> models)
 		{
@@ -263,6 +192,7 @@ namespace MoqGenerator.Services
 				.ToDictionary(pair => pair.InterfaceName, pair => pair.InterfaceDefinition);
 		}
 
+
 		private Dictionary<string, InterfaceDefinition> GetInterfacePropertiesByName(List<SemanticModel> models)
 		{
 			return models
@@ -297,6 +227,78 @@ namespace MoqGenerator.Services
 		}
 
 
+		private Dictionary<string, InterfaceDefinition> GetInterfaceDefinitionsByName(List<SemanticModel> models)
+		{
+			var methods = GetInterfaceMethods(models);
+			var properties = GetInterfacePropertiesByName(models);
+
+			// merge the two dictionaries
+			var result = new Dictionary<string, InterfaceDefinition>();
+
+			var allKeys = methods.Keys.Concat(properties.Keys);
+
+			foreach (var key in allKeys)
+			{
+				if(methods.TryGetValue(key, out var methodDef))
+				{
+					if(properties.TryGetValue(key, out var propDef))
+					{
+						result[key] = methodDef with { Properties = propDef.Properties };
+					}
+					else
+						result[key] = methodDef;
+				}
+				else
+					result[key] = properties[key];
+			}
+
+			return result;
+		}
+
+
+		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
+		{
+			// the csProj may or may not have been loaded already. if it's in our HashSet, no reason to load,
+			// because we'll detect changes on individual files with the LoadCsInterfaceIfNecessaryAsync method
+
+			var csProjPath = _projectHandler.GetCsProjFromCsFile(textDocItem.Identifier.Uri);
+			if(csProjPath != null && !_csProjectsAlreadyLoaded.Contains(csProjPath))
+				await LoadCSProjAsync(csProjPath);
+		}
+
+
+		private (IReadOnlyList<string> projects, AdhocWorkspace workspace) GetProjectsAndWorkspace(string csProjPath)
+		{
+			var manager = new AnalyzerManager();
+			var workspace = new AdhocWorkspace();
+			var projectsAdded = new List<string>();
+
+			var buildWatch = new Stopwatch();
+			var addToWorkspaceWatch = new Stopwatch();
+
+			var projects = _projectHandler.GetProjectAndProjectReferences(csProjPath);
+
+			foreach(var projectName in projects)
+			{
+				if(projectsAdded.Contains(projectName))
+					break;
+
+				buildWatch.Start();
+				var project = manager.GetProject(projectName);
+				buildWatch.Stop();
+
+				addToWorkspaceWatch.Start();
+				project.AddToWorkspace(workspace);
+				addToWorkspaceWatch.Stop();
+
+				projectsAdded.Add(projectName);
+			}
+
+			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
+			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
+			
+			return (projectsAdded, workspace);
+		}
 
 
 		private void LogDefinitions(string v)
