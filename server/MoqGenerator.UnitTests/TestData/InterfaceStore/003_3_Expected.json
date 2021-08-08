@@ -1,56 +1,26 @@
 {
-	"Foo": {
-		"InterfaceName": "ISomeMagicSauce",
+	"bugrepro": {
+		"InterfaceName": "IThing",
 		"SourceFile": "",
 		"Methods": [
 			{
-			"MethodName": "Boom",
-			"ReturnType": "void",
-			"Parameters": [
-				{
-				"ParameterType": "DateTime?",
-				"ParameterName": "someNullableTimeSlice",
-				"ParameterDefinition": "DateTime? someNullableTimeSlice"
-				}
-			]
-			},
-			{
-			"MethodName": "ReturnSomeTuple",
-			"ReturnType": "(string hello, bool valid)",
-			"Parameters": [
-				{
-				"ParameterType": "char",
-				"ParameterName": "c",
-				"ParameterDefinition": "char c"
-				}
-			]
-			},
-			{
-			"MethodName": "Exists",
-			"ReturnType": "bool",
-			"Parameters": [
-				{
-				"ParameterType": "string",
-				"ParameterName": "interfaceName",
-				"ParameterDefinition": "string interfaceName"
-				}
-			]
-			},
-			{
-			"MethodName": "GetStuffAsync",
-			"ReturnType": "Task<IEnumerable<double>>",
-			"Parameters": [
-				{
-				"ParameterType": "IReadOnlyDictionary<int, IEnumerable<double>>",
-				"ParameterName": "transformData",
-				"ParameterDefinition": "IReadOnlyDictionary<int, IEnumerable<double>> transformData"
-				}
-			]
+				"MethodName": "DoThing",
+				"ReturnType": "void",
+				"Parameters": []
 			}
 		],
-		"Properties": [
-			"SomeUrl",
-			"SomeDate"
-		]
+		"Properties": []
+	},
+	"bugrepro.Tests": {
+		"InterfaceName": "IThing",
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "OtherThing",
+				"ReturnType": "void",
+				"Parameters": []
+			}
+		],
+		"Properties": []
 	}
 }
