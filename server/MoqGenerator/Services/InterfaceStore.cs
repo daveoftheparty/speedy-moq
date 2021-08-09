@@ -136,7 +136,7 @@ namespace MoqGenerator.Services
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceMethods(List<SemanticModel> models)
 		{
-			return models
+			var interfaceGroups = models
 				.Select(semanticModel => new
 				{
 					Model = semanticModel,
@@ -153,7 +153,7 @@ namespace MoqGenerator.Services
 						.Select(method =>
 							new
 							{
-								Namespace = node.Model.GetDeclaredSymbol(method).ContainingNamespace.Name,
+								Namespace = node.Model.GetDeclaredSymbol(method.Parent)?.ContainingSymbol?.ToString(),
 								InterfaceName = node.Model.GetDeclaredSymbol(method.Parent).Name,
 								SourceFile = method.Parent.SyntaxTree.FilePath,
 								MethodName = method.Identifier.Text,
@@ -171,19 +171,23 @@ namespace MoqGenerator.Services
 							}
 						)
 				)
-				.GroupBy(x => new { x.InterfaceName, x.Namespace })
-				.Select(grouping => new
+				.GroupBy(x => x.InterfaceName)
+				.ToList();
+
+			var dict = interfaceGroups
+				.Select(interfaceGroup => new
 				{
-					InterfaceName = grouping.Key.InterfaceName,
-					NamespaceDict = grouping
-					.GroupBy(justTheSpace => justTheSpace.Namespace)
-						.ToDictionary(
-							pair => pair.Key,
-							pair => new InterfaceDefinition
+					InterfaceName = interfaceGroup.Key,
+					NamespaceDict = interfaceGroup
+						.GroupBy(y => y.Namespace)
+						.Select(namespaceGroup => new
+						{
+							Namespace = namespaceGroup.Key,
+							InterfaceDefinition = new InterfaceDefinition
 							(
-								grouping.Key.InterfaceName,
-								grouping.First().SourceFile,
-								grouping
+								interfaceGroup.Key,
+								namespaceGroup.First().SourceFile,
+								namespaceGroup
 									.GroupBy(y => y.MethodName)
 									.Select(method => new InterfaceMethod
 									(
@@ -201,34 +205,17 @@ namespace MoqGenerator.Services
 									.ToList(),
 								new List<string>() // Properties, to be filled in by other method...
 							)
-
-						)
+						})
+						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
 				})
 				.ToDictionary(pair => pair.InterfaceName, pair => pair.NamespaceDict);
+
+			return dict;
 		}
 
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models)
 		{
-			// debuggin:
-			// var firstModel = models.First();
-			// var firstNode = firstModel
-			// 	.SyntaxTree
-			// 	.GetRoot()
-			// 	.DescendantNodes()
-			// 	.OfType<InterfaceDeclarationSyntax>()
-			// 	.First();
-			
-			// this throws exception:
-			// var namespaceName = firstModel.GetTypeInfo(firstNode).Type.ContainingNamespace.Name;
-
-			/*
-				this gets what we want...
-				firstModel.GetDeclaredSymbol(firstNode).ContainingNamespace.Name => "Foo"
-				firstModel.GetDeclaredSymbol(firstNode).Name => "IConfigProps"
-				firstModel.GetDeclaredSymbol(firstNode).ToString() => "Foo.IConfigProps"
-			*/
-
 			return models
 				.Select(semanticModel => new
 				{
