@@ -1,0 +1,51 @@
+namespace bugrepro
+{
+	public interface IThing
+	{
+		string AThingString { get; }
+	}
+
+	public class Tests
+	{
+		public interface IThing
+		{
+			string AnotherThingString { get; }
+		}
+	}
+}
+
+namespace bugrepro.Abc
+{
+	public interface IThing
+	{
+		string AThingString { get; }
+	}
+
+	public class Tests
+	{
+		public interface IThing
+		{
+			string AnotherThingString { get; }
+			void GetSomething();
+		}
+	}
+}
+
+namespace bugrepro.Abc.xyZ
+{
+	public interface IThing
+	{
+		string AThingString { get; }
+		void GetItByYourself();
+	}
+
+	public class Tests
+	{
+		public interface IThing
+		{
+			string AnotherThingString { get; }
+			void GetSomething();
+			void GetSomethingElse();
+		}
+	}
+}
