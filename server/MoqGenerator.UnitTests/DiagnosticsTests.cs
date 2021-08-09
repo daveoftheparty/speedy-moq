@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -27,10 +28,21 @@ namespace MoqGenerator.UnitTests
 				.Returns((string name) => name == "IStringAnalyzer");
 
 			var mockText = new Mock<IMockText>();
+
+			Expression<Func<IMockText, IReadOnlyDictionary<string, string>>> getMockTextByNamespace = x => x.GetMockTextByNamespace(It.IsAny<string>(), It.IsAny<IndentationConfig>());
 			mockText
-				.Setup(x => x.GetMockText(It.IsAny<string>(), It.IsAny<IndentationConfig>()))
-				.Returns("-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --")
-				;
+				.Setup(getMockTextByNamespace)
+				.Returns((string interfaceName, IndentationConfig indentationConfig) =>
+				{
+					return new Dictionary<string, string>
+					{
+						{
+							"Foo",
+							"-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
+						}
+					};
+				});
+
 
 			var mockIndentation = new Mock<IIndentation>();
 			mockIndentation

@@ -124,7 +124,7 @@ namespace MoqGenerator.Services
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						(IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>)dataDict
+						dataDict
 					);
 				})
 				.ToList()
@@ -143,7 +143,7 @@ namespace MoqGenerator.Services
 			return publishableDiagnostics;
 		}
 
-		private List<TextEdit> GetEdits(Model.Lsp.Range diagnosticRange, string mockedText, List<string> trimmedLines)
+		private IReadOnlyList<TextEdit> GetEdits(Model.Lsp.Range diagnosticRange, string mockedText, List<string> trimmedLines)
 		{
 			var result = new List<TextEdit>
 			{

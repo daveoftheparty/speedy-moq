@@ -14,33 +14,35 @@
     "Code": "SpeedyMoq001",
     "Source": "SpeedyMoq",
     "Message": "We can generate basic Moq code for you from this interface name!",
-    "Data": [
-      {
-        "Range": {
-          "start": {
-            "line": 9,
-            "character": 0
+    "Data": {
+      "Foo": [
+        {
+          "Range": {
+            "start": {
+              "line": 9,
+              "character": 0
+            },
+            "end": {
+              "line": 9,
+              "character": 18
+            }
           },
-          "end": {
-            "line": 9,
-            "character": 18
-          }
+          "NewText": "-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
         },
-        "NewText": "-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
-      },
-      {
-        "Range": {
-          "start": {
-            "line": 0,
-            "character": 0
+        {
+          "Range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 0
+            }
           },
-          "end": {
-            "line": 0,
-            "character": 0
-          }
-        },
-        "NewText": "using System;\r\nusing System.Linq.Expressions;\r\nusing Moq;\r\n"
-      }
-    ]
+          "NewText": "using System;\r\nusing System.Linq.Expressions;\r\nusing Moq;\r\n"
+        }
+      ]
+    }
   }
 ]
