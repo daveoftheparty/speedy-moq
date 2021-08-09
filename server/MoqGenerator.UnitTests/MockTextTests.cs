@@ -106,6 +106,59 @@ namespace MoqGenerator.UnitTests
 			{
 				{
 					/*
+					namespace Hello
+					{
+						public interface IShowUpInTwoPlaces
+						{
+							string SomeConfigValue { get; }
+						}
+					}
+
+					namespace World
+					{
+						public interface IShowUpInTwoPlaces
+						{
+							string AnotherConfigValue { get; }
+						}
+					}
+					*/
+					"IShowUpInTwoPlaces",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"Hello",
+							new InterfaceDefinition
+							(
+								"IShowUpInTwoPlaces",
+								"",
+								new List<InterfaceMethod>(),
+								new List<string>
+								{
+									"SomeConfigValue"
+								}
+							)
+						},
+
+						{
+							"World",
+							new InterfaceDefinition
+							(
+								"IShowUpInTwoPlaces",
+								"",
+								new List<InterfaceMethod>(),
+								new List<string>
+								{
+									"AnotherConfigValue"
+								}
+							)
+						},
+					}
+				},
+
+
+
+				{
+					/*
 						public interface IStringAnalyzer
 						{
 							int HowManyItems(string patient, char charToCount);
