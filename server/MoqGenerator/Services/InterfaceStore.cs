@@ -216,7 +216,7 @@ namespace MoqGenerator.Services
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models)
 		{
-			return models
+			var interfaceGroups = models
 				.Select(semanticModel => new
 				{
 					Model = semanticModel,
@@ -233,29 +233,38 @@ namespace MoqGenerator.Services
 						.Properties
 						.Select(prop => new 
 						{
-							Namespace = node.Model.GetDeclaredSymbol(prop).ContainingNamespace.Name,
+							Namespace = node.Model.GetDeclaredSymbol(prop.Parent)?.ContainingSymbol?.ToString(),
 							InterfaceName = node.Model.GetDeclaredSymbol(prop.Parent).Name,
 							SourceFile = prop.Parent.SyntaxTree.FilePath,
 							PropertyName = prop.Identifier.Text
 						})
 				)
-				.GroupBy(x => new { x.InterfaceName, x.Namespace })
-				.Select(grouping => new
+				.GroupBy(x => x.InterfaceName)
+				.ToList();
+
+			var dict = interfaceGroups
+				.Select(interfaceGroup => new
 				{
-					InterfaceName = grouping.Key.InterfaceName,
-					NamespaceDict = grouping
-						.GroupBy(justTheSpace => justTheSpace.Namespace)
-						.ToDictionary(
-							pair => pair.Key,
-							pair => new InterfaceDefinition
+					InterfaceName = interfaceGroup.Key,
+					NamespaceDict = interfaceGroup
+						.GroupBy(y => y.Namespace)
+						.Select(namespaceGroup => new
+						{
+							Namespace = namespaceGroup.Key,
+							InterfaceDefinition = new InterfaceDefinition
 							(
-								grouping.Key.InterfaceName,
-								grouping.First().SourceFile,
+								interfaceGroup.Key,
+								namespaceGroup.First().SourceFile,
 								new List<InterfaceMethod>(), // methods to be filled in by other method...
-								grouping.Select(p => p.PropertyName).ToList()
-							))
+								namespaceGroup.Select(p => p.PropertyName).ToList()
+							)
+						})
+						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
+
 				})
 				.ToDictionary(pair => pair.InterfaceName, pair => pair.NamespaceDict);
+			
+			return dict;
 		}
 
 

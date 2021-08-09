@@ -1,0 +1,18 @@
+{
+	"bugrepro": {
+		"InterfaceName": "IThing",
+		"SourceFile": "",
+		"Methods": [],
+		"Properties": [
+			"AThingString"
+		]
+	},
+	"bugrepro.Tests": {
+		"InterfaceName": "IThing",
+		"SourceFile": "",
+		"Methods": [],
+		"Properties": [
+			"AnotherThingString"
+		]
+	}
+}
