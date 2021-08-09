@@ -22,6 +22,20 @@ namespace MoqGenerator.UnitTests
 			var input = test.testInputs[0];
 			var expected = JsonSerializer.Deserialize<IEnumerable<Diagnostic>>(test.testInputs[1]);
 
+			var mockReplacementDictionary = new Dictionary<string, string>
+			{
+				{
+					"Foo",
+					"-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
+				}
+			};
+
+			if(test.testInputs.Length == 3)
+			{
+				mockReplacementDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(test.testInputs[2]);
+			}
+
+
 			var interfaceStore = new Mock<IInterfaceStore>();
 			interfaceStore
 				.Setup(x => x.Exists(It.IsAny<string>()))
@@ -34,13 +48,7 @@ namespace MoqGenerator.UnitTests
 				.Setup(getMockTextByNamespace)
 				.Returns((string interfaceName, IndentationConfig indentationConfig) =>
 				{
-					return new Dictionary<string, string>
-					{
-						{
-							"Foo",
-							"-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
-						}
-					};
+					return mockReplacementDictionary;
 				});
 
 
