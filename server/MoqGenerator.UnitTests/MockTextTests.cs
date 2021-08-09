@@ -13,6 +13,7 @@ using MoqGenerator.Model;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Services;
 using MoqGenerator.UnitTests.Utils;
+using System.Text.Json;
 
 namespace MoqGenerator.UnitTests
 {
@@ -49,22 +50,28 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
+			// if(test.testIdMessage != "TestId: 001")
+			// 	return;
+
 			var interfaceName = test.testInputs[0];
-			var expected = test.testInputs[1];
+			var expected = JsonSerializer.Deserialize<Dictionary<string, string>>(test.testInputs[1]);
 
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
+			var actual = mockText.GetMockTextByNamespace(interfaceName, DefaultIndent());
 			
-			if(expected != actual)
+			try
+			{
+				CollectionAssert.AreEquivalent(expected, actual, test.testIdMessage);
+			}
+			catch
 			{
 				Console.WriteLine("Here's the actual output we got from MockText:");
-				Console.WriteLine(actual);
+				Console.WriteLine(JsonSerializer.Serialize(actual));
 			}
-			Assert.AreEqual(expected, actual, test.testIdMessage);
 		}
 
 

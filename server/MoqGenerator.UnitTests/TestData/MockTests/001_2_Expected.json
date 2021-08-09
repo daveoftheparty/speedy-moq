@@ -1,0 +1,3 @@
+{
+	"FooNamespace" : "\t\t\tvar stringAnalyzer = new Mock<IStringAnalyzer>();\r\n\t\t\tExpression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());\r\n\t\t\tstringAnalyzer\r\n\t\t\t\t.Setup(howManyItems)\r\n\t\t\t\t.Returns((string patient, char charToCount) =>\r\n\t\t\t\t{\r\n\t\t\t\t\treturn default;\r\n\t\t\t\t});\r\n\r\n\t\t\tstringAnalyzer.Verify(howManyItems, Times.Once);"
+}
