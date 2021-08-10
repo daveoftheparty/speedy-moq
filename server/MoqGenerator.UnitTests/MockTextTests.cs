@@ -31,9 +31,9 @@ namespace MoqGenerator.UnitTests
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
 			var interfaceName = "asdf";
-			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
+			var actual = mockText.GetMockTextByNamespace(interfaceName, DefaultIndent());
 			
-			Assert.IsNull(actual);
+			Assert.AreEqual(0, actual.Count);
 			Assert.IsTrue(
 				logMock
 					.LogEntries

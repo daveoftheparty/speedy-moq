@@ -22,24 +22,7 @@ namespace MoqGenerator.Services
 			_interfaceStore = interfaceStore;
 		}
 
-#warning: this is deprecated and should be removed (and from the interface)
-		public string GetMockText(string interfaceName, IndentationConfig indentationConfig)
-		{
-			var namespaceDict = _interfaceStore.GetInterfaceDefinitionByNamespace(interfaceName);
-			if(namespaceDict == null)
-			{
-				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
-				return (string)null;
-			}
 
-			#warning: this is temporary during refactoring!!!
-			var nsName = namespaceDict.Keys.First();
-			var definition = namespaceDict.Values.First();
-			return GetTextForDefinition(interfaceName, nsName, definition, indentationConfig);
-		}
-
-
-#warning: this isn't in the interface yet, and will replace the GetMockText() method once we've refactored all the way through
 		public IReadOnlyDictionary<string, string> GetMockTextByNamespace(string interfaceName, IndentationConfig indentationConfig)
 		{
 			var result = new Dictionary<string, string>();
@@ -60,6 +43,7 @@ namespace MoqGenerator.Services
 				})
 				.ToDictionary(pair => pair.Namespace, pair => pair.Text);
 		}
+
 
 		private string GetTextForDefinition(
 			string interfaceName,
@@ -224,6 +208,7 @@ namespace MoqGenerator.Services
 			watch.StopAndLogDebug(_logger, $"time to generate moq for namespace {namespaceName} and interface {interfaceName}: ");
 			return string.Join(Environment.NewLine, lines);
 		}
+
 
 		private string Camelify(string input)
 		{
