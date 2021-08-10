@@ -53,6 +53,9 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/InterfaceStore/"})]
 		public async Task GoAsync((string testIdMessage, string[] testInputs) test)
 		{
+			// if(test.testIdMessage != "TestId: 005")
+			// 	return;
+
 			var interfaceDict = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(test.testInputs[0]);
 			var inputText = test.testInputs[1];
 			var expected = JsonSerializer.Deserialize<Dictionary<string, InterfaceDefinition>>(test.testInputs[2]);
