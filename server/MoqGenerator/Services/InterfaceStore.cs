@@ -25,10 +25,13 @@ namespace MoqGenerator.Services
 		public Dictionary<string, InterfaceDefinition> GetInterfaceDefinitionByNamespace(string interfaceName)
 		{
 			_definitionsByNameSpaceByInterface.TryGetValue(interfaceName, out var result);
-			#warning fix up this log statement:
-			// _logger.LogDebug($"{nameof(GetInterfaceDefinitionByNamespace)} is looking for interfaceName {interfaceName}." +
-			// 	$" Interfaces loaded: {string.Join('|', _definitionsByNameSpaceByInterface.Keys)}." +
-			// 	$" Interface Source file:{result?.SourceFile ?? "not found"}");
+
+			if(result == null)
+				_logger.LogWarning(
+					$"{nameof(GetInterfaceDefinitionByNamespace)} is looking for interfaceName {interfaceName}." +
+					$" Interfaces loaded: {{GetInterfacesForLogging()}}."
+				);
+
 			return result;
 		}
 
@@ -370,11 +373,23 @@ namespace MoqGenerator.Services
 		}
 
 
+		private string GetInterfacesForLogging()
+		{
+			return 
+				Environment.NewLine + 
+				string.Join(Environment.NewLine,
+					_definitionsByNameSpaceByInterface
+						.SelectMany(entry => entry
+						.Value
+						.Select(nsPair => $"{nsPair.Key}.{entry.Key} : {nsPair.Value.SourceFile}")
+					)
+				);
+		}
+
 		private void LogDefinitions(string v)
 		{
-			#warning this logging probably needs to change, and also, we should just dump the whole dict (serialized?)
 			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. CsProjs loaded: {string.Join('|', _csProjectsAlreadyLoaded)}");
-			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {string.Join('|', _definitionsByNameSpaceByInterface.Keys)}");
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {GetInterfacesForLogging()}");
 		}
 	}
 }
