@@ -73,8 +73,8 @@ namespace MoqGenerator.IntegrationTests
 				)
 			);
 
-			Assert.IsNotNull(store.GetInterfaceDefinition("IStringAnalyzer"));
-			Assert.IsNotNull(store.GetInterfaceDefinition("ISomeMagicSauce"));
+			Assert.IsNotNull(store.GetInterfaceDefinitionByNamespace("IStringAnalyzer"));
+			Assert.IsNotNull(store.GetInterfaceDefinitionByNamespace("ISomeMagicSauce"));
 
 			Console.WriteLine("InterfaceStore Logger entries:");
 			storeLogger.LogEntries.ForEach(e => Console.WriteLine(e.ToString()));

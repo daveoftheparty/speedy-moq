@@ -1,0 +1,3 @@
+{
+	"FooNamespace" : "\t\t\tvar wassupNull = new Mock<IWassupNull>();\r\n\t\t\tExpression<Action<IWassupNull>> boom = x => x.Boom(It.IsAny<DateTime?>());\r\n\t\t\twassupNull\r\n\t\t\t\t.Setup(boom)\r\n\t\t\t\t.Callback((DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls) =>\r\n\t\t\t\t{\r\n\t\t\t\t\treturn;\r\n\t\t\t\t});\r\n\r\n\t\t\twassupNull.Verify(boom, Times.Once);"
+}

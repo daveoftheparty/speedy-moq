@@ -13,6 +13,7 @@ using MoqGenerator.Model;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Services;
 using MoqGenerator.UnitTests.Utils;
+using System.Text.Json;
 
 namespace MoqGenerator.UnitTests
 {
@@ -23,16 +24,16 @@ namespace MoqGenerator.UnitTests
 		public void NoInterfaceDefinitionShouldLog()
 		{
 			var logMock = new LoggerDouble<MockText>();
-			var storeMock = GetInterfaceStoreMock(new Dictionary<string, InterfaceDefinition>
+			var storeMock = GetInterfaceStoreMock(new Dictionary<string, Dictionary<string, InterfaceDefinition>>
 			{
 			});
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
 			var interfaceName = "asdf";
-			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
+			var actual = mockText.GetMockTextByNamespace(interfaceName, DefaultIndent());
 			
-			Assert.IsNull(actual);
+			Assert.AreEqual(0, actual.Count);
 			Assert.IsTrue(
 				logMock
 					.LogEntries
@@ -49,22 +50,28 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
+			// if(test.testIdMessage != "TestId: 001")
+			// 	return;
+
 			var interfaceName = test.testInputs[0];
-			var expected = test.testInputs[1];
+			var expected = JsonSerializer.Deserialize<Dictionary<string, string>>(test.testInputs[1]);
 
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var actual = mockText.GetMockText(interfaceName, DefaultIndent());
+			var actual = mockText.GetMockTextByNamespace(interfaceName, DefaultIndent());
 			
-			if(expected != actual)
+			try
+			{
+				CollectionAssert.AreEquivalent(expected, actual, test.testIdMessage);
+			}
+			catch
 			{
 				Console.WriteLine("Here's the actual output we got from MockText:");
-				Console.WriteLine(actual);
+				Console.WriteLine(JsonSerializer.Serialize(actual));
 			}
-			Assert.AreEqual(expected, actual, test.testIdMessage);
 		}
 
 
@@ -73,12 +80,12 @@ namespace MoqGenerator.UnitTests
 		private
 		(
 			Mock<IInterfaceStore> mock,
-			Expression<Func<IInterfaceStore, InterfaceDefinition>> getDefinition
-		) GetInterfaceStoreMock(Dictionary<string, InterfaceDefinition> defsByName)
+			Expression<Func<IInterfaceStore, Dictionary<string, InterfaceDefinition>>> getDefinition
+		) GetInterfaceStoreMock(Dictionary<string, Dictionary<string, InterfaceDefinition>> defsByName)
 		{
 			var logged = new List<string>();
 			var mock = new Mock<IInterfaceStore>();
-			Expression<Func<IInterfaceStore, InterfaceDefinition>> getDefinition = x => x.GetInterfaceDefinition(It.IsAny<string>());
+			Expression<Func<IInterfaceStore, Dictionary<string, InterfaceDefinition>>> getDefinition = x => x.GetInterfaceDefinitionByNamespace(It.IsAny<string>());
 			mock
 				.Setup(getDefinition)
 				.Returns((string name) => 
@@ -93,10 +100,63 @@ namespace MoqGenerator.UnitTests
 
 
 
-		private Dictionary<string, InterfaceDefinition> GetInterfaceDefinitions()
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitions()
 		{
-			return new Dictionary<string, InterfaceDefinition>
+			return new Dictionary<string, Dictionary<string, InterfaceDefinition>>
 			{
+				{
+					/*
+					namespace Hello
+					{
+						public interface IShowUpInTwoPlaces
+						{
+							string SomeConfigValue { get; }
+						}
+					}
+
+					namespace World
+					{
+						public interface IShowUpInTwoPlaces
+						{
+							string AnotherConfigValue { get; }
+						}
+					}
+					*/
+					"IShowUpInTwoPlaces",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"Hello",
+							new InterfaceDefinition
+							(
+								"IShowUpInTwoPlaces",
+								"",
+								new List<InterfaceMethod>(),
+								new List<string>
+								{
+									"SomeConfigValue"
+								}
+							)
+						},
+
+						{
+							"World",
+							new InterfaceDefinition
+							(
+								"IShowUpInTwoPlaces",
+								"",
+								new List<InterfaceMethod>(),
+								new List<string>
+								{
+									"AnotherConfigValue"
+								}
+							)
+						},
+					}
+				},
+
+
+
 				{
 					/*
 						public interface IStringAnalyzer
@@ -105,27 +165,33 @@ namespace MoqGenerator.UnitTests
 						}
 					*/
 					"IStringAnalyzer",
-					new InterfaceDefinition
-					(
-						"IStringAnalyzer",
-						"IStringAnalyzer.cs",
-						new List<InterfaceMethod>
+					new Dictionary<string, InterfaceDefinition>
+					{
 						{
-							{
-								new InterfaceMethod
-								(
-									"HowManyItems",
-									"int",
-									new List<InterfaceMethodParameter>
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IStringAnalyzer",
+								"IStringAnalyzer.cs",
+								new List<InterfaceMethod>
+								{
 									{
-										new InterfaceMethodParameter("string", "patient", "string patient"),
-										new InterfaceMethodParameter("char", "charToCount", "char charToCount"),
+										new InterfaceMethod
+										(
+											"HowManyItems",
+											"int",
+											new List<InterfaceMethodParameter>
+											{
+												new InterfaceMethodParameter("string", "patient", "string patient"),
+												new InterfaceMethodParameter("char", "charToCount", "char charToCount"),
+											}
+										)
 									}
-								)
-							}
-						},
-						new List<string>()
-					)
+								},
+								new List<string>()
+							)
+						}
+					}
 				},
 
 
@@ -138,26 +204,32 @@ namespace MoqGenerator.UnitTests
 					}
 					*/
 					"INotSoSimple",
-					new InterfaceDefinition
-					(
-						"INotSoSimple",
-						"INotSoSimple.cs",
-						new List<InterfaceMethod>
+					new Dictionary<string, InterfaceDefinition>
+					{
 						{
-							{
-								new InterfaceMethod
-								(
-									"GetStuffAsync",
-									"Task<IEnumerable<SomeUserOutput>>",
-									new List<InterfaceMethodParameter>
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"INotSoSimple",
+								"INotSoSimple.cs",
+								new List<InterfaceMethod>
+								{
 									{
-										new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<SomeUserInput>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData"),
+										new InterfaceMethod
+										(
+											"GetStuffAsync",
+											"Task<IEnumerable<SomeUserOutput>>",
+											new List<InterfaceMethodParameter>
+											{
+												new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<SomeUserInput>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData"),
+											}
+										)
 									}
-								)
-							}
-						},
-						new List<string>()
-					)
+								},
+								new List<string>()
+							)
+						}
+					}
 				},
 
 
@@ -170,26 +242,32 @@ namespace MoqGenerator.UnitTests
 					}
 					*/
 					"IWassupNull",
-					new InterfaceDefinition
-					(
-						"IWassupNull",
-						"IWassupNull.cs",
-						new List<InterfaceMethod>
+					new Dictionary<string, InterfaceDefinition>
+					{
 						{
-							{
-								new InterfaceMethod
-								(
-									"Boom",
-									"void",
-									new List<InterfaceMethodParameter>
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IWassupNull",
+								"IWassupNull.cs",
+								new List<InterfaceMethod>
+								{
 									{
-										new InterfaceMethodParameter("DateTime?", "mostFuLlStAcKeNgInEeRsTooStupidForNulls", "DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls"),
+										new InterfaceMethod
+										(
+											"Boom",
+											"void",
+											new List<InterfaceMethodParameter>
+											{
+												new InterfaceMethodParameter("DateTime?", "mostFuLlStAcKeNgInEeRsTooStupidForNulls", "DateTime? mostFuLlStAcKeNgInEeRsTooStupidForNulls"),
+											}
+										)
 									}
-								)
-							}
-						},
-						new List<string>()
-					)
+								},
+								new List<string>()
+							)
+						}
+					}
 				},
 
 
@@ -202,26 +280,32 @@ namespace MoqGenerator.UnitTests
 					}
 					*/
 					"IMakeTupleYay",
-					new InterfaceDefinition
-					(
-						"IMakeTupleYay",
-						"IMakeTupleYay.cs",
-						new List<InterfaceMethod>
+					new Dictionary<string, InterfaceDefinition>
+					{
 						{
-							{
-								new InterfaceMethod
-								(
-									"YouDontSay",
-									"(string hello, bool valid)",
-									new List<InterfaceMethodParameter>
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IMakeTupleYay",
+								"IMakeTupleYay.cs",
+								new List<InterfaceMethod>
+								{
 									{
-										new InterfaceMethodParameter("char", "c", "char c"),
+										new InterfaceMethod
+										(
+											"YouDontSay",
+											"(string hello, bool valid)",
+											new List<InterfaceMethodParameter>
+											{
+												new InterfaceMethodParameter("char", "c", "char c"),
+											}
+										)
 									}
-								)
-							}
-						},
-						new List<string>()
-					)
+								},
+								new List<string>()
+							)
+						}
+					}
 				},
 
 
@@ -240,58 +324,64 @@ namespace MoqGenerator.UnitTests
 					}
 					*/
 					"ISomeMagicSauce",
-					new InterfaceDefinition
-					(
-						"ISomeMagicSauce",
-						"",
-						new List<InterfaceMethod>
+					new Dictionary<string, InterfaceDefinition>
+					{
 						{
-							new InterfaceMethod
+							"FooNamespace",
+							new InterfaceDefinition
 							(
-								"Boom",
-								"void",
-								new List<InterfaceMethodParameter>
+								"ISomeMagicSauce",
+								"",
+								new List<InterfaceMethod>
 								{
-									new InterfaceMethodParameter("DateTime?", "someNullableTimeSlice", "DateTime? someNullableTimeSlice"),
-								}
-							),
+									new InterfaceMethod
+									(
+										"Boom",
+										"void",
+										new List<InterfaceMethodParameter>
+										{
+											new InterfaceMethodParameter("DateTime?", "someNullableTimeSlice", "DateTime? someNullableTimeSlice"),
+										}
+									),
 
-							new InterfaceMethod
-							(
-								"ReturnSomeTuple",
-								"(string hello, bool valid)",
-								new List<InterfaceMethodParameter>
-								{
-									new InterfaceMethodParameter("char", "c", "char c"),
-								}
-							),
-							
-							new InterfaceMethod
-							(
-								"Exists",
-								"bool",
-								new List<InterfaceMethodParameter>
-								{
-									new InterfaceMethodParameter("string", "interfaceName", "string interfaceName"),
-								}
-							),
+									new InterfaceMethod
+									(
+										"ReturnSomeTuple",
+										"(string hello, bool valid)",
+										new List<InterfaceMethodParameter>
+										{
+											new InterfaceMethodParameter("char", "c", "char c"),
+										}
+									),
+									
+									new InterfaceMethod
+									(
+										"Exists",
+										"bool",
+										new List<InterfaceMethodParameter>
+										{
+											new InterfaceMethodParameter("string", "interfaceName", "string interfaceName"),
+										}
+									),
 
-							new InterfaceMethod
-							(
-								"GetStuffAsync",
-								"Task<IEnumerable<double>>",
-								new List<InterfaceMethodParameter>
+									new InterfaceMethod
+									(
+										"GetStuffAsync",
+										"Task<IEnumerable<double>>",
+										new List<InterfaceMethodParameter>
+										{
+											new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<double>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<double>> transformData"),
+										}
+									),
+								},
+								new List<string>
 								{
-									new InterfaceMethodParameter("IReadOnlyDictionary<int, IEnumerable<double>>", "transformData", "IReadOnlyDictionary<int, IEnumerable<double>> transformData"),
+									"SomeUrl",
+									"SomeDate"
 								}
-							),
-						},
-						new List<string>
-						{
-							"SomeUrl",
-							"SomeDate"
+							)
 						}
-					)
+					}
 				},
 			};
 		}

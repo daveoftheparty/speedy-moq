@@ -1,0 +1,45 @@
+using System;
+using System.Linq.Expressions;
+using Moq;
+using NUnit.Framework;
+
+namespace bugrepro
+{
+	public interface IThing
+	{
+		void DoThing();
+	}
+
+	public class Tests
+	{
+		public interface IThing
+		{
+			void OtherThing();
+		}
+
+		[Test]
+		public void Test1()
+		{
+			var thing = new Mock<IThing>();
+
+			Expression<Action<IThing>> doThing = x => x.DoThing();
+			thing
+				.Setup(doThing)
+				.Callback(() =>
+				{
+					return;
+				});
+
+			Expression<Action<IThing>> otherThing = x => x.OtherThing();
+			thing
+				.Setup(otherThing)
+				.Callback(() =>
+				{
+					return;
+				});
+
+			thing.Verify(doThing, Times.Once);
+			thing.Verify(otherThing, Times.Once);
+		}
+	}
+}

@@ -1,0 +1,35 @@
+[
+	{
+		"Range": {
+			"start": {
+				"line": 18,
+				"character": 3
+			},
+			"end": {
+				"line": 18,
+				"character": 18
+			}
+		},
+		"Severity": 1,
+		"Code": "SpeedyMoq001",
+		"Source": "SpeedyMoq",
+		"Message": "We can generate basic Moq code for you from this interface name!",
+		"Data": {
+			"Foo" : [
+				{
+					"Range": {
+						"start": {
+							"line": 18,
+							"character": 0
+						},
+						"end": {
+							"line": 18,
+							"character": 18
+						}
+					},
+					"NewText": "-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
+				}
+			]
+		}
+	}
+]

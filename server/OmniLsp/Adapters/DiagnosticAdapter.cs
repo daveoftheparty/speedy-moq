@@ -26,17 +26,28 @@ namespace OmniLsp.Adapters
 					break;
 			}
 
+			// have to convert our TextEdit to Omni's version:
 			var omniData = diagnostic
 				.Data
-				.Select(te => new TextEdit
+				.Select(teByNamespace => new
 				{
-					Range = new Range(
-						(int)te.Range.start.line,
-						(int)te.Range.start.character,
-						(int)te.Range.end.line,
-						(int)te.Range.end.character),
-					NewText = te.NewText
-				});
+					NamespaceName = teByNamespace.Key,
+					Edits = teByNamespace
+						.Value
+						.Select(te => 
+							new TextEdit
+							{
+								Range = new Range(
+									(int)te.Range.start.line,
+									(int)te.Range.start.character,
+									(int)te.Range.end.line,
+									(int)te.Range.end.character),
+								NewText = te.NewText
+							}
+						)
+					}
+				)
+				.ToDictionary(pair => pair.NamespaceName, pair => pair.Edits);
 
 			return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic
 			{
@@ -84,7 +95,7 @@ namespace OmniLsp.Adapters
 				diagnostic.Code,
 				diagnostic.Source,
 				diagnostic.Message,
-				JsonSerializer.Deserialize<IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>(diagnostic.Data.ToString())
+				JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
 			);
 		}
 	}

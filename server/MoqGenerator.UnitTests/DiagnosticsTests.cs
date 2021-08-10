@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -21,16 +22,35 @@ namespace MoqGenerator.UnitTests
 			var input = test.testInputs[0];
 			var expected = JsonSerializer.Deserialize<IEnumerable<Diagnostic>>(test.testInputs[1]);
 
+			var mockReplacementDictionary = new Dictionary<string, string>
+			{
+				{
+					"Foo",
+					"-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --"
+				}
+			};
+
+			if(test.testInputs.Length == 3)
+			{
+				mockReplacementDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(test.testInputs[2]);
+			}
+
+
 			var interfaceStore = new Mock<IInterfaceStore>();
 			interfaceStore
 				.Setup(x => x.Exists(It.IsAny<string>()))
 				.Returns((string name) => name == "IStringAnalyzer");
 
 			var mockText = new Mock<IMockText>();
+
+			Expression<Func<IMockText, IReadOnlyDictionary<string, string>>> getMockTextByNamespace = x => x.GetMockTextByNamespace(It.IsAny<string>(), It.IsAny<IndentationConfig>());
 			mockText
-				.Setup(x => x.GetMockText(It.IsAny<string>(), It.IsAny<IndentationConfig>()))
-				.Returns("-- THIS WOULD BE THE GENERATED CODE, TESTED ELSEWHERE --")
-				;
+				.Setup(getMockTextByNamespace)
+				.Returns((string interfaceName, IndentationConfig indentationConfig) =>
+				{
+					return mockReplacementDictionary;
+				});
+
 
 			var mockIndentation = new Mock<IIndentation>();
 			mockIndentation

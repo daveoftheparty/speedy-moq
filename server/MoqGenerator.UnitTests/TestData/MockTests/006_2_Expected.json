@@ -1,0 +1,4 @@
+{
+	"Hello": "\t\t\tvar showUpInTwoPlaces = new Mock<IShowUpInTwoPlaces>();\r\n\t\t\tshowUpInTwoPlaces.SetupGet(x => x.SomeConfigValue).Returns(/* fill me in */);",
+	"World": "\t\t\tvar showUpInTwoPlaces = new Mock<IShowUpInTwoPlaces>();\r\n\t\t\tshowUpInTwoPlaces.SetupGet(x => x.AnotherConfigValue).Returns(/* fill me in */);"
+}

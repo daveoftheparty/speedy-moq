@@ -1,0 +1,26 @@
+{
+	"bugrepro": {
+		"InterfaceName": "IThing",
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "DoThing",
+				"ReturnType": "void",
+				"Parameters": []
+			}
+		],
+		"Properties": []
+	},
+	"bugrepro.Tests": {
+		"InterfaceName": "IThing",
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "OtherThing",
+				"ReturnType": "void",
+				"Parameters": []
+			}
+		],
+		"Properties": []
+	}
+}

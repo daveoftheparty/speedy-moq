@@ -1,0 +1,15 @@
+namespace bugrepro
+{
+	public interface IThing
+	{
+		string AThingString { get; }
+	}
+
+	public class Tests
+	{
+		public interface IThing
+		{
+			string AnotherThingString { get; }
+		}
+	}
+}

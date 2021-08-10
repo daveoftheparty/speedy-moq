@@ -22,15 +22,36 @@ namespace MoqGenerator.Services
 			_interfaceStore = interfaceStore;
 		}
 
-		public string GetMockText(string interfaceName, IndentationConfig indentationConfig)
+
+		public IReadOnlyDictionary<string, string> GetMockTextByNamespace(string interfaceName, IndentationConfig indentationConfig)
 		{
-			var definition = _interfaceStore.GetInterfaceDefinition(interfaceName);
-			if(definition == null)
+			var result = new Dictionary<string, string>();
+
+			var namespaceDict = _interfaceStore.GetInterfaceDefinitionByNamespace(interfaceName);
+			if(namespaceDict == null)
 			{
 				_logger.LogError($"Unable to retrieve interface definition for '{interfaceName}'.");
-				return (string)null;
+				return result;
 			}
 
+			return namespaceDict
+				.Keys
+				.Select(nsName => new
+				{
+					Namespace = nsName,
+					Text = GetTextForDefinition(interfaceName, nsName, namespaceDict[nsName], indentationConfig)
+				})
+				.ToDictionary(pair => pair.Namespace, pair => pair.Text);
+		}
+
+
+		private string GetTextForDefinition(
+			string interfaceName,
+			string namespaceName,
+			Model.InterfaceDefinition definition,
+			IndentationConfig indentationConfig
+		)
+		{
 			/*
 
 				given the interface method:
@@ -184,9 +205,10 @@ namespace MoqGenerator.Services
 				: l
 				);
 
-			watch.StopAndLogDebug(_logger, "time to generate moq: ");
+			watch.StopAndLogDebug(_logger, $"time to generate moq for namespace {namespaceName} and interface {interfaceName}: ");
 			return string.Join(Environment.NewLine, lines);
 		}
+
 
 		private string Camelify(string input)
 		{

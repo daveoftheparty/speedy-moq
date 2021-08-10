@@ -12,7 +12,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
-using OmniLsp.Adapters;
 using MoqGenerator.Interfaces.Lsp;
 
 namespace OmniLsp
@@ -49,28 +48,42 @@ namespace OmniLsp
 			var actions = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic?.Source != null)
 				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.Ordinal))
-				.Select(diagnostic =>
+				.Where(diagnostic => !string.IsNullOrWhiteSpace(diagnostic?.Data?.ToString()))
+				.Select(diagnostic => new
 				{
-					var ourDocId = TextDocAdapter.From(request.TextDocument);
-					var interfaceName = diagnostic.Data.ToString();
-
-					return new CommandOrCodeAction(new CodeAction
+					diagnostic,
+					edits = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>>(diagnostic.Data.ToString())
+				})
+				.SelectMany(
+					diagnostic => diagnostic.edits.Select(kvp =>
 					{
-						Title = MoqGenerator.Constants.CodeActionFixTitle,
-						Diagnostics = new [] { diagnostic },
-						Kind = CodeActionKind.QuickFix,
-						Edit = new WorkspaceEdit
-						{
-							Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+						var title = diagnostic.edits.Count > 1
+							? $"{MoqGenerator.Constants.CodeActionFixTitle} for namespace {kvp.Key}"
+							: MoqGenerator.Constants.CodeActionFixTitle
+							;
+
+						return new CommandOrCodeAction
+						(
+							new CodeAction
 							{
+								Title = title,
+								Diagnostics = new [] { diagnostic.diagnostic },
+								Kind = CodeActionKind.QuickFix,
+								Edit = new WorkspaceEdit
 								{
-									request.TextDocument.Uri,
-									JsonSerializer.Deserialize<IEnumerable<TextEdit>>(diagnostic.Data.ToString())
+									Changes = new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+									{
+										{
+											request.TextDocument.Uri,
+											kvp.Value
+										}
+									}
 								}
 							}
-						}
-					});
-				}).ToArray() ?? Array.Empty<CommandOrCodeAction>();
+						);
+					})
+				)
+				.ToArray() ?? Array.Empty<CommandOrCodeAction>();
 
 
 			actions

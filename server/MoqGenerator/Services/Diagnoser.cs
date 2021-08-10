@@ -107,7 +107,15 @@ namespace MoqGenerator.Services
 				.Select(loadable =>
 				{
 					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange);
-					var mockedText = _mockText.GetMockText(loadable.candidateInterface, config);
+					var mockedTextByNamespace = _mockText.GetMockTextByNamespace(loadable.candidateInterface, config);
+
+					var dataDict = mockedTextByNamespace
+						.Select(pair => new
+						{
+							NamespaceName = pair.Key,
+							Text = GetEdits(loadable.diagnosticRange, pair.Value, lines)
+						})
+						.ToDictionary(textByNs => textByNs.NamespaceName, textByNs => textByNs.Text);
 
 					return new Diagnostic
 					(
@@ -116,7 +124,7 @@ namespace MoqGenerator.Services
 						Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						GetEdits(loadable.diagnosticRange, mockedText, lines)
+						dataDict
 					);
 				})
 				.ToList()
@@ -135,7 +143,7 @@ namespace MoqGenerator.Services
 			return publishableDiagnostics;
 		}
 
-		private List<TextEdit> GetEdits(Model.Lsp.Range diagnosticRange, string mockedText, List<string> trimmedLines)
+		private IReadOnlyList<TextEdit> GetEdits(Model.Lsp.Range diagnosticRange, string mockedText, List<string> trimmedLines)
 		{
 			var result = new List<TextEdit>
 			{

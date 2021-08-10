@@ -22,12 +22,16 @@ namespace MoqGenerator.Services
 	public class InterfaceStore : IInterfaceStore
 	{
 		#region IInterfaceStore
-		public InterfaceDefinition GetInterfaceDefinition(string interfaceName)
+		public Dictionary<string, InterfaceDefinition> GetInterfaceDefinitionByNamespace(string interfaceName)
 		{
-			_definitionsByInterfaceName.TryGetValue(interfaceName, out var result);
-			_logger.LogDebug($"{nameof(GetInterfaceDefinition)} is looking for interfaceName {interfaceName}." +
-				$" Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}." +
-				$" Interface Source file:{result?.SourceFile ?? "not found"}");
+			_definitionsByNameSpaceByInterface.TryGetValue(interfaceName, out var result);
+
+			if(result == null)
+				_logger.LogWarning(
+					$"{nameof(GetInterfaceDefinitionByNamespace)} is looking for interfaceName {interfaceName}." +
+					$" Interfaces loaded: {{GetInterfacesForLogging()}}."
+				);
+
 			return result;
 		}
 
@@ -41,11 +45,11 @@ namespace MoqGenerator.Services
 			await Task.WhenAll(csProjTask, csInterfaceFileTask);
 		}
 
-		public bool Exists(string interfaceName) => _definitionsByInterfaceName.ContainsKey(interfaceName);
+		public bool Exists(string interfaceName) => _definitionsByNameSpaceByInterface.ContainsKey(interfaceName);
 
 		#endregion IInterfaceStore
 
-		private readonly Dictionary<string, InterfaceDefinition> _definitionsByInterfaceName = new();
+		private readonly Dictionary<string, Dictionary<string, InterfaceDefinition>> _definitionsByNameSpaceByInterface = new();
 		private readonly HashSet<string> _csProjectsAlreadyLoaded = new();
 		private readonly ILogger<InterfaceStore> _logger;
 		private readonly string _thisInstance = Guid.NewGuid().ToString();
@@ -85,7 +89,7 @@ namespace MoqGenerator.Services
 
 			foreach(var definition in definitions)
 			{
-				_definitionsByInterfaceName[definition.Key] = definition.Value;
+				_definitionsByNameSpaceByInterface[definition.Key] = definition.Value;
 			}
 
 			if(definitions.Count > 0)
@@ -98,6 +102,232 @@ namespace MoqGenerator.Services
 		}
 
 
+		private async Task LoadCSProjAsync(string csProjPath)
+		{
+
+			var (projectsAdded, workspace) = GetProjectsAndWorkspace(csProjPath);
+
+			var watch = new Stopwatch();
+			watch.Start();
+
+			var compilations = await Task.WhenAll(workspace.CurrentSolution.Projects.Select(x => x.GetCompilationAsync()));
+
+			var models = compilations
+				.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
+				;
+
+			watch.StopAndLogDebug(_logger, "time to get semantic models: ");
+
+			// load our interface dict...
+			watch.Restart();
+			var definitions = GetInterfaceDefinitionsByName(models.ToList());
+			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
+
+			foreach(var definition in definitions)
+			{
+				_definitionsByNameSpaceByInterface[definition.Key] = definition.Value;
+			}
+
+			// and finally, load up our hashset so that we don't have to do this again
+			foreach(var proj in projectsAdded)
+				_csProjectsAlreadyLoaded.Add(proj);
+
+			if(definitions.Count > 0)
+				LogDefinitions(nameof(LoadCSProjAsync));
+		}
+
+
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceMethods(List<SemanticModel> models)
+		{
+			var interfaceGroups = models
+				.Select(semanticModel => new
+				{
+					Model = semanticModel,
+					Methods = semanticModel
+						.SyntaxTree
+						.GetRoot()
+						.DescendantNodes()
+						.OfType<MethodDeclarationSyntax>()
+						.Where(meth => meth.Parent.GetType() == typeof(InterfaceDeclarationSyntax))
+				})
+				.SelectMany(node => 
+					node
+						.Methods
+						.Select(method =>
+							new
+							{
+								Namespace = node.Model.GetDeclaredSymbol(method.Parent)?.ContainingSymbol?.ToString(),
+								InterfaceName = node.Model.GetDeclaredSymbol(method.Parent).Name,
+								SourceFile = method.Parent.SyntaxTree.FilePath,
+								MethodName = method.Identifier.Text,
+								ReturnType = method.ReturnType.ToString(),
+								Parameters = method
+									.ParameterList
+									.Parameters
+									.Select(param => new
+									{
+										ParameterType = param.Type.ToString(),
+										ParameterName = param.Identifier.Text,
+										ParameterDefinition = param.ToString()
+									}
+									)
+							}
+						)
+				)
+				.GroupBy(x => x.InterfaceName)
+				.ToList();
+
+			var dict = interfaceGroups
+				.Select(interfaceGroup => new
+				{
+					InterfaceName = interfaceGroup.Key,
+					NamespaceDict = interfaceGroup
+						.GroupBy(y => y.Namespace)
+						.Select(namespaceGroup => new
+						{
+							Namespace = namespaceGroup.Key,
+							InterfaceDefinition = new InterfaceDefinition
+							(
+								interfaceGroup.Key,
+								namespaceGroup.First().SourceFile,
+								namespaceGroup
+									.GroupBy(y => y.MethodName)
+									.Select(method => new InterfaceMethod
+									(
+										method.Key,
+										method.First().ReturnType,
+										method.First().Parameters
+											.Select(parameter => new InterfaceMethodParameter
+											(
+												parameter.ParameterType,
+												parameter.ParameterName,
+												parameter.ParameterDefinition
+											))
+											.ToList()
+									))
+									.ToList(),
+								new List<string>() // Properties, to be filled in by other method...
+							)
+						})
+						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
+				})
+				.ToDictionary(pair => pair.InterfaceName, pair => pair.NamespaceDict);
+
+			return dict;
+		}
+
+
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models)
+		{
+			var interfaceGroups = models
+				.Select(semanticModel => new
+				{
+					Model = semanticModel,
+					Properties = semanticModel
+						.SyntaxTree
+						.GetRoot()
+						.DescendantNodes()
+						.OfType<PropertyDeclarationSyntax>()
+						.Where(meth => meth.Parent.GetType() == typeof(InterfaceDeclarationSyntax)),
+					
+				})
+				.SelectMany(node => 
+					node
+						.Properties
+						.Select(prop => new 
+						{
+							Namespace = node.Model.GetDeclaredSymbol(prop.Parent)?.ContainingSymbol?.ToString(),
+							InterfaceName = node.Model.GetDeclaredSymbol(prop.Parent).Name,
+							SourceFile = prop.Parent.SyntaxTree.FilePath,
+							PropertyName = prop.Identifier.Text
+						})
+				)
+				.GroupBy(x => x.InterfaceName)
+				.ToList();
+
+			var dict = interfaceGroups
+				.Select(interfaceGroup => new
+				{
+					InterfaceName = interfaceGroup.Key,
+					NamespaceDict = interfaceGroup
+						.GroupBy(y => y.Namespace)
+						.Select(namespaceGroup => new
+						{
+							Namespace = namespaceGroup.Key,
+							InterfaceDefinition = new InterfaceDefinition
+							(
+								interfaceGroup.Key,
+								namespaceGroup.First().SourceFile,
+								new List<InterfaceMethod>(), // methods to be filled in by other method...
+								namespaceGroup.Select(p => p.PropertyName).ToList()
+							)
+						})
+						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
+
+				})
+				.ToDictionary(pair => pair.InterfaceName, pair => pair.NamespaceDict);
+			
+			return dict;
+		}
+
+
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitionsByName(List<SemanticModel> models)
+		{
+			var methods = GetInterfaceMethods(models);
+			var properties = GetInterfacePropertiesByName(models);
+
+			// merge the two dictionaries
+			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>();
+
+			
+
+			var interfaceKeys = methods.Keys.Concat(properties.Keys);
+			foreach(var interfaceKey in interfaceKeys)
+			{
+				if(methods.TryGetValue(interfaceKey, out var methodNamespaceDict))
+				{
+					if(properties.TryGetValue(interfaceKey, out var propertyNamespaceDict))
+					{
+						// merge namespace dictionaries
+						result[interfaceKey] = MergeNamespaceDictionaries(methodNamespaceDict, propertyNamespaceDict);
+					}
+					else
+					{
+						result[interfaceKey] = methodNamespaceDict;
+					}
+				}
+				else
+					result[interfaceKey] = properties[interfaceKey];
+			}
+			return result;
+		}
+
+		private Dictionary<string, InterfaceDefinition> MergeNamespaceDictionaries(
+			Dictionary<string, InterfaceDefinition> methodNamespaceDict,
+			Dictionary<string, InterfaceDefinition> propertyNamespaceDict)
+		{
+			var result = new Dictionary<string, InterfaceDefinition>();
+
+			var namespaceKeys = methodNamespaceDict.Keys.Concat(propertyNamespaceDict.Keys);
+
+			foreach (var namespaceKey in namespaceKeys)
+			{
+				if(methodNamespaceDict.TryGetValue(namespaceKey, out var methodDef))
+				{
+					if(propertyNamespaceDict.TryGetValue(namespaceKey, out var propDef))
+					{
+						result[namespaceKey] = methodDef with { Properties = propDef.Properties };
+					}
+					else
+						result[namespaceKey] = methodDef;
+				}
+				else
+					result[namespaceKey] = propertyNamespaceDict[namespaceKey];
+			}
+
+			return result;
+		}
+
 		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
 		{
 			// the csProj may or may not have been loaded already. if it's in our HashSet, no reason to load,
@@ -107,6 +337,7 @@ namespace MoqGenerator.Services
 			if(csProjPath != null && !_csProjectsAlreadyLoaded.Contains(csProjPath))
 				await LoadCSProjAsync(csProjPath);
 		}
+
 
 		private (IReadOnlyList<string> projects, AdhocWorkspace workspace) GetProjectsAndWorkspace(string csProjPath)
 		{
@@ -141,168 +372,24 @@ namespace MoqGenerator.Services
 			return (projectsAdded, workspace);
 		}
 
-		private async Task LoadCSProjAsync(string csProjPath)
+
+		private string GetInterfacesForLogging()
 		{
-
-			var (projectsAdded, workspace) = GetProjectsAndWorkspace(csProjPath);
-
-			var watch = new Stopwatch();
-			watch.Start();
-
-			var compilations = await Task.WhenAll(workspace.CurrentSolution.Projects.Select(x => x.GetCompilationAsync()));
-
-			var models = compilations
-				.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
-				;
-
-			watch.StopAndLogDebug(_logger, "time to get semantic models: ");
-
-			// load our interface dict...
-			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(models.ToList());
-			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
-
-			foreach(var definition in definitions)
-			{
-				_definitionsByInterfaceName[definition.Key] = definition.Value;
-			}
-
-			// and finally, load up our hashset so that we don't have to do this again
-			foreach(var proj in projectsAdded)
-				_csProjectsAlreadyLoaded.Add(proj);
-
-			if(definitions.Count > 0)
-				LogDefinitions(nameof(LoadCSProjAsync));
-		}
-
-
-		private Dictionary<string, InterfaceDefinition> GetInterfaceDefinitionsByName(List<SemanticModel> models)
-		{
-			var methods = GetInterfaceMethods(models);
-			var properties = GetInterfacePropertiesByName(models);
-
-			// merge the two dictionaries
-			var result = new Dictionary<string, InterfaceDefinition>();
-
-			var allKeys = methods.Keys.Concat(properties.Keys);
-
-			foreach (var key in allKeys)
-			{
-				if(methods.TryGetValue(key, out var methodDef))
-				{
-					if(properties.TryGetValue(key, out var propDef))
-					{
-						result[key] = methodDef with { Properties = propDef.Properties };
-					}
-					else
-						result[key] = methodDef;
-				}
-				else
-					result[key] = properties[key];
-			}
-
-			return result;
-		}
-
-		private Dictionary<string, InterfaceDefinition> GetInterfaceMethods(List<SemanticModel> models)
-		{
-			return models
-				.SelectMany(
-					semanticModel => semanticModel
-						.SyntaxTree
-						.GetRoot()
-						.DescendantNodes()
-						.OfType<MethodDeclarationSyntax>()
-						.Where(meth => meth.Parent.GetType() == typeof(InterfaceDeclarationSyntax))
-				)
-				.Select(node => new
-				{
-					InterfaceName = ((InterfaceDeclarationSyntax)((SyntaxNode)node).Parent).Identifier.Text,
-					SourceFile = node.Parent.SyntaxTree.FilePath,
-					MethodName = node.Identifier.Text,
-					ReturnType = node.ReturnType.ToString(),
-					Parameters = node
-						.ParameterList
-						.Parameters
-						.Select(param => new
-						{
-							ParameterType = param.Type.ToString(),
-							ParameterName = param.Identifier.Text,
-							ParameterDefinition = param.ToString()
-						}
-						)
-				}
-				)
-				.GroupBy(x => x.InterfaceName)
-				.Select(interfaceName => new
-				{
-					InterfaceName = interfaceName.Key,
-					InterfaceDefinition = new InterfaceDefinition
-					(
-						interfaceName.Key,
-						interfaceName.First().SourceFile,
-						interfaceName
-							.GroupBy(y => y.MethodName)
-							.Select(method => new InterfaceMethod
-							(
-								method.Key,
-								method.First().ReturnType,
-								method.First().Parameters
-									.Select(parameter => new InterfaceMethodParameter
-									(
-										parameter.ParameterType,
-										parameter.ParameterName,
-										parameter.ParameterDefinition
-									))
-									.ToList()
-							))
-							.ToList(),
-						new List<string>()
+			return 
+				Environment.NewLine + 
+				string.Join(Environment.NewLine,
+					_definitionsByNameSpaceByInterface
+						.SelectMany(entry => entry
+						.Value
+						.Select(nsPair => $"{nsPair.Key}.{entry.Key} : {nsPair.Value.SourceFile}")
 					)
-				})
-				.ToDictionary(pair => pair.InterfaceName, pair => pair.InterfaceDefinition);
+				);
 		}
-
-		private Dictionary<string, InterfaceDefinition> GetInterfacePropertiesByName(List<SemanticModel> models)
-		{
-			return models
-				.SelectMany(
-					semanticModel => semanticModel
-						.SyntaxTree
-						.GetRoot()
-						.DescendantNodes()
-						.OfType<PropertyDeclarationSyntax>()
-						.Where(meth => meth.Parent.GetType() == typeof(InterfaceDeclarationSyntax))
-				)
-				.Select(node => new
-				{
-					InterfaceName = ((InterfaceDeclarationSyntax)((SyntaxNode)node).Parent).Identifier.Text,
-					SourceFile = node.Parent.SyntaxTree.FilePath,
-					PropertyName = node.Identifier.Text
-				}
-				)
-				.GroupBy(x => x.InterfaceName)
-				.Select(interfaceName => new
-				{
-					InterfaceName = interfaceName.Key,
-					InterfaceDefinition = new InterfaceDefinition
-					(
-						interfaceName.Key,
-						interfaceName.First().SourceFile,
-						new List<InterfaceMethod>(),
-						interfaceName.Select(p => p.PropertyName).ToList()
-					)
-				})
-				.ToDictionary(pair => pair.InterfaceName, pair => pair.InterfaceDefinition);
-		}
-
-
-
 
 		private void LogDefinitions(string v)
 		{
 			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. CsProjs loaded: {string.Join('|', _csProjectsAlreadyLoaded)}");
-			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {string.Join('|', _definitionsByInterfaceName.Keys)}");
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {GetInterfacesForLogging()}");
 		}
 	}
 }

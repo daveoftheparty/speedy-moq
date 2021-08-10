@@ -8,6 +8,8 @@ using MoqGenerator.Model;
 using System;
 using MoqGenerator.UnitTests.Utils;
 using MoqGenerator.Interfaces.Lsp;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoqGenerator.UnitTests
 {
@@ -43,17 +45,20 @@ namespace MoqGenerator.UnitTests
 			);
 
 			if(go)
-				Assert.AreEqual("FizzBuzz", store.GetInterfaceDefinition("IBar").Properties[0]);
+				Assert.AreEqual("FizzBuzz", store.GetInterfaceDefinitionByNamespace("IBar")["Foo"].Properties[0]);
 			else
-				Assert.IsNull(store.GetInterfaceDefinition("IBar"));
+				Assert.IsNull(store.GetInterfaceDefinitionByNamespace("IBar"));
 		}
 
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/InterfaceStore/"})]
 		public async Task GoAsync((string testIdMessage, string[] testInputs) test)
 		{
-			var interfaceName = test.testInputs[0];
+			// if(test.testIdMessage != "TestId: 005")
+			// 	return;
+
+			var interfaceDict = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(test.testInputs[0]);
 			var inputText = test.testInputs[1];
-			var expected = JsonSerializer.Deserialize<InterfaceDefinition>(test.testInputs[2]);
+			var expected = JsonSerializer.Deserialize<Dictionary<string, InterfaceDefinition>>(test.testInputs[2]);
 
 			var logMock = new LoggerDouble<InterfaceStore>();
 			
@@ -70,23 +75,47 @@ namespace MoqGenerator.UnitTests
 				)
 			);
 
-			Assert.IsTrue(store.Exists(interfaceName), test.testIdMessage);
-			var actual = store.GetInterfaceDefinition(interfaceName);
-
 			try
 			{
-				// surprisingly??, the new record type in C# 9.0 isn't "smart enough" to do nested collection asserts...
-				
-				// Assert.AreEqual(expected.InterfaceName, actual.InterfaceName, test.testIdMessage);
-				// Assert.AreEqual(expected.SourceFile, actual.SourceFile, test.testIdMessage);
-				// CollectionAssert.AreEquivalent(expected.Methods, actual.Methods, test.testIdMessage);
-				// CollectionAssert.AreEquivalent(expected.Properties, actual.Properties, test.testIdMessage);
-				Assert.AreEqual(JsonSerializer.Serialize(expected), JsonSerializer.Serialize(actual), test.testIdMessage);
+				foreach(var interfaceByNamespace in interfaceDict)
+				{
+					var interfaceName = interfaceByNamespace.Key;
+					Assert.IsTrue(store.Exists(interfaceName), test.testIdMessage);
+					var namespaceDict = store.GetInterfaceDefinitionByNamespace(interfaceName);
+
+					foreach(var namespaceName in interfaceByNamespace.Value)
+					{
+						Assert.IsTrue(namespaceDict.ContainsKey(namespaceName), test.testIdMessage);
+
+						var actualDefinition = namespaceDict[namespaceName];
+						var expectedDefinition = expected[namespaceName];
+						
+						Assert.AreEqual(
+							JsonSerializer.Serialize(expectedDefinition),
+							JsonSerializer.Serialize(actualDefinition),
+							test.testIdMessage
+							);
+					}
+				}
 			}
 			catch
 			{
 				Console.WriteLine("actual output:");
-				Console.WriteLine(JsonSerializer.Serialize(actual));
+				interfaceDict
+					.Keys
+					.Select(iName => new
+					{
+						InterfaceName = iName,
+						NamespaceDict = store.GetInterfaceDefinitionByNamespace(iName)
+					})
+					.ToList()
+					.ForEach(iNameAndDict => {
+						var result = iNameAndDict.NamespaceDict == null
+							? $"{iNameAndDict.InterfaceName} : null"
+							: $"{iNameAndDict.InterfaceName} : {JsonSerializer.Serialize(iNameAndDict.NamespaceDict)}"
+							;
+						Console.WriteLine(result);
+					});
 				throw;
 			}
 		}
