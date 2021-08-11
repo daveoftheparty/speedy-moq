@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Moq;
 using System.Threading.Tasks;
 using MoqGenerator.Services;
@@ -32,9 +33,20 @@ namespace MoqGenerator.UnitTests
 			var whoaCowboy = new Mock<IWhoaCowboy>();
 			whoaCowboy.SetupGet(x => x.GiddyUp).Returns(go);
 
+			var uriHandler = new Mock<IUriHandler>();
+			Expression<Func<IUriHandler, string>> getFilePath = x => x.GetFilePath(It.IsAny<TextDocumentIdentifier>());
+			uriHandler
+				.Setup(getFilePath)
+				.Returns((TextDocumentIdentifier textDocId) =>
+				{
+					return textDocId.Uri;
+				});
+
+			
+
 			var logMock = new LoggerDouble<InterfaceStore>();
 
-			var store = new InterfaceStore(logMock, whoaCowboy.Object, new Mock<IProjectHandler>().Object);
+			var store = new InterfaceStore(logMock, whoaCowboy.Object, new Mock<IProjectHandler>().Object, uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
@@ -60,12 +72,22 @@ namespace MoqGenerator.UnitTests
 			var inputText = test.testInputs[1];
 			var expected = JsonSerializer.Deserialize<Dictionary<string, InterfaceDefinition>>(test.testInputs[2]);
 
+
+			var uriHandler = new Mock<IUriHandler>();
+			Expression<Func<IUriHandler, string>> getFilePath = x => x.GetFilePath(It.IsAny<TextDocumentIdentifier>());
+			uriHandler
+				.Setup(getFilePath)
+				.Returns((TextDocumentIdentifier textDocId) =>
+				{
+					return textDocId.Uri;
+				});
+
 			var logMock = new LoggerDouble<InterfaceStore>();
 			
 			var whoaCowboy = new Mock<IWhoaCowboy>();
 			whoaCowboy.SetupGet(x => x.GiddyUp).Returns(true);
 
-			var store = new InterfaceStore(logMock, whoaCowboy.Object, new Mock<IProjectHandler>().Object);
+			var store = new InterfaceStore(logMock, whoaCowboy.Object, new Mock<IProjectHandler>().Object, uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(

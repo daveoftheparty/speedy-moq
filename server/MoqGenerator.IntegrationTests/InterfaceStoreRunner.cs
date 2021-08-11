@@ -74,7 +74,7 @@ namespace MoqGenerator.IntegrationTests
 			var storeLogger = new LoggerDouble<InterfaceStore>();
 			var projectHandlerLogger = new LoggerDouble<ProjectHandler>();
 
-			var store = new InterfaceStore(storeLogger, whoaCowboy.Object, new ProjectHandler(projectHandlerLogger, uriHandler.Object));
+			var store = new InterfaceStore(storeLogger, whoaCowboy.Object, new ProjectHandler(projectHandlerLogger, uriHandler.Object), uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
@@ -84,7 +84,6 @@ namespace MoqGenerator.IntegrationTests
 				)
 			);
 
-			uriHandler.Verify(getFilePath, Times.Once);
 			Assert.IsNotNull(store.GetInterfaceDefinitionByNamespace("IStringAnalyzer"));
 			Assert.IsNotNull(store.GetInterfaceDefinitionByNamespace("ISomeMagicSauce"));
 

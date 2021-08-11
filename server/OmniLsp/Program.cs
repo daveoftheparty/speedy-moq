@@ -58,6 +58,7 @@ namespace OmniLsp
 			services.AddTransient<IMockText, MockText>();
 			services.AddTransient<IIndentation, Indentation>();
 			services.AddTransient<IProjectHandler, ProjectHandler>();
+			services.AddTransient<IUriHandler, UriHandler>();
 		}
 	}
 }

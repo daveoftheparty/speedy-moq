@@ -55,13 +55,15 @@ namespace MoqGenerator.Services
 		private readonly string _thisInstance = Guid.NewGuid().ToString();
 		private readonly IWhoaCowboy _whoaCowboy;
 		private readonly IProjectHandler _projectHandler;
+		private readonly IUriHandler _uriHandler;
 
-		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy, IProjectHandler projectHandler)
+		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy, IProjectHandler projectHandler, IUriHandler uriHandler)
 		{
 			_logger = logger;
 			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 			_whoaCowboy = whoaCowboy;
 			_projectHandler = projectHandler;
+			_uriHandler = uriHandler;
 		}
 
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
@@ -84,7 +86,7 @@ namespace MoqGenerator.Services
 
 			// load our interface dict...
 			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model });
+			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model }, textDocItem.Identifier);
 			watch.StopAndLogDebug(_logger, "(single file) time to get interface definitions from semantic models: ");
 
 			UpdateInterfaceDictionary(definitions);
@@ -99,7 +101,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private async Task LoadCSProjAsync(string csProjPath)
+		private async Task LoadCSProjAsync(string csProjPath, TextDocumentIdentifier textDocId)
 		{
 
 			var (projectsAdded, workspace) = GetProjectsAndWorkspace(csProjPath);
@@ -117,7 +119,7 @@ namespace MoqGenerator.Services
 
 			// load our interface dict...
 			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(models.ToList());
+			var definitions = GetInterfaceDefinitionsByName(models.ToList(), textDocId);
 			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
 
 			UpdateInterfaceDictionary(definitions);
@@ -131,7 +133,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceMethods(List<SemanticModel> models)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceMethods(List<SemanticModel> models, string uriAsFile)
 		{
 			var interfaceGroups = models
 				.Select(semanticModel => new
@@ -152,7 +154,7 @@ namespace MoqGenerator.Services
 							{
 								Namespace = node.Model.GetDeclaredSymbol(method.Parent)?.ContainingSymbol?.ToString(),
 								InterfaceName = node.Model.GetDeclaredSymbol(method.Parent).Name,
-								SourceFile = method.Parent.SyntaxTree.FilePath,
+								SourceFile = string.IsNullOrWhiteSpace(method?.Parent.SyntaxTree.FilePath) ? uriAsFile : method.Parent.SyntaxTree.FilePath,
 								MethodName = method.Identifier.Text,
 								ReturnType = method.ReturnType.ToString(),
 								Parameters = method
@@ -211,7 +213,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models, string uriAsFile)
 		{
 			var interfaceGroups = models
 				.Select(semanticModel => new
@@ -232,7 +234,7 @@ namespace MoqGenerator.Services
 						{
 							Namespace = node.Model.GetDeclaredSymbol(prop.Parent)?.ContainingSymbol?.ToString(),
 							InterfaceName = node.Model.GetDeclaredSymbol(prop.Parent).Name,
-							SourceFile = prop.Parent.SyntaxTree.FilePath,
+							SourceFile = string.IsNullOrWhiteSpace(prop?.Parent.SyntaxTree.FilePath) ? uriAsFile : prop.Parent.SyntaxTree.FilePath,
 							PropertyName = prop.Identifier.Text
 						})
 				)
@@ -265,10 +267,12 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitionsByName(List<SemanticModel> models)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitionsByName(List<SemanticModel> models, TextDocumentIdentifier textDocId)
 		{
-			var methods = GetInterfaceMethods(models);
-			var properties = GetInterfacePropertiesByName(models);
+			var uriAsFile = _uriHandler.GetFilePath(textDocId);
+
+			var methods = GetInterfaceMethods(models, uriAsFile);
+			var properties = GetInterfacePropertiesByName(models, uriAsFile);
 
 			// merge the two dictionaries
 			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>();
@@ -348,9 +352,9 @@ namespace MoqGenerator.Services
 			// the csProj may or may not have been loaded already. if it's in our HashSet, no reason to load,
 			// because we'll detect changes on individual files with the LoadCsInterfaceIfNecessaryAsync method
 
-			var csProjPath = _projectHandler.GetCsProjFromCsFile(textDocItem.Identifier.Uri);
+			var csProjPath = _projectHandler.GetCsProjFromCsFile(textDocItem.Identifier);
 			if(csProjPath != null && !_csProjectsAlreadyLoaded.Contains(csProjPath))
-				await LoadCSProjAsync(csProjPath);
+				await LoadCSProjAsync(csProjPath, textDocItem.Identifier);
 		}
 
 
