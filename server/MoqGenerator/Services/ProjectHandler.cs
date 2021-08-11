@@ -53,8 +53,7 @@ namespace MoqGenerator.Services
 
 				if(csProjFile != null)
 				{
-					watch.StopAndLogDebug(_logger, "time to find csproj file: ");
-					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
+					watch.StopAndLogInformation(_logger, $"method {nameof(GetCsProjFromCsFile)} found {csProjFile} in: ");
 					
 					var fullName = csProjFile.FullName;
 					_csProjByFile.Add(filePath, csProjFile.FullName);
