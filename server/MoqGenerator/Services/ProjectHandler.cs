@@ -6,20 +6,26 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model.Lsp;
 using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
 {
 	public class ProjectHandler : IProjectHandler
 	{
-		private readonly ILogger<ProjectHandler> _logger;
+		private readonly Dictionary<string, string> _csProjByFile = new();
 
-		public ProjectHandler(ILogger<ProjectHandler> logger)
+		private readonly ILogger<ProjectHandler> _logger;
+		private readonly IUriHandler _uriHandler;
+
+		public ProjectHandler(ILogger<ProjectHandler> logger, IUriHandler uriHandler)
 		{
 			_logger = logger;
+			_uriHandler = uriHandler;
 		}
 
-		public string GetCsProjFromCsFile(string uri)
+
+		public string GetCsProjFromCsFile(TextDocumentIdentifier textDocId)
 		{
 			var watch = new Stopwatch();
 			watch.Start();
@@ -27,31 +33,41 @@ namespace MoqGenerator.Services
 			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
 			// if we can't find one, traverse backwards until we do... or don't
 
-			var path = uri.Replace("file:///", "");
-			_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is looking for a .csproj related to file {path}");
+			var filePath = _uriHandler.GetFilePath(textDocId);
+			var currPath = filePath;
 			
-			path = Path.GetDirectoryName(path);
-			while(!string.IsNullOrWhiteSpace(path))
+			if(_csProjByFile.TryGetValue(currPath, out var proj))
 			{
-				_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is searching for a .csproj in {path}");
+				watch.StopAndLogInformation(_logger, $"method {nameof(GetCsProjFromCsFile)} found previously resolved {proj} for lookup file {currPath}");
+				return proj;
+			}
+
+			_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is looking for a .csproj related to file {currPath}");
+			
+			currPath = Path.GetDirectoryName(currPath);
+			while(!string.IsNullOrWhiteSpace(currPath))
+			{
+				_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} is searching for a .csproj in {currPath}");
 				
 				var csProjFile = Directory
-					.EnumerateFiles(path)
+					.EnumerateFiles(currPath)
 					.Select(f => new FileInfo(f))
 					.FirstOrDefault(x => x.Extension == ".csproj") // I have no idea why there would be more than one csproj in a directory, or if it's even possible
 					;
 
 				if(csProjFile != null)
 				{
-					watch.StopAndLogDebug(_logger, "time to find csproj file: ");
-					_logger.LogInformation($"method {nameof(GetCsProjFromCsFile)} found {csProjFile}");
-					return csProjFile.FullName;
+					watch.StopAndLogInformation(_logger, $"method {nameof(GetCsProjFromCsFile)} found {csProjFile} in: ");
+					
+					var fullName = csProjFile.FullName;
+					_csProjByFile.Add(filePath, csProjFile.FullName);
+					return fullName;
 				}
 
-				path = Directory.GetParent(path).FullName;
+				currPath = Directory.GetParent(currPath).FullName;
 			}
 
-			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
+			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {filePath}");
 			watch.StopAndLogError(_logger, "time that we FAILED to find csproj file: ");
 			return null;
 		}
