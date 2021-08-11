@@ -1,3 +1,6 @@
+using System;
+using System.Linq.Expressions;
+using Moq;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +11,8 @@ using NUnit.Framework;
 using MoqGenerator.UnitTests.Utils;
 
 using MoqGenerator.Services;
+using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model.Lsp;
 
 namespace MoqGenerator.UnitTests
 {
@@ -16,8 +21,18 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(nameof(GetTestInputs))]
 		public void Go((string testIdMessage, string rootCsProj, IReadOnlyList<string> expectedProjects) tests)
 		{
+			var uriHandler = new Mock<IUriHandler>();
+			Expression<Func<IUriHandler, string>> getFilePath = x => x.GetFilePath(It.IsAny<TextDocumentIdentifier>());
+			uriHandler
+				.Setup(getFilePath)
+				.Returns((TextDocumentIdentifier textDocId) =>
+				{
+					return "foo";
+				});
+
+			
 			var logger = new LoggerDouble<ProjectHandler>();
-			var handler = new ProjectHandler(logger);
+			var handler = new ProjectHandler(logger, uriHandler.Object);
 
 			var testProjectsPath = GetTestProjectsPath();
 			CollectionAssert.AreEquivalent(

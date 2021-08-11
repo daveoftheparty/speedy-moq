@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model.Lsp;
 using MoqGenerator.Util;
 
 namespace MoqGenerator.Services
@@ -15,14 +16,16 @@ namespace MoqGenerator.Services
 		private readonly Dictionary<string, string> _csProjByFile = new();
 
 		private readonly ILogger<ProjectHandler> _logger;
+		private readonly IUriHandler _uriHandler;
 
-		public ProjectHandler(ILogger<ProjectHandler> logger)
+		public ProjectHandler(ILogger<ProjectHandler> logger, IUriHandler uriHandler)
 		{
 			_logger = logger;
+			_uriHandler = uriHandler;
 		}
 
 
-		public string GetCsProjFromCsFile(string uri)
+		public string GetCsProjFromCsFile(TextDocumentIdentifier textDocId)
 		{
 			var watch = new Stopwatch();
 			watch.Start();
@@ -30,8 +33,9 @@ namespace MoqGenerator.Services
 			// whelp, we're gonna hack at this, don't know if there is a better way. look for a csproj in the same directory as this file,
 			// if we can't find one, traverse backwards until we do... or don't
 
-			var currPath = uri.Replace("file:///", "");
-			var filePath = currPath;
+			var filePath = _uriHandler.GetFilePath(textDocId);
+			var currPath = filePath;
+			
 			if(_csProjByFile.TryGetValue(currPath, out var proj))
 			{
 				watch.StopAndLogInformation(_logger, $"method {nameof(GetCsProjFromCsFile)} found previously resolved {proj} for lookup file {currPath}");
@@ -63,7 +67,7 @@ namespace MoqGenerator.Services
 				currPath = Directory.GetParent(currPath).FullName;
 			}
 
-			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {uri}");
+			_logger.LogError($"method {nameof(GetCsProjFromCsFile)} could not locate a parent .csproj file for {filePath}");
 			watch.StopAndLogError(_logger, "time that we FAILED to find csproj file: ");
 			return null;
 		}

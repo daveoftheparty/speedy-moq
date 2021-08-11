@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Moq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -60,10 +61,20 @@ namespace MoqGenerator.IntegrationTests
 			var whoaCowboy = new Mock<IWhoaCowboy>();
 			whoaCowboy.SetupGet(x => x.GiddyUp).Returns(true);
 
+			var uriHandler = new Mock<IUriHandler>();
+			Expression<Func<IUriHandler, string>> getFilePath = x => x.GetFilePath(It.IsAny<TextDocumentIdentifier>());
+			uriHandler
+				.Setup(getFilePath)
+				.Returns((TextDocumentIdentifier textDocId) =>
+				{
+					return textDocId.Uri;
+				});
+
+			
 			var storeLogger = new LoggerDouble<InterfaceStore>();
 			var projectHandlerLogger = new LoggerDouble<ProjectHandler>();
 
-			var store = new InterfaceStore(storeLogger, whoaCowboy.Object, new ProjectHandler(projectHandlerLogger));
+			var store = new InterfaceStore(storeLogger, whoaCowboy.Object, new ProjectHandler(projectHandlerLogger, uriHandler.Object));
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
@@ -73,6 +84,7 @@ namespace MoqGenerator.IntegrationTests
 				)
 			);
 
+			uriHandler.Verify(getFilePath, Times.Once);
 			Assert.IsNotNull(store.GetInterfaceDefinitionByNamespace("IStringAnalyzer"));
 			Assert.IsNotNull(store.GetInterfaceDefinitionByNamespace("ISomeMagicSauce"));
 

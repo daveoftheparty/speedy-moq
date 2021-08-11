@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using MoqGenerator.Model.Lsp;
 
 namespace MoqGenerator.Interfaces.Lsp
 {
 	public interface IProjectHandler
 	{
-		string GetCsProjFromCsFile(string uri);
+		string GetCsProjFromCsFile(TextDocumentIdentifier textDocId);
 		IEnumerable<string> GetProjectAndProjectReferences(string csProjPath);
 	}
 }
