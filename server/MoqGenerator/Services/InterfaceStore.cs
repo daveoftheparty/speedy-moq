@@ -87,10 +87,7 @@ namespace MoqGenerator.Services
 			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model });
 			watch.StopAndLogDebug(_logger, "(single file) time to get interface definitions from semantic models: ");
 
-			foreach(var definition in definitions)
-			{
-				_definitionsByNameSpaceByInterface[definition.Key] = definition.Value;
-			}
+			UpdateInterfaceDictionary(definitions);
 
 			if(definitions.Count > 0)
 			{
@@ -123,10 +120,7 @@ namespace MoqGenerator.Services
 			var definitions = GetInterfaceDefinitionsByName(models.ToList());
 			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
 
-			foreach(var definition in definitions)
-			{
-				_definitionsByNameSpaceByInterface[definition.Key] = definition.Value;
-			}
+			UpdateInterfaceDictionary(definitions);
 
 			// and finally, load up our hashset so that we don't have to do this again
 			foreach(var proj in projectsAdded)
@@ -326,6 +320,27 @@ namespace MoqGenerator.Services
 			}
 
 			return result;
+		}
+
+
+		private void UpdateInterfaceDictionary(Dictionary<string, Dictionary<string, InterfaceDefinition>> definitions)
+		{
+			foreach(var definition in definitions)
+			{
+				if(!_definitionsByNameSpaceByInterface.TryGetValue(definition.Key, out var masterNamespaceDict))
+				{
+					// this interface doesn't even exist in master dictionary, this incoming must be 'the truth'
+					_definitionsByNameSpaceByInterface[definition.Key] = definition.Value;
+				}
+				else
+				{
+					// update individual namespace KeyValuePairs from incoming since they're now 'the truth'
+					foreach(var definitionByNamespace in definition.Value)
+					{
+						_definitionsByNameSpaceByInterface[definition.Key][definitionByNamespace.Key] = definitionByNamespace.Value;
+					}
+				}
+			}
 		}
 
 		private async Task LoadCsProjAsyncIfNecessaryAsync(TextDocumentItem textDocItem)
