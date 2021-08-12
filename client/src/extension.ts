@@ -53,7 +53,6 @@ export function activate(context: vscode.ExtensionContext) {
     const client = new LanguageClient(vsCodeName, friendlyName, serverOptions, clientOptions);
 
     console.log("Speedy Moq is up and rollin...");
-    client.trace = Trace.Verbose;
     const lsp = client.start();
 
     // Push the disposable to the context's subscriptions so that the

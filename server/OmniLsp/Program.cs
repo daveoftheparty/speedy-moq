@@ -33,12 +33,12 @@ namespace OmniLsp
 				options
 				.WithInput(Console.OpenStandardInput())
 				.WithOutput(Console.OpenStandardOutput())
-				.ConfigureLogging(
-					x => x
-						.AddLanguageProtocolLogging()
-						.SetMinimumLevel(LogLevel.Debug)
+				.ConfigureLogging(x => x
+					// plenty of rants & raves about logging in CONTRIBUTING.md at the root of this repo 😎
+					.AddLanguageProtocolLogging() // seems to be required to get any of OUR logs
+					.AddFilter("OmniSharp", LogLevel.Warning)
+					.AddFilter("MoqGenerator", LogLevel.Information)
 				)
-				.WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Error))) // I bumped this up to see if we could filter out Omnisharp, it filtered absolutely nothing....
 				.WithServices(x => ConfigureServices(x, giddyUp))
 				.WithHandler<TextDocumentHandler>()
 				.WithHandler<CodeActionHandler>()

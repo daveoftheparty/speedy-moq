@@ -27,10 +27,10 @@ namespace MoqGenerator.Services
 			_definitionsByNameSpaceByInterface.TryGetValue(interfaceName, out var result);
 
 			if(result == null)
-				_logger.LogWarning(
-					$"{nameof(GetInterfaceDefinitionByNamespace)} is looking for interfaceName {interfaceName}." +
-					$" Interfaces loaded: {{GetInterfacesForLogging()}}."
-				);
+			{
+				_logger.LogWarning($"{nameof(GetInterfaceDefinitionByNamespace)} failed to lookup interfaceName {interfaceName}.");
+				LogInterfacesLoaded(nameof(GetInterfaceDefinitionByNamespace));
+			}
 
 			return result;
 		}
@@ -60,7 +60,7 @@ namespace MoqGenerator.Services
 		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy, IProjectHandler projectHandler, IUriHandler uriHandler)
 		{
 			_logger = logger;
-			_logger.LogTrace($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
+			_logger.LogInformation($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 			_whoaCowboy = whoaCowboy;
 			_projectHandler = projectHandler;
 			_uriHandler = uriHandler;
@@ -82,12 +82,12 @@ namespace MoqGenerator.Services
 				.AddSyntaxTrees(tree);
 			
 			var model = compilation.GetSemanticModel(tree);
-			watch.StopAndLogDebug(_logger, "(single file) time to get semantic models: ");
+			watch.StopAndLogInformation(_logger, "(single file) time to get semantic models: ");
 
 			// load our interface dict...
 			watch.Restart();
 			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model }, textDocItem.Identifier);
-			watch.StopAndLogDebug(_logger, "(single file) time to get interface definitions from semantic models: ");
+			watch.StopAndLogInformation(_logger, "(single file) time to get interface definitions from semantic models: ");
 
 			UpdateInterfaceDictionary(definitions);
 
@@ -115,12 +115,12 @@ namespace MoqGenerator.Services
 				.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
 				;
 
-			watch.StopAndLogDebug(_logger, "time to get semantic models: ");
+			watch.StopAndLogInformation(_logger, "time to get semantic models: ");
 
 			// load our interface dict...
 			watch.Restart();
 			var definitions = GetInterfaceDefinitionsByName(models.ToList(), textDocId);
-			watch.StopAndLogDebug(_logger, "time to get interface definitions from semantic models: ");
+			watch.StopAndLogInformation(_logger, "time to get interface definitions from semantic models: ");
 
 			UpdateInterfaceDictionary(definitions);
 
@@ -385,30 +385,36 @@ namespace MoqGenerator.Services
 				projectsAdded.Add(projectName);
 			}
 
-			buildWatch.StopAndLogDebug(_logger, "time to build projs to get refs: ");
-			addToWorkspaceWatch.StopAndLogDebug(_logger, "time to add projs to workspace: ");
+			buildWatch.StopAndLogInformation(_logger, "time to build projs to get refs: ");
+			addToWorkspaceWatch.StopAndLogInformation(_logger, "time to add projs to workspace: ");
 			
 			return (projectsAdded, workspace);
 		}
 
 
-		private string GetInterfacesForLogging()
+		private void LogInterfacesLoaded(string who)
 		{
-			return 
-				Environment.NewLine + 
-				string.Join(Environment.NewLine,
-					_definitionsByNameSpaceByInterface
-						.SelectMany(entry => entry
-						.Value
-						.Select(nsPair => $"{nsPair.Key}.{entry.Key} : {nsPair.Value.SourceFile}")
-					)
-				);
+			_logger.LogInformation($"{nameof(LogInterfacesLoaded)} was called by {who}. Interfaces loaded:");
+
+			_definitionsByNameSpaceByInterface
+				.SelectMany(entry => entry
+					.Value
+					.Select(nsPair => $"\t\t\t\t{nsPair.Key}.{entry.Key} : {nsPair.Value.SourceFile}")
+				)
+				.ToList()
+				.ForEach(message => _logger.LogInformation(message))
+				;
 		}
 
-		private void LogDefinitions(string v)
+		private void LogDefinitions(string who)
 		{
-			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. CsProjs loaded: {string.Join('|', _csProjectsAlreadyLoaded)}");
-			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {v}. Interfaces loaded: {GetInterfacesForLogging()}");
+			_logger.LogInformation($"{nameof(LogDefinitions)} was called by {who}. CsProjs loaded:");
+			_csProjectsAlreadyLoaded
+				.Select(proj => $"\t\t\t\t{proj}")
+				.ToList()
+				.ForEach(message => _logger.LogInformation(message));
+
+			LogInterfacesLoaded(who);
 		}
 	}
 }

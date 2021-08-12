@@ -32,7 +32,7 @@ namespace OmniLsp
 			_diagnoser = diagnoser;
 			_interfaceStore = interfaceStore;
 
-			_logger.LogTrace($"hello from {nameof(TextDocumentHandler)}:{_thisInstance} ctor...");
+			_logger.LogInformation($"hello from {nameof(TextDocumentHandler)}:{_thisInstance} ctor...");
 		}
 
 		#region TextDocumentSyncHandlerBase overrides
@@ -94,7 +94,7 @@ namespace OmniLsp
 
 			try
 			{
-				_logger.LogTrace($"requesting diagnostics, triggered by {who}");
+				_logger.LogInformation($"requesting diagnostics, triggered by {who}");
 				var diagnostics = _diagnoser.GetDiagnostics(textDoc);
 					
 				_router.TextDocument.PublishDiagnostics(new PublishDiagnosticsParams
@@ -102,7 +102,6 @@ namespace OmniLsp
 					Uri = uri,
 					Diagnostics = diagnostics.Select(d => DiagnosticAdapter.From(d)).ToList()
 				});
-				
 			}
 			catch (Exception e)
 			{
