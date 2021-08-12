@@ -42,8 +42,56 @@ The model should live in the MoqGenerator.Model.Lsp namespace
 
 ## Logging in the server
 
-I spent more hours than I care to count trying to make logging work propertly. I have not yet found a way to suppress the logs from the language client itself, and I have ALSO not found a way for LogTrace() or LogDebug() to show up in logs (properly). LogDebug() will show up in logs, but without the header `[Debug - <time>]` like you will get from LogInfo() or above.
+There does not seem to be ANY way that I can tell to suppress the log messages (that are very verbose) that are of this type:
 
-Whether or not it's possible to surface an `ILogger.Log<Trace|Debug>()` statement to the client, I'd like to, for now, keep log levels where they're at.
+```
+[Trace - 8:46:27 PM] Sending request 'initialize - (0)'.
+[Trace - 8:46:28 PM] Received notification 'window/logMessage'.
+[Trace - 8:46:32 PM] Received notification 'textDocument/publishDiagnostics'.
+[Trace - 8:46:28 PM] Sending notification 'textDocument/didOpen'.
+```
 
-What this means to you as you're developing is that you may want to see some log statements that aren't normally surfaced to the client, so you may temporarily need to use level `Information` or higher to see the logs in the VSCode output window-- but before making a PR please adjust log levels appropriately.
+In addition, when _**I**_ try to log anything at Trace or Debug level, my log levels don't print out:
+
+```
+MoqGenerator.Services.InterfaceStore: time to build projs to get refs: 6ms | 
+OmniLsp.TextDocumentHandler: requesting diagnostics, triggered by textDocument/didOpen | 
+```
+
+AND I don't know where the pipe is coming from at the end of every log message, maybe an OmniSharp "feature" maybe a VSCode "feature"-- not a huge deal.
+
+Also, these two log lines are the result of a Log.LogError and Log.LogCritical, respectively:
+```
+[Error - 8:46:28 PM] OmniLsp.TextDocumentHandler: hello from TextDocumentHandler:0fb0c0b4-ef8f-406c-a054-a00bb3e6fcb9 ctor... | 
+[Error - 8:46:28 PM] OmniLsp.TextDocumentHandler: hello from TextDocumentHandler:0fb0c0b4-ef8f-406c-a054-a00bb3e6fcb9 ctor... | 
+```
+From here on out, I'm going to elevate all my log messages to Information and above, skipping the broken Critical level (not that I need it)-- in other words:
+- `ILogger<T>.LogInformation()`
+- `ILogger<T>.LogWarning()`
+- `ILogger<T>.LogError()`
+
+I'm also going to break a cardinal rule of logging (all information related to the message on a single log line), because as a human that reads the logs, I need them readable. In VSCode, logging the interface definitions will result in this:
+
+```
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: LogDefinitions was called by LoadCSProjAsync. Interfaces loaded: | 
+[Trace - 9:16:23 PM] Received notification 'window/logMessage'.
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: 				Two.Lib.IDealio : e:\temp\TwoInterface\Two.Lib\IDealio.cs | 
+[Trace - 9:16:23 PM] Received notification 'window/logMessage'.
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: 				Two.Lib.Version1.IDealio : e:\temp\TwoInterface\Two.Lib\Version1\IDealio.cs | 
+[Trace - 9:16:23 PM] Received notification 'window/logMessage'.
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: 				Two.Lib.Version2.IDealio : e:\temp\TwoInterface\Two.Lib\Version2\IDealio.cs | 
+```
+
+Which, at least I can READ, and looks even better after run through a Notepad++ regex find/replace this value: `^(?!\[.+?\] MoqGenerator).*` with nothing and then remove blank lines:
+
+```
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: LogDefinitions was called by LoadCSProjAsync. Interfaces loaded: | 
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: 				Two.Lib.IDealio : e:\temp\TwoInterface\Two.Lib\IDealio.cs | 
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: 				Two.Lib.Version1.IDealio : e:\temp\TwoInterface\Two.Lib\Version1\IDealio.cs | 
+[Info  - 9:16:23 PM] MoqGenerator.Services.InterfaceStore: 				Two.Lib.Version2.IDealio : e:\temp\TwoInterface\Two.Lib\Version2\IDealio.cs | 
+```
+
+As opposed to trying to cram all the data into a json blob on the log line, which, a machine could read, but I can't, not at first glance:
+```
+[Info  - 9:25:28 PM] MoqGenerator.Services.InterfaceStore: LogDefinitions was called by foo. Interfaces loaded: [{"Namespace":"Two.Lib.IDealio","File":"e:\\temp\\TwoInterface\\Two.Lib\\IDealio.cs"},{"Namespace":"Two.Lib.Version1.IDealio","File":"e:\\temp\\TwoInterface\\Two.Lib\\Version1\\IDealio.cs"},{"Namespace":"Two.Lib.Version2.IDealio","File":"e:\\temp\\TwoInterface\\Two.Lib\\Version2\\IDealio.cs"}] | 
+```
