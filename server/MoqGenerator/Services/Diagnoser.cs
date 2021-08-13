@@ -54,12 +54,12 @@ namespace MoqGenerator.Services
 			// check if we're dealing with a test file, otherwise bail early...
 			if(!lines.Any(line => _testFrameworks.Contains(line)))
 			{
-				_logger.LogDebug($"{item.Identifier.Uri} does not appear to be a test file");
-				watch.StopAndLogDebug(_logger, $"discarding {item.Identifier.Uri} for not being a test file took: ");
+				_logger.LogInformation($"{item.Identifier.Uri} does not appear to be a test file");
+				watch.StopAndLogInformation(_logger, $"discarding {item.Identifier.Uri} for not being a test file took: ");
 				return new List<Diagnostic>();
 			}
 
-			watch.StopAndLogDebug(_logger, $"deciding that {item.Identifier.Uri} is a test file took: ");
+			watch.StopAndLogInformation(_logger, $"deciding that {item.Identifier.Uri} is a test file took: ");
 			watch.Restart();
 
 			// use roslyn to find any diagnostics for the file,
@@ -72,7 +72,7 @@ namespace MoqGenerator.Services
 				.Create(null)
 				.AddSyntaxTrees(tree);
 
-			watch.StopAndLogDebug(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
+			watch.StopAndLogInformation(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
 			watch.Restart();
 
 			var diagnostics = compilation
@@ -132,14 +132,14 @@ namespace MoqGenerator.Services
 
 
 			if(publishableDiagnostics.Count > 0)
-				_logger.LogDebug("Diagnostics we're going to publish:");
+				_logger.LogInformation("Diagnostics we're going to publish:");
 
 			foreach(var diagnostic in publishableDiagnostics)
 			{
-				_logger.LogDebug(JsonSerializer.Serialize(diagnostic));
+				_logger.LogInformation(JsonSerializer.Serialize(diagnostic));
 			}
 			
-			watch.StopAndLogDebug(_logger, $"calculating diagnostics from syntax tree for {item.Identifier.Uri} took: ");
+			watch.StopAndLogInformation(_logger, $"calculating diagnostics from syntax tree for {item.Identifier.Uri} took: ");
 			return publishableDiagnostics;
 		}
 

@@ -54,7 +54,7 @@ namespace MoqGenerator.Services
 			// a tab, rather than a sequence of generated spaces
 			if(userTabStyle == '\t')
 			{
-				watch.StopAndLogDebug(_logger, "tab detected as indent character in: ");
+				watch.StopAndLogInformation(_logger, "tab detected as indent character in: ");
 				return new IndentationConfig(leadingWhiteSpaceByLine[range.start.line].count, "\t", false);
 			}
 
@@ -73,7 +73,7 @@ namespace MoqGenerator.Services
 				.ToList()
 				;
 			
-			_logger.LogDebug($"FakeTabCounts = ({string.Join(", ", allFakeTabsForLogging)})");
+			_logger.LogInformation($"FakeTabCounts = ({string.Join(", ", allFakeTabsForLogging)})");
 
 			// I originally grabbed distinct counts, think it was going to be some
 			// sort of semi-complicated algorithm like if max(count) % min(count) == 0 and
@@ -86,7 +86,7 @@ namespace MoqGenerator.Services
 
 			var fakeTabCount = allFakeTabsForLogging.Min();
 
-			watch.StopAndLogDebug(_logger, "spaces detected as indent 'character' in: ");
+			watch.StopAndLogInformation(_logger, "spaces detected as indent 'character' in: ");
 			return new IndentationConfig(
 				leadingWhiteSpaceByLine[range.start.line].count / fakeTabCount,
 				new string(Enumerable.Repeat(' ', fakeTabCount).ToArray()),

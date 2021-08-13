@@ -7,12 +7,9 @@ namespace MoqGenerator.Util
 	public static class StopwatchHelper
 	{
 
-		public static void StopAndLogTrace(this Stopwatch watch, ILogger logger, string messagePrefix) => StopAndLog(watch, logger, messagePrefix, LogLevel.Trace);
-		public static void StopAndLogDebug(this Stopwatch watch, ILogger logger, string messagePrefix) => StopAndLog(watch, logger, messagePrefix, LogLevel.Debug);
 		public static void StopAndLogInformation(this Stopwatch watch, ILogger logger, string messagePrefix) => StopAndLog(watch, logger, messagePrefix, LogLevel.Information);
 		public static void StopAndLogWarning(this Stopwatch watch, ILogger logger, string messagePrefix) => StopAndLog(watch, logger, messagePrefix, LogLevel.Warning);
 		public static void StopAndLogError(this Stopwatch watch, ILogger logger, string messagePrefix) => StopAndLog(watch, logger, messagePrefix, LogLevel.Error);
-		public static void StopAndLogCritical(this Stopwatch watch, ILogger logger, string messagePrefix) => StopAndLog(watch, logger, messagePrefix, LogLevel.Critical);
 
 		private static void StopAndLog(Stopwatch watch, ILogger logger, string messagePrefix, LogLevel level)
 		{

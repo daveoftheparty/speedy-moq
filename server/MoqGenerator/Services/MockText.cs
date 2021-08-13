@@ -205,7 +205,7 @@ namespace MoqGenerator.Services
 				: l
 				);
 
-			watch.StopAndLogDebug(_logger, $"time to generate moq for namespace {namespaceName} and interface {interfaceName}: ");
+			watch.StopAndLogInformation(_logger, $"time to generate moq for namespace {namespaceName} and interface {interfaceName}: ");
 			return string.Join(Environment.NewLine, lines);
 		}
 

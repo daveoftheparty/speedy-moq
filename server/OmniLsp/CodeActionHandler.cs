@@ -43,7 +43,7 @@ namespace OmniLsp
 			if(!_whoaCowboy.GiddyUp)
 				return Task.FromResult(new CommandOrCodeActionContainer());
 
-			_logger.LogTrace("Code action firing...");
+			_logger.LogInformation("Code action firing...");
 			
 			var actions = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic?.Source != null)
@@ -89,7 +89,7 @@ namespace OmniLsp
 			actions
 				.SelectMany(a => a.CodeAction.Edit.Changes.Values.SelectMany(v => v))
 				.ToList()
-				.ForEach(e => _logger.LogTrace($"Requesting changes to '{request.TextDocument.Uri.ToString()}' at Start ({e.Range.Start.Line}, {e.Range.Start.Character}), End ({e.Range.End.Line}, {e.Range.End.Character})"))
+				.ForEach(e => _logger.LogInformation($"Requesting changes to '{request.TextDocument.Uri.ToString()}' at Start ({e.Range.Start.Line}, {e.Range.Start.Character}), End ({e.Range.End.Line}, {e.Range.End.Character})"))
 				;
 
 			return Task.FromResult(new CommandOrCodeActionContainer(actions));
