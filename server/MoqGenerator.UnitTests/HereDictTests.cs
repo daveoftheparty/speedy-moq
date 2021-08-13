@@ -23,22 +23,7 @@ namespace MoqGenerator.UnitTests
 			}
 			catch
 			{
-				Console.WriteLine("READABLE FAILURES:");
-				foreach(var singleExpected in expected)
-				{
-					Console.WriteLine("expected " + singleExpected.Key);
-					Console.WriteLine("========================");
-					Console.WriteLine(singleExpected.Value);
-					Console.WriteLine("========================");
-				}
-
-				foreach(var singleActual in actual)
-				{
-					Console.WriteLine("actual " + singleActual.Key);
-					Console.WriteLine("========================");
-					Console.WriteLine(singleActual.Value);
-					Console.WriteLine("========================");
-				}
+				DictionaryDumper.DumpDictionaries(expected, actual);
 			}
 		}
 	}

@@ -1,0 +1,14 @@
+<< begin FooNamespace
+			var notSoSimple = new Mock<INotSoSimple>();
+			Expression<Func<INotSoSimple, Task<IEnumerable<SomeUserOutput>>>> getStuffAsync = x =>
+				x.GetStuffAsync(It.IsAny<IReadOnlyDictionary<int, IEnumerable<SomeUserInput>>>());
+
+			notSoSimple
+				.Setup(getStuffAsync)
+				.Returns((IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData) =>
+				{
+					return default;
+				});
+
+			notSoSimple.Verify(getStuffAsync, Times.Once);
+end FooNamespace >>

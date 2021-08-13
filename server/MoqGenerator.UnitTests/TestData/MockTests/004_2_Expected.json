@@ -1,3 +1,0 @@
-{
-	"FooNamespace" : "\t\t\tvar makeTupleYay = new Mock<IMakeTupleYay>();\r\n\t\t\tExpression<Func<IMakeTupleYay, (string hello, bool valid)>> youDontSay = x => x.YouDontSay(It.IsAny<char>());\r\n\t\t\tmakeTupleYay\r\n\t\t\t\t.Setup(youDontSay)\r\n\t\t\t\t.Returns((char c) =>\r\n\t\t\t\t{\r\n\t\t\t\t\treturn default;\r\n\t\t\t\t});\r\n\r\n\t\t\tmakeTupleYay.Verify(youDontSay, Times.Once);"
-}

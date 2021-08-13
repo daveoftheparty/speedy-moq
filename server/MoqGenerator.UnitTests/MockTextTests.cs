@@ -54,7 +54,8 @@ namespace MoqGenerator.UnitTests
 			// 	return;
 
 			var interfaceName = test.testInputs[0];
-			var expected = JsonSerializer.Deserialize<Dictionary<string, string>>(test.testInputs[1]);
+			var hereDict = new HereDict();
+			var expected = hereDict.GetDictionary(test.testInputs[1]);
 
 			var logMock = new LoggerDouble<MockText>();
 			var storeMock = GetInterfaceStoreMock(GetInterfaceDefinitions());
@@ -69,8 +70,7 @@ namespace MoqGenerator.UnitTests
 			}
 			catch
 			{
-				Console.WriteLine("Here's the actual output we got from MockText:");
-				Console.WriteLine(JsonSerializer.Serialize(actual));
+				DictionaryDumper.DumpDictionaries(expected, actual);
 			}
 		}
 

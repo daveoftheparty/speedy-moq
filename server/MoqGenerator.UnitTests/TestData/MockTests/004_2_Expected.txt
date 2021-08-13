@@ -1,0 +1,14 @@
+<< begin FooNamespace
+			var makeTupleYay = new Mock<IMakeTupleYay>();
+			Expression<Func<IMakeTupleYay, (string hello, bool valid)>> youDontSay = x =>
+				x.YouDontSay(It.IsAny<char>());
+
+			makeTupleYay
+				.Setup(youDontSay)
+				.Returns((char c) =>
+				{
+					return default;
+				});
+
+			makeTupleYay.Verify(youDontSay, Times.Once);
+end FooNamespace >>

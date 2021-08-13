@@ -1,3 +1,0 @@
-{
-	"FooNamespace" : "\t\t\tvar notSoSimple = new Mock<INotSoSimple>();\r\n\t\t\tExpression<Func<INotSoSimple, Task<IEnumerable<SomeUserOutput>>>> getStuffAsync = x => x.GetStuffAsync(It.IsAny<IReadOnlyDictionary<int, IEnumerable<SomeUserInput>>>());\r\n\t\t\tnotSoSimple\r\n\t\t\t\t.Setup(getStuffAsync)\r\n\t\t\t\t.Returns((IReadOnlyDictionary<int, IEnumerable<SomeUserInput>> transformData) =>\r\n\t\t\t\t{\r\n\t\t\t\t\treturn default;\r\n\t\t\t\t});\r\n\r\n\t\t\tnotSoSimple.Verify(getStuffAsync, Times.Once);"
-}
