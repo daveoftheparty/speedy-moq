@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using MoqGenerator.UnitTests.Utils;
@@ -14,9 +15,31 @@ namespace MoqGenerator.UnitTests
 			var expected = JsonSerializer.Deserialize<Dictionary<string, string>>(test.testInputs[1]);
 
 			var hereDict = new HereDict();
-			var actual = hereDict.GetDictionary();
+			var actual = hereDict.GetDictionary(input);
 
-			CollectionAssert.AreEquivalent(expected, actual);
+			try
+			{
+				CollectionAssert.AreEquivalent(expected, actual);
+			}
+			catch
+			{
+				Console.WriteLine("READABLE FAILURES:");
+				foreach(var singleExpected in expected)
+				{
+					Console.WriteLine("expected " + singleExpected.Key);
+					Console.WriteLine("========================");
+					Console.WriteLine(singleExpected.Value);
+					Console.WriteLine("========================");
+				}
+
+				foreach(var singleActual in actual)
+				{
+					Console.WriteLine("actual " + singleActual.Key);
+					Console.WriteLine("========================");
+					Console.WriteLine(singleActual.Value);
+					Console.WriteLine("========================");
+				}
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 {
 	"AnotherKey" : "bar",
 	"NoWhiteSpaceKey" : "baz",
-	"SomeMultilineText" : "hello\r\nworld\r\n",
-	"SomePreservedText" : "hello, world\r\n\r\n\tI heart things that are easy to read!\r\n\r\neven this :D\r\n\r\nNote I'll leave an empty blank line at the end of this text:\r\n\r\n"
+	"SomeMultilineText" : "hello\r\nworld",
+	"SomePreservedText" : "hello, world\r\n\r\n\tI heart things that are easy to read!\r\n\r\neven this :D\r\n\r\nNote I'll leave an empty blank line at the end of this text:\r\n"
 }
