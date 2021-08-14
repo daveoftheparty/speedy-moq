@@ -106,7 +106,7 @@ namespace MoqGenerator.Services
 				.Where(candidate => _interfaceStore.Exists(candidate.candidateInterface)) // can't gen text if the interface hasn't been loaded
 				.Select(loadable =>
 				{
-					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange);
+					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange.start.line);
 					var mockedTextByNamespace = _mockText.GetMockTextByNamespace(loadable.candidateInterface, config);
 
 					var dataDict = mockedTextByNamespace

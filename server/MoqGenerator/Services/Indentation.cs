@@ -16,7 +16,7 @@ namespace MoqGenerator.Services
 			_logger = logger;
 		}
 
-		public IndentationConfig GetIndentationConfig(string text, Range range)
+		public IndentationConfig GetIndentationConfig(string text, uint currentLine)
 		{
 			var watch = new Stopwatch();
 			watch.Start();
@@ -55,7 +55,7 @@ namespace MoqGenerator.Services
 			if(userTabStyle == '\t')
 			{
 				watch.StopAndLogInformation(_logger, "tab detected as indent character in: ");
-				return new IndentationConfig(leadingWhiteSpaceByLine[range.start.line].count, "\t", false);
+				return new IndentationConfig(leadingWhiteSpaceByLine[currentLine].count, "\t", false);
 			}
 
 
@@ -88,7 +88,7 @@ namespace MoqGenerator.Services
 
 			watch.StopAndLogInformation(_logger, "spaces detected as indent 'character' in: ");
 			return new IndentationConfig(
-				leadingWhiteSpaceByLine[range.start.line].count / fakeTabCount,
+				leadingWhiteSpaceByLine[currentLine].count / fakeTabCount,
 				new string(Enumerable.Repeat(' ', fakeTabCount).ToArray()),
 				true
 				);
