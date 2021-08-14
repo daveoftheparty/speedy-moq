@@ -1,0 +1,8 @@
+<< begin 4
+    hi
+        not even real code
+        not even real code
+        not even real code
+ currentLine Here
+             yo
+end 4 >>
