@@ -23,9 +23,13 @@ namespace MoqGenerator.UnitTests
 
 			var expected = JsonSerializer.Deserialize<IndentationConfig>(test.testInputs[1]);
 
-
-			var indenter = new Indentation(new LoggerDouble<Indentation>());
+			var logger = new LoggerDouble<Indentation>();
+			var indenter = new Indentation(logger);
 			var actual = indenter.GetIndentationConfig(sourceText, currentLine);
+
+			Console.WriteLine("Logs: for " + test.testIdMessage);
+			foreach(var entry in logger.LogEntries)
+				Console.WriteLine(entry);
 
 			Assert.AreEqual(expected, actual, test.testIdMessage);
 		}

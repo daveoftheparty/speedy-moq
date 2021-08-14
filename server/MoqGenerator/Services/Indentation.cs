@@ -48,10 +48,11 @@ namespace MoqGenerator.Services
 				.ThenBy(tabsAreBetter => tabsAreBetter.TabChar) // ascii tab is 9, less than ascii space 32, so tabs win if we have a tie, because they're better
 				.FirstOrDefault();
 
+			int currentLevel = 4;
 			if(findStyle == null)
 			{
-				watch.StopAndLogInformation(_logger, "indent character not clear; defaulting to tab: ");
-				return new IndentationConfig(4, "\t", true);
+				watch.StopAndLogInformation(_logger, $"indent character not clear; defaulting to tab at level {currentLevel}: ");
+				return new IndentationConfig(currentLevel, "\t", true);
 			}
 
 			var userTabStyle = findStyle.TabChar;
@@ -61,8 +62,9 @@ namespace MoqGenerator.Services
 			// a tab, rather than a sequence of generated spaces
 			if(userTabStyle == '\t')
 			{
-				watch.StopAndLogInformation(_logger, "tab detected as indent character in: ");
-				return new IndentationConfig(leadingWhiteSpaceByLine[currentLine].count, "\t", false);
+				currentLevel = leadingWhiteSpaceByLine[currentLine].count;
+				watch.StopAndLogInformation(_logger, $"tab detected as indent character, current level {currentLevel} in: ");
+				return new IndentationConfig(currentLevel, "\t", false);
 			}
 
 
@@ -92,10 +94,11 @@ namespace MoqGenerator.Services
 			// {4, 8, 12, 16, ...} and should also cover everything else like {9, 18, 27, 36, ...}
 
 			var fakeTabCount = allFakeTabsForLogging.Min();
+			currentLevel = leadingWhiteSpaceByLine[currentLine].count / fakeTabCount;
 
-			watch.StopAndLogInformation(_logger, "spaces detected as indent 'character' in: ");
+			watch.StopAndLogInformation(_logger, $"spaces detected as indent 'character', current level {currentLevel} in: ");
 			return new IndentationConfig(
-				leadingWhiteSpaceByLine[currentLine].count / fakeTabCount,
+				currentLevel,
 				new string(Enumerable.Repeat(' ', fakeTabCount).ToArray()),
 				true
 				);
