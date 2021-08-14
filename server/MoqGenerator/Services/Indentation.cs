@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -93,8 +95,10 @@ namespace MoqGenerator.Services
 			// that the 4 was the winner... so... min count == 4 should cover people who tab
 			// {4, 8, 12, 16, ...} and should also cover everything else like {9, 18, 27, 36, ...}
 
-			var fakeTabCount = allFakeTabsForLogging.Min();
-			currentLevel = leadingWhiteSpaceByLine[currentLine].count / fakeTabCount;
+			var fakes = CalculateFakeTabStop(allFakeTabsForLogging, leadingWhiteSpaceByLine[currentLine].count);
+
+			var fakeTabCount = fakes.tabSize;
+			currentLevel = fakes.currentIndent;
 
 			watch.StopAndLogInformation(_logger, $"spaces detected as indent 'character', current level {currentLevel} in: ");
 			return new IndentationConfig(
@@ -104,7 +108,48 @@ namespace MoqGenerator.Services
 				);
 		}
 
+		private (int tabSize, int currentIndent) CalculateFakeTabStop(List<int> allFakeTabsForLogging, int currentLineCount)
+		{
+			if(allFakeTabsForLogging == null || allFakeTabsForLogging.Count == 0)
+			{
+				_logger.LogError($"invalid fakeTab list, can't calculate a proper tab stop, defaulting to a tab stop = 0 spaces and current level is 0");
+				return (0, 0);
+			}
 
+			// list is pre-ordered
+			List<int> workingList;
+			if(allFakeTabsForLogging[0] == 1)
+				workingList = allFakeTabsForLogging.Skip(1).ToList();
+			else
+				workingList = allFakeTabsForLogging;
+
+
+			var candidates = new List<(int divisor, int matches)>();
+			for(var i = 0; i < workingList.Count; i++)
+			{
+				var currentDivisor = workingList[i];
+				var matches = 0;
+				for(var k = i; k < workingList.Count; k++)
+				{
+					if(workingList[k] % currentDivisor == 0)
+						matches++;
+				}
+				candidates.Add((currentDivisor, matches));
+			}
+
+			var bestMatch = candidates
+				.OrderByDescending(matches => matches.matches)
+				.First();
+
+			var tabSize = bestMatch.divisor;
+			var currentIndent = (int)Math.Ceiling(currentLineCount / (double)tabSize);
+
+			return
+			(
+				tabSize,
+				currentIndent
+			);
+		}
 
 		private (int count, bool isValid, char tabChar) GetLeadingWhitespaceChars(string line)
 		{

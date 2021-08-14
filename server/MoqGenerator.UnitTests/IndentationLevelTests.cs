@@ -13,9 +13,18 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/IndentationTests/"})]
 		public void GoIndentation((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 004")
+			// if(test.testIdMessage != "TestId: 009")
 			// 	return;
 
+#warning write a LOT more tests for the whole spaces as tabs stuff:
+			/*
+				fakeTabCounts:
+					3, 6, 9, 12
+					3, 6, 8, 9, 12
+					1, 3, 6, 8, 9, 12, 14
+
+					etc...
+			*/
 			var hereDict = new HereDict();
 			var rawInput = hereDict.GetDictionary(test.testInputs[0]).First();
 			var sourceText = rawInput.Value;
