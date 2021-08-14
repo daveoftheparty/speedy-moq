@@ -13,6 +13,9 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/IndentationTests/"})]
 		public void GoIndentation((string testIdMessage, string[] testInputs) test)
 		{
+			// if(test.testIdMessage != "TestId: 004")
+			// 	return;
+
 			var hereDict = new HereDict();
 			var rawInput = hereDict.GetDictionary(test.testInputs[0]).First();
 			var sourceText = rawInput.Value;

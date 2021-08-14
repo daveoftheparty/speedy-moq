@@ -35,7 +35,7 @@ namespace MoqGenerator.Services
 
 			// find the most tab style (tab vs. spaces) in the doc,
 			// purely by how many lines use one versus the other
-			var userTabStyle = leadingWhiteSpaceByLine
+			var findStyle = leadingWhiteSpaceByLine
 				.Values
 				.Where(lwsc => lwsc.isValid && lwsc.count > 0)
 				.GroupBy(tabStyle => tabStyle.tabChar)
@@ -46,8 +46,15 @@ namespace MoqGenerator.Services
 				})
 				.OrderByDescending(lineCount => lineCount.Count)
 				.ThenBy(tabsAreBetter => tabsAreBetter.TabChar) // ascii tab is 9, less than ascii space 32, so tabs win if we have a tie, because they're better
-				.First()
-				.TabChar;
+				.FirstOrDefault();
+
+			if(findStyle == null)
+			{
+				watch.StopAndLogInformation(_logger, "indent character not clear; defaulting to tab: ");
+				return new IndentationConfig(4, "\t", true);
+			}
+
+			var userTabStyle = findStyle.TabChar;
 
 			// if the tabChar is a tab, our work here is done, because
 			// this person understands that an indentation is created by
