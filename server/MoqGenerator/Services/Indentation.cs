@@ -98,7 +98,7 @@ namespace MoqGenerator.Services
 			var fakes = CalculateFakeTabStop(allFakeTabsForLogging, leadingWhiteSpaceByLine[currentLine].count);
 
 			var fakeTabCount = fakes.tabSize;
-			currentLevel = fakes.currentIndent;
+			currentLevel = fakes.currentIndentLevel;
 
 			watch.StopAndLogInformation(_logger, $"spaces detected as indent 'character', current level {currentLevel} in: ");
 			return new IndentationConfig(
@@ -108,7 +108,7 @@ namespace MoqGenerator.Services
 				);
 		}
 
-		private (int tabSize, int currentIndent) CalculateFakeTabStop(List<int> allFakeTabsForLogging, int currentLineCount)
+		public (int tabSize, int currentIndentLevel) CalculateFakeTabStop(List<int> allFakeTabsForLogging, int currentLineSpaceCount)
 		{
 			if(allFakeTabsForLogging == null || allFakeTabsForLogging.Count == 0)
 			{
@@ -142,12 +142,12 @@ namespace MoqGenerator.Services
 				.First();
 
 			var tabSize = bestMatch.divisor;
-			var currentIndent = (int)Math.Ceiling(currentLineCount / (double)tabSize);
+			var currentIndentLevel = (int)Math.Ceiling(currentLineSpaceCount / (double)tabSize);
 
 			return
 			(
 				tabSize,
-				currentIndent
+				currentIndentLevel
 			);
 		}
 
