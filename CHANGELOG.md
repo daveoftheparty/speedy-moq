@@ -1,3 +1,20 @@
+## 0.0.8 (Aug 14, 2021)
+- improved readme
+- logging improvements
+- formatting change: wrap the Linq Expression for better readability for methods with long params. Went from:
+```csharp
+Expression<Func<IStringAnalyzer, int>> charOccurs = x => x.CharOccurs(It.IsAny<string>(), It.IsAny<char>());
+```
+to
+```csharp
+Expression<Func<IStringAnalyzer, int>> charOccurs = x =>
+	x.CharOccurs(It.IsAny<string>(), It.IsAny<char>());
+```
+- more testing around tabs vs. spaces detection for proper output formatting
+- update demo gif, hoping for better display (less blurry)
+- thin dark outline around extension icon for light theme display
+- developer/testing quality of life stuff around test inputs
+
 ## 0.0.7 (Aug 10, 2021)
 - tiny performance improvement, won't keep trolling the file system to find .csproj files for a .cs file that has previously been resolved
 - fixes a bug introduced with 0.0.6 where some namespace calculations can blow over/remove previous interface definitions. (As a user: you might have seen the same interface defined in two or more namespaces randomly offer to Generate Moq Setups for all namespaces, then later, for only one of them.)
