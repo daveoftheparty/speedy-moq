@@ -1,0 +1,24 @@
+<< begin 18
+using System;
+using System.Linq.Expressions;
+
+using Moq;
+using NUnit.Framework;
+
+namespace UnitTests.Features.TestData
+{
+    	public interface IStringAnalyzer
+    	{
+        	int HowManyItems(string patient, char charToCount);
+    	}
+
+    	public class StringAnalyzerTests
+    	{
+        	[Test]
+        	public void HappyPath()
+        	{
+            	IStringAnalyzer
+        	}
+    	}
+}
+end 18 >>

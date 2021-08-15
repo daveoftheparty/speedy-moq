@@ -1,0 +1,51 @@
+<< begin FooNamespace
+			var someMagicSauce = new Mock<ISomeMagicSauce>();
+
+			someMagicSauce.SetupGet(x => x.SomeUrl).Returns(/* fill me in */);
+			someMagicSauce.SetupGet(x => x.SomeDate).Returns(/* fill me in */);
+
+			Expression<Action<ISomeMagicSauce>> boom = x =>
+				x.Boom(It.IsAny<DateTime?>());
+
+			someMagicSauce
+				.Setup(boom)
+				.Callback((DateTime? someNullableTimeSlice) =>
+				{
+					return;
+				});
+
+			Expression<Func<ISomeMagicSauce, (string hello, bool valid)>> returnSomeTuple = x =>
+				x.ReturnSomeTuple(It.IsAny<char>());
+
+			someMagicSauce
+				.Setup(returnSomeTuple)
+				.Returns((char c) =>
+				{
+					return default;
+				});
+
+			Expression<Func<ISomeMagicSauce, bool>> exists = x =>
+				x.Exists(It.IsAny<string>());
+
+			someMagicSauce
+				.Setup(exists)
+				.Returns((string interfaceName) =>
+				{
+					return default;
+				});
+
+			Expression<Func<ISomeMagicSauce, Task<IEnumerable<double>>>> getStuffAsync = x =>
+				x.GetStuffAsync(It.IsAny<IReadOnlyDictionary<int, IEnumerable<double>>>());
+
+			someMagicSauce
+				.Setup(getStuffAsync)
+				.Returns((IReadOnlyDictionary<int, IEnumerable<double>> transformData) =>
+				{
+					return default;
+				});
+
+			someMagicSauce.Verify(boom, Times.Once);
+			someMagicSauce.Verify(returnSomeTuple, Times.Once);
+			someMagicSauce.Verify(exists, Times.Once);
+			someMagicSauce.Verify(getStuffAsync, Times.Once);
+end FooNamespace >>

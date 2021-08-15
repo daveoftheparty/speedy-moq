@@ -8,7 +8,6 @@ using Moq;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Services;
 using MoqGenerator.Interfaces.Lsp;
-using ourRange = MoqGenerator.Model.Lsp.Range;
 using MoqGenerator.UnitTests.Utils;
 using System;
 
@@ -54,7 +53,7 @@ namespace MoqGenerator.UnitTests
 
 			var mockIndentation = new Mock<IIndentation>();
 			mockIndentation
-				.Setup(x => x.GetIndentationConfig(It.IsAny<string>(), It.IsAny<ourRange>()))
+				.Setup(x => x.GetIndentationConfig(It.IsAny<string>(), It.IsAny<uint>()))
 				.Returns(new IndentationConfig(3, "\t", false));
 
 			var diagnoser = new Diagnoser(

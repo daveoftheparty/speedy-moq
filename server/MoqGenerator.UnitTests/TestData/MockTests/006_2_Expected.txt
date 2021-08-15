@@ -1,0 +1,10 @@
+<< begin Hello
+			var showUpInTwoPlaces = new Mock<IShowUpInTwoPlaces>();
+			showUpInTwoPlaces.SetupGet(x => x.SomeConfigValue).Returns(/* fill me in */);
+end Hello >>
+
+
+<< begin World
+			var showUpInTwoPlaces = new Mock<IShowUpInTwoPlaces>();
+			showUpInTwoPlaces.SetupGet(x => x.AnotherConfigValue).Returns(/* fill me in */);
+end World >>

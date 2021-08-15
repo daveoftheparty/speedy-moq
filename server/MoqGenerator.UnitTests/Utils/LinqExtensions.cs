@@ -5,7 +5,7 @@ namespace MoqGenerator.UnitTests.Utils
 {
 	public static class LinqExtensions
 	{
-		public static IEnumerable<T> TakeUntil<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+		public static IEnumerable<T> TakeUntil<T>(this IEnumerable<T> source, Func<T, bool> predicate, bool inclusive = true)
 		{
 			foreach(T item in source)
 			{
@@ -15,7 +15,7 @@ namespace MoqGenerator.UnitTests.Utils
 				}
 				else
 				{
-					yield return item;
+					if(inclusive) yield return item;
 					yield break;
 				}
 			}

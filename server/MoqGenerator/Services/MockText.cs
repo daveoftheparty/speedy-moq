@@ -68,7 +68,9 @@ namespace MoqGenerator.Services
 
 					stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
 
-					Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+					Expression<Func<IStringAnalyzer, int>> howManyItems = x =>
+						x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+
 					stringAnalyzer
 						.Setup(howManyItems)
 						.Returns((string patient, char charToCount) =>
@@ -128,19 +130,26 @@ namespace MoqGenerator.Services
 
 				if(method.ReturnType == "void")
 				{
-					results.Add(
-						// Expression<Action<IStringAnalyzer>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Action<{interfaceName}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
-					);
+					results.AddRange(new []
+					{
+						// Expression<Action<IStringAnalyzer>> howManyItems = x =>
+						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+						$"Expression<Action<{interfaceName}>> {camelName} = x =>",
+						$"{tab}x.{methodName}({parameterDeclaration});"
+					});
 				}
 				else
 				{
-					results.Add(
-						// Expression<Func<IStringAnalyzer, int>> howManyItems = x => x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x => x.{methodName}({parameterDeclaration});"
-					);
+					results.AddRange(new []
+					{
+						// Expression<Func<IStringAnalyzer, int>> howManyItems = x =>
+						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
+						$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x =>",
+						$"{tab}x.{methodName}({parameterDeclaration});"
+					});
 				}
 
+				results.Add("");
 
 				// stringAnalyzer
 				//	.Setup(howManyItems)

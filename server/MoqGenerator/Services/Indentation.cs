@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -16,7 +18,7 @@ namespace MoqGenerator.Services
 			_logger = logger;
 		}
 
-		public IndentationConfig GetIndentationConfig(string text, Range range)
+		public IndentationConfig GetIndentationConfig(string text, uint currentLine)
 		{
 			var watch = new Stopwatch();
 			watch.Start();
@@ -35,7 +37,7 @@ namespace MoqGenerator.Services
 
 			// find the most tab style (tab vs. spaces) in the doc,
 			// purely by how many lines use one versus the other
-			var userTabStyle = leadingWhiteSpaceByLine
+			var findStyle = leadingWhiteSpaceByLine
 				.Values
 				.Where(lwsc => lwsc.isValid && lwsc.count > 0)
 				.GroupBy(tabStyle => tabStyle.tabChar)
@@ -46,16 +48,25 @@ namespace MoqGenerator.Services
 				})
 				.OrderByDescending(lineCount => lineCount.Count)
 				.ThenBy(tabsAreBetter => tabsAreBetter.TabChar) // ascii tab is 9, less than ascii space 32, so tabs win if we have a tie, because they're better
-				.First()
-				.TabChar;
+				.FirstOrDefault();
+
+			int currentLevel = 4;
+			if(findStyle == null)
+			{
+				watch.StopAndLogInformation(_logger, $"indent character not clear; defaulting to tab at level {currentLevel}: ");
+				return new IndentationConfig(currentLevel, "\t", true);
+			}
+
+			var userTabStyle = findStyle.TabChar;
 
 			// if the tabChar is a tab, our work here is done, because
 			// this person understands that an indentation is created by
 			// a tab, rather than a sequence of generated spaces
 			if(userTabStyle == '\t')
 			{
-				watch.StopAndLogInformation(_logger, "tab detected as indent character in: ");
-				return new IndentationConfig(leadingWhiteSpaceByLine[range.start.line].count, "\t", false);
+				currentLevel = leadingWhiteSpaceByLine[currentLine].count;
+				watch.StopAndLogInformation(_logger, $"tab detected as indent character, current level {currentLevel} in: ");
+				return new IndentationConfig(currentLevel, "\t", false);
 			}
 
 
@@ -84,17 +95,61 @@ namespace MoqGenerator.Services
 			// that the 4 was the winner... so... min count == 4 should cover people who tab
 			// {4, 8, 12, 16, ...} and should also cover everything else like {9, 18, 27, 36, ...}
 
-			var fakeTabCount = allFakeTabsForLogging.Min();
+			var fakes = CalculateFakeTabStop(allFakeTabsForLogging, leadingWhiteSpaceByLine[currentLine].count);
 
-			watch.StopAndLogInformation(_logger, "spaces detected as indent 'character' in: ");
+			var fakeTabCount = fakes.tabSize;
+			currentLevel = fakes.currentIndentLevel;
+
+			watch.StopAndLogInformation(_logger, $"spaces detected as indent 'character', current level {currentLevel} in: ");
 			return new IndentationConfig(
-				leadingWhiteSpaceByLine[range.start.line].count / fakeTabCount,
+				currentLevel,
 				new string(Enumerable.Repeat(' ', fakeTabCount).ToArray()),
 				true
 				);
 		}
 
+		public (int tabSize, int currentIndentLevel) CalculateFakeTabStop(List<int> allFakeTabsForLogging, int currentLineSpaceCount)
+		{
+			if(allFakeTabsForLogging == null || allFakeTabsForLogging.Count == 0)
+			{
+				_logger.LogError($"invalid fakeTab list, can't calculate a proper tab stop, defaulting to a tab stop = 0 spaces and current level is 0");
+				return (0, 0);
+			}
 
+			// list is pre-ordered
+			List<int> workingList;
+			if(allFakeTabsForLogging[0] == 1)
+				workingList = allFakeTabsForLogging.Skip(1).ToList();
+			else
+				workingList = allFakeTabsForLogging;
+
+
+			var candidates = new List<(int divisor, int matches)>();
+			for(var i = 0; i < workingList.Count; i++)
+			{
+				var currentDivisor = workingList[i];
+				var matches = 0;
+				for(var k = i; k < workingList.Count; k++)
+				{
+					if(workingList[k] % currentDivisor == 0)
+						matches++;
+				}
+				candidates.Add((currentDivisor, matches));
+			}
+
+			var bestMatch = candidates
+				.OrderByDescending(matches => matches.matches)
+				.First();
+
+			var tabSize = bestMatch.divisor;
+			var currentIndentLevel = (int)Math.Ceiling(currentLineSpaceCount / (double)tabSize);
+
+			return
+			(
+				tabSize,
+				currentIndentLevel
+			);
+		}
 
 		private (int count, bool isValid, char tabChar) GetLeadingWhitespaceChars(string line)
 		{

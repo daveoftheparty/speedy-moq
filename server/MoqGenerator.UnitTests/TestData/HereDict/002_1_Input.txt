@@ -1,0 +1,27 @@
+
+
+<< begin AnotherKey
+bar
+end AnotherKey >>
+<< begin NoWhiteSpaceKey
+baz
+end NoWhiteSpaceKey >>
+
+
+
+
+<< begin SomeMultilineText
+hello
+world
+end SomeMultilineText >>
+
+<< begin SomePreservedText
+hello, world
+
+	I heart things that are easy to read!
+
+even this :D
+
+Note I'll leave an empty blank line at the end of this text:
+
+end SomePreservedText >>

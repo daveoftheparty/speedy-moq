@@ -4,6 +4,6 @@ namespace MoqGenerator.Interfaces.Lsp
 {
 	public interface IIndentation
 	{
-		IndentationConfig GetIndentationConfig(string text, Range range);
+		IndentationConfig GetIndentationConfig(string text, uint currentLine);
 	}
 }
