@@ -19,7 +19,7 @@ namespace Demo.Lib
 
 ## And:
 ```csharp
-using NUnit.Framework; // or xUnit / Microsoft.VisualStudio.TestTools
+using NUnit.Framework; // or xUnit, Microsoft.VisualStudio.TestTools
 
 namespace Demo.Lib.UnitTests
 {
