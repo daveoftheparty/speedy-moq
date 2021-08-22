@@ -1,0 +1,7 @@
+namespace Foo
+{
+	public interface IGenericService<TSource, TResult>
+	{
+		IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+	}
+}

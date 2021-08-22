@@ -106,6 +106,44 @@ namespace MoqGenerator.UnitTests
 			{
 				{
 					/*
+						public interface IGenericService<TSource, TResult>
+						{
+							IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+						}
+					*/
+					"IGenericService",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IGenericService",
+								"IGenericService.cs",
+								new List<InterfaceMethod>
+								{
+									{
+										new InterfaceMethod
+										(
+											"TransformSource",
+											"IEnumerable<TResult>",
+											new List<InterfaceMethodParameter>
+											{
+												new InterfaceMethodParameter("IEnumerable<TSource>", "items", "IEnumerable<TSource> items"),
+											}
+										)
+									}
+								},
+								new List<string>()
+							)
+						}
+					}
+				},
+
+
+
+				{
+					/*
 					namespace Hello
 					{
 						public interface IShowUpInTwoPlaces

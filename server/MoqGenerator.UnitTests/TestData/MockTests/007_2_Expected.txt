@@ -1,0 +1,14 @@
+<< begin FooNamespace
+			var genericService = new Mock<IGenericService<TSource, TResult>>();
+			Expression<Func<IGenericService<TSource, TResult>, IEnumerable<TResult>>> transformSource = x =>
+				x.TransformSource(It.IsAny<IEnumerable<TSource>>());
+
+			genericService
+				.Setup(transformSource)
+				.Returns((IEnumerable<TSource> items) =>
+				{
+					return default;
+				});
+
+			genericService.Verify(transformSource, Times.Once);
+end FooNamespace >>

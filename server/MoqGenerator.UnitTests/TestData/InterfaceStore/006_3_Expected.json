@@ -1,0 +1,20 @@
+{
+	"Foo": {
+		"InterfaceName": "IGenericService",
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "TransformSource",
+				"ReturnType": "IEnumerable<TResult>",
+				"Parameters": [
+					{
+						"ParameterType": "IEnumerable<TSource>",
+						"ParameterName": "items",
+						"ParameterDefinition": "IEnumerable<TSource> items"
+					}
+				]
+			}
+		],
+		"Properties": []
+	}
+}
