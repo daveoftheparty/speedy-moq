@@ -1,3 +1,27 @@
+## 0.0.9 (Aug 23, 2021)
+Bugfix with generating mock for a generic. Before fix, this interface:
+```csharp
+public interface IService<T>
+{
+	T GetSomething();
+}
+```
+generated:
+```csharp
+var service = new Mock<IService>();
+Expression<Func<IService, T>> getSomething = x =>
+	x.GetSomething();
+```
+which is a compilation error, and this library tries to avoid generating code with compilation errors.
+
+Now, the interface above will generate:
+```csharp
+var service = new Mock<IService<T>>();
+Expression<Func<IService<T>, T>> getSomething = x =>
+	x.GetSomething();
+```
+which, while the T isn't super useful, is at least, syntactically correct... just replace T with _*whatever*_
+
 ## 0.0.8 (Aug 14, 2021)
 - improved readme
 - logging improvements

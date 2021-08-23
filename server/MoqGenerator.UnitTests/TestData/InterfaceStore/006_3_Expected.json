@@ -1,0 +1,37 @@
+{
+	"Foo": {
+		"InterfaceName": "IGenericService",
+		"InterfaceNameWithGenerics": "IGenericService<TSource, TResult>",
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "TransformSource",
+				"ReturnType": "IEnumerable<TResult>",
+				"Parameters": [
+					{
+						"ParameterType": "IEnumerable<TSource>",
+						"ParameterName": "items",
+						"ParameterDefinition": "IEnumerable<TSource> items"
+					}
+				]
+			},
+			{
+				"MethodName": "Increment",
+				"ReturnType": "void",
+				"Parameters": [
+					{
+						"ParameterType": "string",
+						"ParameterName": "name",
+						"ParameterDefinition": "string name"
+					},
+					{
+						"ParameterType": "int",
+						"ParameterName": "value",
+						"ParameterDefinition": "int value"
+					}
+				]
+			}
+		],
+		"Properties": []
+	}
+}

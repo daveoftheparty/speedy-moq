@@ -98,9 +98,11 @@ namespace MoqGenerator.Services
 
 			mockName = Camelify(mockName);
 
+			var interfacePlusArgs = definition.InterfaceNameWithGenerics ?? definition.InterfaceName;
+
 			results.Add(
 				// var stringAnalyzer = new Mock<IStringAnalyzer>();
-				$"var {mockName} = new Mock<{interfaceName}>();"
+				$"var {mockName} = new Mock<{interfacePlusArgs}>();"
 				);
 
 
@@ -134,7 +136,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Action<IStringAnalyzer>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Action<{interfaceName}>> {camelName} = x =>",
+						$"Expression<Action<{interfacePlusArgs}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}
@@ -144,7 +146,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Func<IStringAnalyzer, int>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Func<{interfaceName}, {method.ReturnType}>> {camelName} = x =>",
+						$"Expression<Func<{interfacePlusArgs}, {method.ReturnType}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}

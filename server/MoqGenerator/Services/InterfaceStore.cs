@@ -154,6 +154,7 @@ namespace MoqGenerator.Services
 							{
 								Namespace = node.Model.GetDeclaredSymbol(method.Parent)?.ContainingSymbol?.ToString(),
 								InterfaceName = node.Model.GetDeclaredSymbol(method.Parent).Name,
+								TypeArguments = GetInterfaceTypeArguments(node.Model.GetDeclaredSymbol(method.Parent).Name, node.Model, method.Parent),
 								SourceFile = string.IsNullOrWhiteSpace(method?.Parent.SyntaxTree.FilePath) ? uriAsFile : method.Parent.SyntaxTree.FilePath,
 								MethodName = method.Identifier.Text,
 								ReturnType = method.ReturnType.ToString(),
@@ -185,6 +186,7 @@ namespace MoqGenerator.Services
 							InterfaceDefinition = new InterfaceDefinition
 							(
 								interfaceGroup.Key,
+								namespaceGroup.First().TypeArguments,
 								namespaceGroup.First().SourceFile,
 								namespaceGroup
 									.GroupBy(y => y.MethodName)
@@ -234,6 +236,7 @@ namespace MoqGenerator.Services
 						{
 							Namespace = node.Model.GetDeclaredSymbol(prop.Parent)?.ContainingSymbol?.ToString(),
 							InterfaceName = node.Model.GetDeclaredSymbol(prop.Parent).Name,
+							TypeArguments = GetInterfaceTypeArguments(node.Model.GetDeclaredSymbol(prop.Parent).Name, node.Model, prop.Parent),
 							SourceFile = string.IsNullOrWhiteSpace(prop?.Parent.SyntaxTree.FilePath) ? uriAsFile : prop.Parent.SyntaxTree.FilePath,
 							PropertyName = prop.Identifier.Text
 						})
@@ -253,6 +256,7 @@ namespace MoqGenerator.Services
 							InterfaceDefinition = new InterfaceDefinition
 							(
 								interfaceGroup.Key,
+								namespaceGroup.First().TypeArguments,
 								namespaceGroup.First().SourceFile,
 								new List<InterfaceMethod>(), // methods to be filled in by other method...
 								namespaceGroup.Select(p => p.PropertyName).ToList()
@@ -266,6 +270,18 @@ namespace MoqGenerator.Services
 			return dict;
 		}
 
+
+		private string GetInterfaceTypeArguments(string interfaceName, SemanticModel model, SyntaxNode member)
+		{
+			var typeArgs = ((INamedTypeSymbol)model.GetDeclaredSymbol(member))?
+				.TypeArguments
+				.Select(t => t.Name)
+				.ToList();
+
+			return typeArgs.Count == 0
+				? null
+				: $"{interfaceName}<{string.Join(", ", typeArgs)}>";
+		}
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitionsByName(List<SemanticModel> models, TextDocumentIdentifier textDocId)
 		{
