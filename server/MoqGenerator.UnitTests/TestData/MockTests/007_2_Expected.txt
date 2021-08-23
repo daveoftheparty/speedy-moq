@@ -1,5 +1,6 @@
 << begin FooNamespace
 			var genericService = new Mock<IGenericService<TSource, TResult>>();
+
 			Expression<Func<IGenericService<TSource, TResult>, IEnumerable<TResult>>> transformSource = x =>
 				x.TransformSource(It.IsAny<IEnumerable<TSource>>());
 
@@ -10,5 +11,16 @@
 					return default;
 				});
 
+			Expression<Action<IGenericService<TSource, TResult>>> increment = x =>
+				x.Increment(It.IsAny<string>(), It.IsAny<int>());
+
+			genericService
+				.Setup(increment)
+				.Callback((string name, int value) =>
+				{
+					return;
+				});
+
 			genericService.Verify(transformSource, Times.Once);
+			genericService.Verify(increment, Times.Once);
 end FooNamespace >>

@@ -50,7 +50,7 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 001")
+			// if(test.testIdMessage != "TestId: 007")
 			// 	return;
 
 			var interfaceName = test.testInputs[0];
@@ -109,6 +109,7 @@ namespace MoqGenerator.UnitTests
 						public interface IGenericService<TSource, TResult>
 						{
 							IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+							void Increment(string name, int value);
 						}
 					*/
 					"IGenericService",
@@ -119,6 +120,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IGenericService",
+								"IGenericService<TSource, TResult>",
 								"IGenericService.cs",
 								new List<InterfaceMethod>
 								{
@@ -132,8 +134,22 @@ namespace MoqGenerator.UnitTests
 												new InterfaceMethodParameter("IEnumerable<TSource>", "items", "IEnumerable<TSource> items"),
 											}
 										)
+									},
+
+									{
+										new InterfaceMethod
+										(
+											"Increment",
+											"void",
+											new List<InterfaceMethodParameter>
+											{
+												new InterfaceMethodParameter("string", "name", "string name"),
+												new InterfaceMethodParameter("int", "value", "int value"),
+											}
+										)
 									}
 								},
+								
 								new List<string>()
 							)
 						}
@@ -168,6 +184,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IShowUpInTwoPlaces",
+								null,
 								"",
 								new List<InterfaceMethod>(),
 								new List<string>
@@ -182,6 +199,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IShowUpInTwoPlaces",
+								null,
 								"",
 								new List<InterfaceMethod>(),
 								new List<string>
@@ -210,6 +228,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IStringAnalyzer",
+								null,
 								"IStringAnalyzer.cs",
 								new List<InterfaceMethod>
 								{
@@ -249,6 +268,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"INotSoSimple",
+								null,
 								"INotSoSimple.cs",
 								new List<InterfaceMethod>
 								{
@@ -287,6 +307,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IWassupNull",
+								null,
 								"IWassupNull.cs",
 								new List<InterfaceMethod>
 								{
@@ -325,6 +346,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IMakeTupleYay",
+								null,
 								"IMakeTupleYay.cs",
 								new List<InterfaceMethod>
 								{
@@ -369,6 +391,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"ISomeMagicSauce",
+								null,
 								"",
 								new List<InterfaceMethod>
 								{

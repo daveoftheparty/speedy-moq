@@ -14,6 +14,22 @@
 						"ParameterDefinition": "IEnumerable<TSource> items"
 					}
 				]
+			},
+			{
+				"MethodName": "Increment",
+				"ReturnType": "void",
+				"Parameters": [
+					{
+						"ParameterType": "string",
+						"ParameterName": "name",
+						"ParameterDefinition": "string name"
+					},
+					{
+						"ParameterType": "int",
+						"ParameterName": "value",
+						"ParameterDefinition": "int value"
+					}
+				]
 			}
 		],
 		"Properties": []
