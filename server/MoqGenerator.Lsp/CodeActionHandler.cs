@@ -14,7 +14,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
 using MoqGenerator.Interfaces.Lsp;
 
-namespace OmniLsp
+namespace MoqGenerator.Lsp
 {
 	public class CodeActionHandler : ICodeActionHandler
 	{

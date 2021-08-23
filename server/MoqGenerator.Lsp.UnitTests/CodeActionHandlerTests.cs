@@ -8,7 +8,7 @@ using MoqGenerator.Interfaces.Lsp;
 
 using OmniRange = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
-namespace OmniLsp.UnitTests
+namespace MoqGenerator.Lsp.UnitTests
 {
 	public class CodeActionHandlerTests
 	{

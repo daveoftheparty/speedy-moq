@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace OmniLsp
+namespace MoqGenerator.Lsp
 {
 	public class DebugUtils
 	{

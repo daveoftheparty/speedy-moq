@@ -13,9 +13,9 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using MoqGenerator.Interfaces.Lsp;
-using OmniLsp.Adapters;
+using MoqGenerator.Lsp.Adapters;
 
-namespace OmniLsp
+namespace MoqGenerator.Lsp
 {
 	public class TextDocumentHandler : TextDocumentSyncHandlerBase
 	{

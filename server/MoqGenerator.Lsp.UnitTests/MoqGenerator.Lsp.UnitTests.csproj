@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OmniLsp\OmniLsp.csproj" />
+    <ProjectReference Include="..\MoqGenerator.Lsp\MoqGenerator.Lsp.csproj" />
     <ProjectReference Include="..\MoqGenerator.UnitTests\MoqGenerator.UnitTests.csproj" />
   </ItemGroup>
 

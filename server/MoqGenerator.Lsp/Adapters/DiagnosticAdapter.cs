@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 
-namespace OmniLsp.Adapters
+namespace MoqGenerator.Lsp.Adapters
 {
 	public class DiagnosticAdapter
 	{

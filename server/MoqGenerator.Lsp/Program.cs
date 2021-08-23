@@ -9,7 +9,7 @@ using OmniSharp.Extensions.LanguageServer.Server;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Services;
 
-namespace OmniLsp
+namespace MoqGenerator.Lsp
 {
 	class Program
 	{
