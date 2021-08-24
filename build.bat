@@ -9,7 +9,7 @@ if exist "./client/out/server" (
 
 dotnet build ^
 	-c Release ^
-	server/OmniLsp/OmniLsp.csproj ^
+	server/MoqGenerator.Lsp/MoqGenerator.Lsp.csproj ^
 	/property:GenerateFullPaths=true ^
 	/consoleloggerparameters:NoSummary ^
 	--output ./client/out/server

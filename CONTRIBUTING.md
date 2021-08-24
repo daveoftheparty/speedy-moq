@@ -32,9 +32,9 @@ const serverOptions: ServerOptions = {
 
 ## New models in code
 
-I'm trying to keep the implementation of the language server more or less separate (or as separate as possible) from the LSP provider. I'm not saying there's a better choice out there for C#, but, I had a lot of trouble trying to get it up and running, due to an extreme lack of documentation. I hope not to have to replace the OmniLsp project, but, if I do, I want the transition as smooth as possible, so:
+I'm trying to keep the implementation of the language server more or less separate (or as separate as possible) from the LSP provider. I'm not saying there's a better choice out there for C#, but, I had a lot of trouble trying to get it up and running, due to an extreme lack of documentation. I hope not to have to replace the MoqGenerator.Lsp project, but, if I do, I want the transition as smooth as possible, so:
 
-If you need a new model to communicate between OmniLsp <==> MoqGenerator, take the model from this spec, version 3.16:
+If you need a new model to communicate between MoqGenerator.Lsp <==> MoqGenerator, take the model from this spec, version 3.16:
 
 https://microsoft.github.io/language-server-protocol/specification
 
@@ -55,15 +55,15 @@ In addition, when _**I**_ try to log anything at Trace or Debug level, my log le
 
 ```
 MoqGenerator.Services.InterfaceStore: time to build projs to get refs: 6ms | 
-OmniLsp.TextDocumentHandler: requesting diagnostics, triggered by textDocument/didOpen | 
+MoqGenerator.Lsp.TextDocumentHandler: requesting diagnostics, triggered by textDocument/didOpen | 
 ```
 
 AND I don't know where the pipe is coming from at the end of every log message, maybe an OmniSharp "feature" maybe a VSCode "feature"-- not a huge deal.
 
 Also, these two log lines are the result of a Log.LogError and Log.LogCritical, respectively:
 ```
-[Error - 8:46:28 PM] OmniLsp.TextDocumentHandler: hello from TextDocumentHandler:0fb0c0b4-ef8f-406c-a054-a00bb3e6fcb9 ctor... | 
-[Error - 8:46:28 PM] OmniLsp.TextDocumentHandler: hello from TextDocumentHandler:0fb0c0b4-ef8f-406c-a054-a00bb3e6fcb9 ctor... | 
+[Error - 8:46:28 PM] MoqGenerator.Lsp.TextDocumentHandler: hello from TextDocumentHandler:0fb0c0b4-ef8f-406c-a054-a00bb3e6fcb9 ctor... | 
+[Error - 8:46:28 PM] MoqGenerator.Lsp.TextDocumentHandler: hello from TextDocumentHandler:0fb0c0b4-ef8f-406c-a054-a00bb3e6fcb9 ctor... | 
 ```
 From here on out, I'm going to elevate all my log messages to Information and above, skipping the broken Critical level (not that I need it)-- in other words:
 - `ILogger<T>.LogInformation()`

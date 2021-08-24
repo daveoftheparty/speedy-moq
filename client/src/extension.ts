@@ -13,7 +13,7 @@ import { release } from 'os';
 
 const vsCodeName = 'speedyMoq';
 const friendlyName = 'Speedy Moq';
-const CSharpPackageName = 'OmniLsp';
+const CSharpPackageName = 'MoqGenerator.Lsp';
 
 export function activate(context: vscode.ExtensionContext) {
 
