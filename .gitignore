@@ -1,4 +1,3 @@
 out
 node_modules
-# client/server # Dave-- this makes me nervous, I don't understand it, this folder doesn't exist from the Microsoft example and doesn't seem to exist after an npm install/npm run compile either
 .vscode-test
