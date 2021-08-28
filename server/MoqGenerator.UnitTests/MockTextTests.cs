@@ -150,7 +150,8 @@ namespace MoqGenerator.UnitTests
 									}
 								},
 								
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -190,7 +191,8 @@ namespace MoqGenerator.UnitTests
 								new List<string>
 								{
 									"SomeConfigValue"
-								}
+								},
+								null
 							)
 						},
 
@@ -205,7 +207,8 @@ namespace MoqGenerator.UnitTests
 								new List<string>
 								{
 									"AnotherConfigValue"
-								}
+								},
+								null
 							)
 						},
 					}
@@ -245,7 +248,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -284,7 +288,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -323,7 +328,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -362,7 +368,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -439,7 +446,8 @@ namespace MoqGenerator.UnitTests
 								{
 									"SomeUrl",
 									"SomeDate"
-								}
+								},
+								null
 							)
 						}
 					}

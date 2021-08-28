@@ -204,7 +204,8 @@ namespace MoqGenerator.Services
 											.ToList()
 									))
 									.ToList(),
-								new List<string>() // Properties, to be filled in by other method...
+								new List<string>(), // Properties, to be filled in by other method...
+								null // Indexer
 							)
 						})
 						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
@@ -259,7 +260,8 @@ namespace MoqGenerator.Services
 								namespaceGroup.First().TypeArguments,
 								namespaceGroup.First().SourceFile,
 								new List<InterfaceMethod>(), // methods to be filled in by other method...
-								namespaceGroup.Select(p => p.PropertyName).ToList()
+								namespaceGroup.Select(p => p.PropertyName).ToList(),
+								null // Indexer
 							)
 						})
 						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
