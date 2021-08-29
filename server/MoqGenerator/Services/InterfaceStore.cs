@@ -86,10 +86,10 @@ namespace MoqGenerator.Services
 
 			// load our interface dict...
 			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model }, textDocItem.Identifier);
+			var definitions = GetDefinitionsByNamespaceByInterface(new List<SemanticModel> { model }, textDocItem.Identifier);
 			watch.StopAndLogInformation(_logger, "(single file) time to get interface definitions from semantic models: ");
 
-			UpdateInterfaceDictionary(definitions);
+			UpdateMainDictionary(definitions);
 
 			if(definitions.Count > 0)
 			{
@@ -119,10 +119,10 @@ namespace MoqGenerator.Services
 
 			// load our interface dict...
 			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(models.ToList(), textDocId);
+			var definitions = GetDefinitionsByNamespaceByInterface(models.ToList(), textDocId);
 			watch.StopAndLogInformation(_logger, "time to get interface definitions from semantic models: ");
 
-			UpdateInterfaceDictionary(definitions);
+			UpdateMainDictionary(definitions);
 
 			// and finally, load up our hashset so that we don't have to do this again
 			foreach(var proj in projectsAdded)
@@ -133,7 +133,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceMethods(List<SemanticModel> models, string uriAsFile)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetMethods(List<SemanticModel> models, string uriAsFile)
 		{
 			var interfaceGroups = models
 				.Select(semanticModel => new
@@ -216,7 +216,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models, string uriAsFile)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetProperties(List<SemanticModel> models, string uriAsFile)
 		{
 			var interfaceGroups = models
 				.Select(semanticModel => new
@@ -285,12 +285,12 @@ namespace MoqGenerator.Services
 				: $"{interfaceName}<{string.Join(", ", typeArgs)}>";
 		}
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitionsByName(List<SemanticModel> models, TextDocumentIdentifier textDocId)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetDefinitionsByNamespaceByInterface(List<SemanticModel> models, TextDocumentIdentifier textDocId)
 		{
 			var uriAsFile = _uriHandler.GetFilePath(textDocId);
 
-			var methods = GetInterfaceMethods(models, uriAsFile);
-			var properties = GetInterfacePropertiesByName(models, uriAsFile);
+			var methods = GetMethods(models, uriAsFile);
+			var properties = GetProperties(models, uriAsFile);
 
 			// merge the two dictionaries
 			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>();
@@ -345,7 +345,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private void UpdateInterfaceDictionary(Dictionary<string, Dictionary<string, InterfaceDefinition>> definitions)
+		private void UpdateMainDictionary(Dictionary<string, Dictionary<string, InterfaceDefinition>> definitions)
 		{
 			foreach(var definition in definitions)
 			{
