@@ -241,33 +241,55 @@ namespace MoqGenerator.Services
 		{
 			if(indexer != null)
 			{
+				if(indexer.HasSet)
+				{
+					results.Add("");
+					// hasIndexerStore = new Dictionary<string, string>();
+					results.Add(
+						$"var {mockName}Store = new Dictionary<{indexer.KeyType}, {indexer.ReturnType}>();"
+					);
+				}
+
 				if(indexer.HasGet)
 				{
 					// stringAnalyzer
 					//	.Setup(x => x[It.IsAny<string>()])
-					//	.Returns((string key) => return default);
+					
+					//	.Returns((string key) => default);
+					// or
+					//	.Returns((string key) => stringAnalyzerStore[key]);
 
 					results.Add(mockName);
 					results.Add(
 						$"{tab}.Setup(x => x[It.IsAny<{indexer.KeyType}>()])"
 					);
-					results.Add(
-						$"{tab}.Returns(({indexer.KeyType} key) => default);"
-					);
+
+					if(indexer.HasSet)
+					{
+						results.Add(
+							$"{tab}.Returns(({indexer.KeyType} key) => {mockName}Store[key]);"
+						);
+					}
+					else
+					{
+						results.Add(
+							$"{tab}.Returns(({indexer.KeyType} key) => default);"
+						);
+					}
 				}
 
 				if(indexer.HasSet)
 				{
 					// stringAnalyzer
 					// 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
-					// 	.Callback((string key, string value) => {});
+					// 	.Callback((string key, string value) => stringAnalyzerStore[key] = value);
 
 					results.Add(mockName);
 					results.Add(
 						$"{tab}.SetupSet(x => x[It.IsAny<{indexer.KeyType}>()] = It.IsAny<{indexer.ReturnType}>())"
 					);
 					results.Add(
-						$"{tab}.Callback(({indexer.KeyType} key, {indexer.ReturnType} value) => {{}});"
+						$"{tab}.Callback(({indexer.KeyType} key, {indexer.ReturnType} value) => {mockName}Store[key] = value);"
 					);
 				}
 			}

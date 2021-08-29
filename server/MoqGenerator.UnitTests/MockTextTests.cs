@@ -50,7 +50,7 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 007")
+			// if(test.testIdMessage != "TestId: 008")
 			// 	return;
 
 			var interfaceName = test.testInputs[0];
@@ -104,6 +104,39 @@ namespace MoqGenerator.UnitTests
 		{
 			return new Dictionary<string, Dictionary<string, InterfaceDefinition>>
 			{
+				{
+					/*
+						public interface IHasIndexerNoSetter
+						{
+							string this[string key] { get; }
+						}
+					*/
+					"IHasIndexerNoSetter",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IHasIndexerNoSetter",
+								null,
+								"IHasIndexerNoSetter.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"string",
+									"string",
+									true,
+									false
+								)
+							)
+						}
+					}
+				},
+
+
+
 				{
 					/*
 						public interface IHasIndexer
