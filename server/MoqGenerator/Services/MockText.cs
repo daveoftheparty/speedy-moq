@@ -58,6 +58,7 @@ namespace MoqGenerator.Services
 
 					public interface IStringAnalyzer
 					{
+						string this[string key] { get; set; }
 						public string SomeUrl { get; }
 						int HowManyItems(string patient, char charToCount);
 					}
@@ -65,6 +66,14 @@ namespace MoqGenerator.Services
 				we want to return the following:
 
 					var stringAnalyzer = new Mock<IStringAnalyzer>();
+
+					stringAnalyzer
+						.Setup(x => x[It.IsAny<string>()])
+						.Returns((string key) => return default);
+
+					stringAnalyzer
+						.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
+						.Callback((string key, string value) => return);
 
 					stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
 
@@ -106,8 +115,46 @@ namespace MoqGenerator.Services
 				);
 
 
-			if(definition.Methods.Count + definition.Properties.Count > 1)
+			if(
+				definition.Methods.Count + 
+				definition.Properties.Count +
+				(definition.Indexer != null ? 1 : 0)
+				> 1
+			)
 				results.Add("");
+
+			if(definition.Indexer != null)
+			{
+				if(definition.Indexer.HasGet)
+				{
+					// stringAnalyzer
+					//	.Setup(x => x[It.IsAny<string>()])
+					//	.Returns((string key) => return default);
+
+					results.Add(mockName);
+					results.Add(
+						$"{tab}.Setup(x => x.[It.IsAny<{definition.Indexer.KeyType}>()])"
+					);
+					results.Add(
+						$"{tab}.Returns(({definition.Indexer.KeyType} key) => return default);"
+					);
+				}
+
+				if(definition.Indexer.HasSet)
+				{
+					// stringAnalyzer
+					// 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
+					// 	.Callback((string key, string value) => return);
+
+					results.Add(mockName);
+					results.Add(
+						$"{tab}.SetupSet(x => x.[It.IsAny<{definition.Indexer.KeyType}>()] = It.IsAny<{definition.Indexer.ReturnType}>())"
+					);
+					results.Add(
+						$"{tab}.Callback(({definition.Indexer.KeyType} key, {definition.Indexer.ReturnType} value) => return);"
+					);
+				}
+			}
 
 			foreach(var property in definition.Properties)
 			{

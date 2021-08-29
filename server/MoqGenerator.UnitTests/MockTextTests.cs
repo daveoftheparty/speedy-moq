@@ -106,6 +106,39 @@ namespace MoqGenerator.UnitTests
 			{
 				{
 					/*
+						public interface IHasIndexer
+						{
+							string this[string key] { get; set; }
+						}
+					*/
+					"IHasIndexer",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IHasIndexer",
+								null,
+								"IHasIndexer.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"string",
+									"string",
+									true,
+									true
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
+					/*
 						public interface IGenericService<TSource, TResult>
 						{
 							IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
