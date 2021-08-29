@@ -2,6 +2,7 @@
 	"Foo": {
 		"InterfaceName": "IHasIndexer",
 		"SourceFile": "",
+		"Methods": [],
 		"Properties": [
 			"Heyaa"
 		],

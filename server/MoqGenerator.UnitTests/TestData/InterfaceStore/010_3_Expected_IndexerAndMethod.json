@@ -9,6 +9,7 @@
 				"Parameters": []
 			}
 		],
+		"Properties": [],
 		"Indexer": {
 			"KeyType": "string",
 			"ReturnType": "string",
