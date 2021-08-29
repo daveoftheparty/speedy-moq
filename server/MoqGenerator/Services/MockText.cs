@@ -123,38 +123,7 @@ namespace MoqGenerator.Services
 			)
 				results.Add("");
 
-			if(definition.Indexer != null)
-			{
-				if(definition.Indexer.HasGet)
-				{
-					// stringAnalyzer
-					//	.Setup(x => x[It.IsAny<string>()])
-					//	.Returns((string key) => return default);
-
-					results.Add(mockName);
-					results.Add(
-						$"{tab}.Setup(x => x[It.IsAny<{definition.Indexer.KeyType}>()])"
-					);
-					results.Add(
-						$"{tab}.Returns(({definition.Indexer.KeyType} key) => default);"
-					);
-				}
-
-				if(definition.Indexer.HasSet)
-				{
-					// stringAnalyzer
-					// 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
-					// 	.Callback((string key, string value) => {});
-
-					results.Add(mockName);
-					results.Add(
-						$"{tab}.SetupSet(x => x[It.IsAny<{definition.Indexer.KeyType}>()] = It.IsAny<{definition.Indexer.ReturnType}>())"
-					);
-					results.Add(
-						$"{tab}.Callback(({definition.Indexer.KeyType} key, {definition.Indexer.ReturnType} value) => {{}});"
-					);
-				}
-			}
+			MockIndexer(definition.Indexer, results, mockName, tab);
 
 			foreach(var property in definition.Properties)
 			{
@@ -265,6 +234,43 @@ namespace MoqGenerator.Services
 
 			watch.StopAndLogInformation(_logger, $"time to generate moq for namespace {namespaceName} and interface {interfaceName}: ");
 			return string.Join(Environment.NewLine, lines);
+		}
+
+
+		public void MockIndexer(Model.InterfaceIndexer indexer, List<string> results, string mockName, string tab)
+		{
+			if(indexer != null)
+			{
+				if(indexer.HasGet)
+				{
+					// stringAnalyzer
+					//	.Setup(x => x[It.IsAny<string>()])
+					//	.Returns((string key) => return default);
+
+					results.Add(mockName);
+					results.Add(
+						$"{tab}.Setup(x => x[It.IsAny<{indexer.KeyType}>()])"
+					);
+					results.Add(
+						$"{tab}.Returns(({indexer.KeyType} key) => default);"
+					);
+				}
+
+				if(indexer.HasSet)
+				{
+					// stringAnalyzer
+					// 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
+					// 	.Callback((string key, string value) => {});
+
+					results.Add(mockName);
+					results.Add(
+						$"{tab}.SetupSet(x => x[It.IsAny<{indexer.KeyType}>()] = It.IsAny<{indexer.ReturnType}>())"
+					);
+					results.Add(
+						$"{tab}.Callback(({indexer.KeyType} key, {indexer.ReturnType} value) => {{}});"
+					);
+				}
+			}
 		}
 
 
