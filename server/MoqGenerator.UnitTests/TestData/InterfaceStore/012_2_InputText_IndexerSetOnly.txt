@@ -1,0 +1,7 @@
+namespace Foo
+{
+	public interface IHasIndexer
+	{
+		string this[string key] { set; }
+	}
+}

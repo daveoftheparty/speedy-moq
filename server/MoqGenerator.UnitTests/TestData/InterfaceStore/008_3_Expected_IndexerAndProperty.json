@@ -1,0 +1,15 @@
+{
+	"Foo": {
+		"InterfaceName": "IHasIndexer",
+		"SourceFile": "",
+		"Properties": [
+			"Heyaa"
+		],
+		"Indexer": {
+			"KeyType": "string",
+			"ReturnType": "string",
+			"HasGet": true,
+			"HasSet": true
+		}
+	}
+}

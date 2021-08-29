@@ -1,0 +1,19 @@
+{
+	"Foo": {
+		"InterfaceName": "IHasIndexer",
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "Thang",
+				"ReturnType": "void",
+				"Parameters": []
+			}
+		],
+		"Indexer": {
+			"KeyType": "string",
+			"ReturnType": "string",
+			"HasGet": true,
+			"HasSet": true
+		}
+	}
+}
