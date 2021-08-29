@@ -8,8 +8,7 @@
 				"ReturnType": "void",
 				"Parameters": []
 			}
-		],
-		"Properties": []
+		]
 	},
 	"bugrepro.Tests": {
 		"InterfaceName": "IThing",
@@ -20,7 +19,6 @@
 				"ReturnType": "void",
 				"Parameters": []
 			}
-		],
-		"Properties": []
+		]
 	}
 }

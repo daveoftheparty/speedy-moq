@@ -2,8 +2,6 @@
 	"Foo": {
 		"InterfaceName": "IHasIndexer",
 		"SourceFile": "",
-		"Methods": [],
-		"Properties": [],
 		"Indexer": {
 			"KeyType": "string",
 			"ReturnType": "string",
