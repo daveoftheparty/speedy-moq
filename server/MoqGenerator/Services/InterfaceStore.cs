@@ -204,7 +204,7 @@ namespace MoqGenerator.Services
 											.ToList()
 									))
 									.ToList(),
-								null, // Properties, to be filled in by GetProperties()
+								new List<string>(), // Properties, to be filled in by GetProperties()
 								null // Indexer to be filled in by GetIndexer()
 							)
 						})
@@ -259,7 +259,7 @@ namespace MoqGenerator.Services
 								interfaceGroup.Key,
 								namespaceGroup.First().TypeArguments,
 								namespaceGroup.First().SourceFile,
-								null, // methods to be filled in by GetMethods()
+								new List<InterfaceMethod>(), // methods to be filled in by GetMethods()
 								namespaceGroup.Select(p => p.PropertyName).ToList(),
 								null // Indexer to be filled in by GetIndexer
 							)
@@ -319,8 +319,8 @@ namespace MoqGenerator.Services
 								interfaceGroup.Key,
 								namespaceGroup.First().TypeArguments,
 								namespaceGroup.First().SourceFile,
-								null, // methods to be filled in by GetMethods()
-								null, // Properties to be filled in by GetProperties()
+								new List<InterfaceMethod>(), // methods to be filled in by GetMethods()
+								new List<string>(), // Properties to be filled in by GetProperties()
 								new InterfaceIndexer
 								(
 									namespaceGroup.Select(x => x.KeyType).First(),

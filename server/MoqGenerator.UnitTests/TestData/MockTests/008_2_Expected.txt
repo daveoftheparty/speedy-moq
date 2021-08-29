@@ -1,11 +1,9 @@
 << begin FooNamespace
 			var hasIndexer = new Mock<IHasIndexer>();
-
 			hasIndexer
 				.Setup(x => x[It.IsAny<string>()])
-				.Returns((string key) => return default);
-
+				.Returns((string key) => default);
 			hasIndexer
 				.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
-				.Callback((string key, string value) => return);
+				.Callback((string key, string value) => {});
 end FooNamespace >>

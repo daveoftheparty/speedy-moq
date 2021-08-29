@@ -133,10 +133,10 @@ namespace MoqGenerator.Services
 
 					results.Add(mockName);
 					results.Add(
-						$"{tab}.Setup(x => x.[It.IsAny<{definition.Indexer.KeyType}>()])"
+						$"{tab}.Setup(x => x[It.IsAny<{definition.Indexer.KeyType}>()])"
 					);
 					results.Add(
-						$"{tab}.Returns(({definition.Indexer.KeyType} key) => return default);"
+						$"{tab}.Returns(({definition.Indexer.KeyType} key) => default);"
 					);
 				}
 
@@ -144,14 +144,14 @@ namespace MoqGenerator.Services
 				{
 					// stringAnalyzer
 					// 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
-					// 	.Callback((string key, string value) => return);
+					// 	.Callback((string key, string value) => {});
 
 					results.Add(mockName);
 					results.Add(
-						$"{tab}.SetupSet(x => x.[It.IsAny<{definition.Indexer.KeyType}>()] = It.IsAny<{definition.Indexer.ReturnType}>())"
+						$"{tab}.SetupSet(x => x[It.IsAny<{definition.Indexer.KeyType}>()] = It.IsAny<{definition.Indexer.ReturnType}>())"
 					);
 					results.Add(
-						$"{tab}.Callback(({definition.Indexer.KeyType} key, {definition.Indexer.ReturnType} value) => return);"
+						$"{tab}.Callback(({definition.Indexer.KeyType} key, {definition.Indexer.ReturnType} value) => {{}});"
 					);
 				}
 			}
