@@ -106,6 +106,39 @@ namespace MoqGenerator.UnitTests
 			{
 				{
 					/*
+						public interface IHasListStringByLongIndexer
+						{
+							List<string> this[long key] { get; set; }
+						}
+					*/
+					"IHasListStringByLongIndexer",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IHasListStringByLongIndexer",
+								null,
+								"IHasListStringByLongIndexer.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"long",
+									"List<string>",
+									true,
+									true
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
+					/*
 						public interface IHasIndexerNoSetter
 						{
 							string this[string key] { get; }

@@ -43,5 +43,27 @@ namespace Demo.Lib.UnitTests
 			var sut = hasIndexerNoSetter.Object;
 			Assert.AreEqual(null, sut["foo"]);
 		}
+
+		[Test]
+		public void GoListStringByLong()
+		{
+			// this was generated:
+			var hasListStringByLongIndexer = new Mock<IHasListStringByLongIndexer>();
+
+			var hasListStringByLongIndexerStore = new Dictionary<long, List<string>>();
+			hasListStringByLongIndexer
+				.Setup(x => x[It.IsAny<long>()])
+				.Returns((long key) => hasListStringByLongIndexerStore[key]);
+			hasListStringByLongIndexer
+				.SetupSet(x => x[It.IsAny<long>()] = It.IsAny<List<string>>())
+				.Callback((long key, List<string> value) => hasListStringByLongIndexerStore[key] = value);
+			// END code generation
+
+			var sut = hasListStringByLongIndexer.Object;
+			var expected = new List<string> { "foo", "bar" };
+
+			sut[1369] = expected;
+			CollectionAssert.AreEquivalent(expected, sut[1369]);
+		}
 	}
 }
