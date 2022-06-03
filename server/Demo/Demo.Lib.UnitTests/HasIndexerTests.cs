@@ -11,7 +11,7 @@ namespace Demo.Lib.UnitTests
 		[Test]
 		public void Go()
 		{
-			#warning: System and System.Linq.Expressions were added by MockText, but unnecessary!
+			#warning: System and System.Linq.Expressions were added by Diagnoser(), but unnecessary!
 
 			// this was generated:
 			var hasIndexer = new Mock<IHasIndexer>();

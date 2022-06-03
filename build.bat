@@ -4,7 +4,7 @@ call npm ci
 call npm run compile
 
 @echo on
-
+REM not sure what my intention was here when I wrote this, building the whole solution. Was this just experimental? Seems redundant to the build below. Also, tests aren't run.
 echo building dotnet
 cd ./server
 dotnet build
