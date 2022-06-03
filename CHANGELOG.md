@@ -1,3 +1,25 @@
+## (next, see next heading for format)
+- added support for mocking indexers, this code:
+```csharp
+public interface IHasIndexer
+{
+	string this[string key] { get; set; }
+}
+```
+produces this setup:
+```csharp
+var hasIndexer = new Mock<IHasIndexer>();
+
+var hasIndexerStore = new Dictionary<string, string>();
+hasIndexer
+	.Setup(x => x[It.IsAny<string>()])
+	.Returns((string key) => hasIndexerStore[key]);
+hasIndexer
+	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
+	.Callback((string key, string value) => hasIndexerStore[key] = value);
+```
+
+
 ## 0.0.9 (Aug 23, 2021)
 Bugfix with generating mock for a generic. Before fix, this interface:
 ```csharp
