@@ -58,6 +58,7 @@ namespace MoqGenerator.Services
 
 					public interface IStringAnalyzer
 					{
+						string this[string key] { get; set; }
 						public string SomeUrl { get; }
 						int HowManyItems(string patient, char charToCount);
 					}
@@ -65,6 +66,14 @@ namespace MoqGenerator.Services
 				we want to return the following:
 
 					var stringAnalyzer = new Mock<IStringAnalyzer>();
+
+					stringAnalyzer
+						.Setup(x => x[It.IsAny<string>()])
+						.Returns((string key) => return default);
+
+					stringAnalyzer
+						.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
+						.Callback((string key, string value) => return);
 
 					stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
 
@@ -106,8 +115,15 @@ namespace MoqGenerator.Services
 				);
 
 
-			if(definition.Methods.Count + definition.Properties.Count > 1)
+			if(
+				definition.Methods.Count + 
+				definition.Properties.Count +
+				(definition.Indexer != null ? 1 : 0)
+				> 1
+			)
 				results.Add("");
+
+			MockIndexer(definition.Indexer, results, mockName, tab);
 
 			foreach(var property in definition.Properties)
 			{
@@ -218,6 +234,65 @@ namespace MoqGenerator.Services
 
 			watch.StopAndLogInformation(_logger, $"time to generate moq for namespace {namespaceName} and interface {interfaceName}: ");
 			return string.Join(Environment.NewLine, lines);
+		}
+
+
+		public void MockIndexer(Model.InterfaceIndexer indexer, List<string> results, string mockName, string tab)
+		{
+			if(indexer != null)
+			{
+				if(indexer.HasSet)
+				{
+					results.Add("");
+					// hasIndexerStore = new Dictionary<string, string>();
+					results.Add(
+						$"var {mockName}Store = new Dictionary<{indexer.KeyType}, {indexer.ReturnType}>();"
+					);
+				}
+
+				if(indexer.HasGet)
+				{
+					// stringAnalyzer
+					//	.Setup(x => x[It.IsAny<string>()])
+					
+					//	.Returns((string key) => default);
+					// or
+					//	.Returns((string key) => stringAnalyzerStore[key]);
+
+					results.Add(mockName);
+					results.Add(
+						$"{tab}.Setup(x => x[It.IsAny<{indexer.KeyType}>()])"
+					);
+
+					if(indexer.HasSet)
+					{
+						results.Add(
+							$"{tab}.Returns(({indexer.KeyType} key) => {mockName}Store[key]);"
+						);
+					}
+					else
+					{
+						results.Add(
+							$"{tab}.Returns(({indexer.KeyType} key) => default);"
+						);
+					}
+				}
+
+				if(indexer.HasSet)
+				{
+					// stringAnalyzer
+					// 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
+					// 	.Callback((string key, string value) => stringAnalyzerStore[key] = value);
+
+					results.Add(mockName);
+					results.Add(
+						$"{tab}.SetupSet(x => x[It.IsAny<{indexer.KeyType}>()] = It.IsAny<{indexer.ReturnType}>())"
+					);
+					results.Add(
+						$"{tab}.Callback(({indexer.KeyType} key, {indexer.ReturnType} value) => {mockName}Store[key] = value);"
+					);
+				}
+			}
 		}
 
 

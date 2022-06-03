@@ -50,7 +50,7 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 007")
+			// if(test.testIdMessage != "TestId: 008")
 			// 	return;
 
 			var interfaceName = test.testInputs[0];
@@ -106,6 +106,105 @@ namespace MoqGenerator.UnitTests
 			{
 				{
 					/*
+						public interface IHasListStringByLongIndexer
+						{
+							List<string> this[long key] { get; set; }
+						}
+					*/
+					"IHasListStringByLongIndexer",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IHasListStringByLongIndexer",
+								null,
+								"IHasListStringByLongIndexer.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"long",
+									"List<string>",
+									true,
+									true
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
+					/*
+						public interface IHasIndexerNoSetter
+						{
+							string this[string key] { get; }
+						}
+					*/
+					"IHasIndexerNoSetter",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IHasIndexerNoSetter",
+								null,
+								"IHasIndexerNoSetter.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"string",
+									"string",
+									true,
+									false
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
+					/*
+						public interface IHasIndexer
+						{
+							string this[string key] { get; set; }
+						}
+					*/
+					"IHasIndexer",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IHasIndexer",
+								null,
+								"IHasIndexer.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"string",
+									"string",
+									true,
+									true
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
+					/*
 						public interface IGenericService<TSource, TResult>
 						{
 							IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
@@ -150,7 +249,8 @@ namespace MoqGenerator.UnitTests
 									}
 								},
 								
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -190,7 +290,8 @@ namespace MoqGenerator.UnitTests
 								new List<string>
 								{
 									"SomeConfigValue"
-								}
+								},
+								null
 							)
 						},
 
@@ -205,7 +306,8 @@ namespace MoqGenerator.UnitTests
 								new List<string>
 								{
 									"AnotherConfigValue"
-								}
+								},
+								null
 							)
 						},
 					}
@@ -245,7 +347,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -284,7 +387,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -323,7 +427,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -362,7 +467,8 @@ namespace MoqGenerator.UnitTests
 										)
 									}
 								},
-								new List<string>()
+								new List<string>(),
+								null
 							)
 						}
 					}
@@ -439,7 +545,8 @@ namespace MoqGenerator.UnitTests
 								{
 									"SomeUrl",
 									"SomeDate"
-								}
+								},
+								null
 							)
 						}
 					}

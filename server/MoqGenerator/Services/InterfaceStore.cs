@@ -86,10 +86,10 @@ namespace MoqGenerator.Services
 
 			// load our interface dict...
 			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(new List<SemanticModel> { model }, textDocItem.Identifier);
+			var definitions = GetDefinitionsByNamespaceByInterface(new List<SemanticModel> { model }, textDocItem.Identifier);
 			watch.StopAndLogInformation(_logger, "(single file) time to get interface definitions from semantic models: ");
 
-			UpdateInterfaceDictionary(definitions);
+			UpdateMainDictionary(definitions);
 
 			if(definitions.Count > 0)
 			{
@@ -119,10 +119,10 @@ namespace MoqGenerator.Services
 
 			// load our interface dict...
 			watch.Restart();
-			var definitions = GetInterfaceDefinitionsByName(models.ToList(), textDocId);
+			var definitions = GetDefinitionsByNamespaceByInterface(models.ToList(), textDocId);
 			watch.StopAndLogInformation(_logger, "time to get interface definitions from semantic models: ");
 
-			UpdateInterfaceDictionary(definitions);
+			UpdateMainDictionary(definitions);
 
 			// and finally, load up our hashset so that we don't have to do this again
 			foreach(var proj in projectsAdded)
@@ -133,7 +133,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceMethods(List<SemanticModel> models, string uriAsFile)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetMethods(List<SemanticModel> models, string uriAsFile)
 		{
 			var interfaceGroups = models
 				.Select(semanticModel => new
@@ -204,7 +204,8 @@ namespace MoqGenerator.Services
 											.ToList()
 									))
 									.ToList(),
-								new List<string>() // Properties, to be filled in by other method...
+								new List<string>(), // Properties, to be filled in by GetProperties()
+								null // Indexer to be filled in by GetIndexer()
 							)
 						})
 						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
@@ -215,7 +216,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfacePropertiesByName(List<SemanticModel> models, string uriAsFile)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetProperties(List<SemanticModel> models, string uriAsFile)
 		{
 			var interfaceGroups = models
 				.Select(semanticModel => new
@@ -258,8 +259,9 @@ namespace MoqGenerator.Services
 								interfaceGroup.Key,
 								namespaceGroup.First().TypeArguments,
 								namespaceGroup.First().SourceFile,
-								new List<InterfaceMethod>(), // methods to be filled in by other method...
-								namespaceGroup.Select(p => p.PropertyName).ToList()
+								new List<InterfaceMethod>(), // methods to be filled in by GetMethods()
+								namespaceGroup.Select(p => p.PropertyName).ToList(),
+								null // Indexer to be filled in by GetIndexer
 							)
 						})
 						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
@@ -270,6 +272,71 @@ namespace MoqGenerator.Services
 			return dict;
 		}
 
+
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetIndexer(List<SemanticModel> models, string uriAsFile)
+		{
+			var interfaceGroups = models
+				.Select(semanticModel => new
+				{
+					Model = semanticModel,
+					Indexer = semanticModel
+						.SyntaxTree
+						.GetRoot()
+						.DescendantNodes()
+						.OfType<IndexerDeclarationSyntax>()
+						.Where(meth => meth.Parent.GetType() == typeof(InterfaceDeclarationSyntax))
+
+				})
+				.SelectMany(node => 
+					node
+						.Indexer
+						.Select(indexer => new 
+						{
+							Namespace = node.Model.GetDeclaredSymbol(indexer.Parent)?.ContainingSymbol?.ToString(),
+							InterfaceName = node.Model.GetDeclaredSymbol(indexer.Parent)?.Name,
+							TypeArguments = GetInterfaceTypeArguments(node.Model.GetDeclaredSymbol(indexer.Parent)?.Name, node.Model, indexer.Parent),
+							SourceFile = string.IsNullOrWhiteSpace(indexer.Parent?.SyntaxTree.FilePath) ? uriAsFile : indexer.Parent?.SyntaxTree.FilePath,
+							KeyType = indexer.ParameterList.Parameters.First().Type.ToString(),
+							ReturnType = indexer.Type.ToString(),
+							HasGet = indexer.AccessorList.Accessors.Any(a => ((AccessorDeclarationSyntax)a).Keyword.Text == "get"),
+							HasSet = indexer.AccessorList.Accessors.Any(a => ((AccessorDeclarationSyntax)a).Keyword.Text == "set"),
+						})
+				)
+				.GroupBy(x => x.InterfaceName)
+				.ToList();
+
+			var dict = interfaceGroups
+				.Select(interfaceGroup => new
+				{
+					InterfaceName = interfaceGroup.Key,
+					NamespaceDict = interfaceGroup
+						.GroupBy(y => y.Namespace)
+						.Select(namespaceGroup => new
+						{
+							Namespace = namespaceGroup.Key,
+							InterfaceDefinition = new InterfaceDefinition
+							(
+								interfaceGroup.Key,
+								namespaceGroup.First().TypeArguments,
+								namespaceGroup.First().SourceFile,
+								new List<InterfaceMethod>(), // methods to be filled in by GetMethods()
+								new List<string>(), // Properties to be filled in by GetProperties()
+								new InterfaceIndexer
+								(
+									namespaceGroup.Select(x => x.KeyType).First(),
+									namespaceGroup.Select(x => x.ReturnType).First(),
+									namespaceGroup.Select(x => x.HasGet).First(),
+									namespaceGroup.Select(x => x.HasSet).First()
+								)
+							)
+						})
+						.ToDictionary(nsPair => nsPair.Namespace, nsPair => nsPair.InterfaceDefinition)
+
+				})
+				.ToDictionary(pair => pair.InterfaceName, pair => pair.NamespaceDict);
+			
+			return dict;
+		}
 
 		private string GetInterfaceTypeArguments(string interfaceName, SemanticModel model, SyntaxNode member)
 		{
@@ -283,67 +350,75 @@ namespace MoqGenerator.Services
 				: $"{interfaceName}<{string.Join(", ", typeArgs)}>";
 		}
 
-		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetInterfaceDefinitionsByName(List<SemanticModel> models, TextDocumentIdentifier textDocId)
+		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetDefinitionsByNamespaceByInterface(List<SemanticModel> models, TextDocumentIdentifier textDocId)
 		{
 			var uriAsFile = _uriHandler.GetFilePath(textDocId);
 
-			var methods = GetInterfaceMethods(models, uriAsFile);
-			var properties = GetInterfacePropertiesByName(models, uriAsFile);
+			var methods = GetMethods(models, uriAsFile);
+			var properties = GetProperties(models, uriAsFile);
+			var indexer = GetIndexer(models, uriAsFile);
 
-			// merge the two dictionaries
-			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>();
-
-			
-
-			var interfaceKeys = methods.Keys.Concat(properties.Keys);
-			foreach(var interfaceKey in interfaceKeys)
-			{
-				if(methods.TryGetValue(interfaceKey, out var methodNamespaceDict))
-				{
-					if(properties.TryGetValue(interfaceKey, out var propertyNamespaceDict))
-					{
-						// merge namespace dictionaries
-						result[interfaceKey] = MergeNamespaceDictionaries(methodNamespaceDict, propertyNamespaceDict);
-					}
-					else
-					{
-						result[interfaceKey] = methodNamespaceDict;
-					}
-				}
-				else
-					result[interfaceKey] = properties[interfaceKey];
-			}
+			// merge the dictionaries
+			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>(methods);
+			MergeDictionary(result, properties, MergeType.Properties);
+			MergeDictionary(result, indexer, MergeType.Indexer);
 			return result;
 		}
 
+		private enum MergeType
+		{
+			Properties,
+			Indexer
+		}
+
+		private void MergeDictionary(
+			Dictionary<string, Dictionary<string, InterfaceDefinition>> result,
+			IReadOnlyDictionary<string, Dictionary<string, InterfaceDefinition>> incoming,
+			MergeType mergeType
+			)
+		{
+			foreach(var interfaceKey in incoming.Keys)
+			{
+				if(result.TryGetValue(interfaceKey, out var resultDefByNamespace))
+					result[interfaceKey] = MergeNamespaceDictionaries(resultDefByNamespace, incoming[interfaceKey], mergeType);
+				else
+					result[interfaceKey] = incoming[interfaceKey];
+			}
+		}
+
+
 		private Dictionary<string, InterfaceDefinition> MergeNamespaceDictionaries(
-			Dictionary<string, InterfaceDefinition> methodNamespaceDict,
-			Dictionary<string, InterfaceDefinition> propertyNamespaceDict)
+			Dictionary<string, InterfaceDefinition> resultDefByNamespace,
+			Dictionary<string, InterfaceDefinition> incomingDefByNamespace,
+			MergeType mergeType)
 		{
 			var result = new Dictionary<string, InterfaceDefinition>();
 
-			var namespaceKeys = methodNamespaceDict.Keys.Concat(propertyNamespaceDict.Keys);
-
-			foreach (var namespaceKey in namespaceKeys)
+			foreach (var namespaceKey in incomingDefByNamespace.Keys)
 			{
-				if(methodNamespaceDict.TryGetValue(namespaceKey, out var methodDef))
+				if(resultDefByNamespace.TryGetValue(namespaceKey, out var resultDef))
 				{
-					if(propertyNamespaceDict.TryGetValue(namespaceKey, out var propDef))
+					switch (mergeType)
 					{
-						result[namespaceKey] = methodDef with { Properties = propDef.Properties };
+						case MergeType.Properties:
+							result[namespaceKey] = resultDef with { Properties = incomingDefByNamespace[namespaceKey].Properties };
+							break;
+						case MergeType.Indexer:
+							result[namespaceKey] = resultDef with { Indexer = incomingDefByNamespace[namespaceKey].Indexer };
+							break;
 					}
-					else
-						result[namespaceKey] = methodDef;
 				}
 				else
-					result[namespaceKey] = propertyNamespaceDict[namespaceKey];
+				{
+					result[namespaceKey] = incomingDefByNamespace[namespaceKey];
+				}
 			}
 
 			return result;
 		}
 
 
-		private void UpdateInterfaceDictionary(Dictionary<string, Dictionary<string, InterfaceDefinition>> definitions)
+		private void UpdateMainDictionary(Dictionary<string, Dictionary<string, InterfaceDefinition>> definitions)
 		{
 			foreach(var definition in definitions)
 			{

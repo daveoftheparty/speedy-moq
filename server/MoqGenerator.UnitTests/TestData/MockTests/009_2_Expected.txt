@@ -1,0 +1,6 @@
+<< begin FooNamespace
+			var hasIndexerNoSetter = new Mock<IHasIndexerNoSetter>();
+			hasIndexerNoSetter
+				.Setup(x => x[It.IsAny<string>()])
+				.Returns((string key) => default);
+end FooNamespace >>

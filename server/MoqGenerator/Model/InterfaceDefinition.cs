@@ -8,7 +8,8 @@ namespace MoqGenerator.Model
 		string InterfaceNameWithGenerics,
 		string SourceFile,
 		IReadOnlyList<InterfaceMethod> Methods,
-		IReadOnlyList<string> Properties
+		IReadOnlyList<string> Properties,
+		InterfaceIndexer Indexer
 	);
 
 	public record InterfaceMethod
@@ -23,5 +24,13 @@ namespace MoqGenerator.Model
 		string ParameterType,
 		string ParameterName,
 		string ParameterDefinition
+	);
+
+	public record InterfaceIndexer
+	(
+		string KeyType,
+		string ReturnType,
+		bool HasGet,
+		bool HasSet
 	);
 }

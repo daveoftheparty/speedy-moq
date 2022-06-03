@@ -38,8 +38,7 @@
 	"bugrepro": {
 		"InterfaceName": "IThing",
 		"SourceFile": "",
-		"Methods": [
-		],
+		"Methods": [],
 		"Properties": [
 			"AThingString"
 		]
@@ -47,8 +46,7 @@
 	"bugrepro.Tests": {
 		"InterfaceName": "IThing",
 		"SourceFile": "",
-		"Methods": [
-		],
+		"Methods": [],
 		"Properties": [
 			"AnotherThingString"
 		]
@@ -56,8 +54,7 @@
 	"bugrepro.Abc": {
 		"InterfaceName": "IThing",
 		"SourceFile": "",
-		"Methods": [
-		],
+		"Methods": [],
 		"Properties": [
 			"AThingString"
 		]
