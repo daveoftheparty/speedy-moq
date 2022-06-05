@@ -1,5 +1,14 @@
 # Contributing
 
+## Table of Contents
+- [Contributing](#contributing)
+  - [Architecture](#architecture)
+  - [Building/launching from a fresh clone](#buildinglaunching-from-a-fresh-clone)
+  - [Debugging the server](#debugging-the-server)
+## Architecture
+
+See [docs](./docs/readme.md)
+
 ## Building/launching from a fresh clone
 
 At the root of the project, run both of these commands:

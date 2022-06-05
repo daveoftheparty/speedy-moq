@@ -79,7 +79,7 @@ There are probably bugs, and lots of them. [File an issue!](https://github.com/d
 
 If you don't get the codefix (the lightbulb), it may be one of these reasons:
 - Extension isn't ready yet. It may take 3-5 seconds to read your code and prepare suggestions from the time a .cs file is first opened in the IDE.
-- Your interface name is misspelled.
+- Your interface name is misspelled. Code completion should help avoid that. _Your interface name must be the only text on a line, other than whitespace._
 - Your test project does not yet reference the project where the interface is declared.
 - The extension doesn't recognize the file you are editing as a test file. Currently test file detection is a simple matter of looking to see if any of these statements appear in your .cs file. If the extension is missing a test framework, please let me know.
 	- `using NUnit.Framework;`
