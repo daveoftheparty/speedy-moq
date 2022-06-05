@@ -7,9 +7,10 @@
   - [Container](#container)
   - [Component](#component)
   - [Diagnoser Component - CURRENT STATE](#diagnoser-component---current-state)
+  - [Diagnoser Component - TARGET STATE](#diagnoser-component---target-state)
 - [Diagram workflow](#diagram-workflow)
 - [Generating TOC](#generating-toc)
- 
+
 ## Context
 [^top](#table-of-contents)
 
@@ -29,6 +30,11 @@
 [^top](#table-of-contents)
 
 ![Diagnoser Component Current State](./images/diagrams/Diagnoser-Component-Current-State.png)
+
+## Diagnoser Component - TARGET STATE
+[^top](#table-of-contents)
+
+![Diagnoser Component Target State](./images/diagrams/Diagnoser-Component-Target-State.png)
 
 # Diagram workflow
 
