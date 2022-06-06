@@ -66,7 +66,6 @@ namespace MoqGenerator.Services
 			// will also do some of the heavy lifting for us on line location/range
 
 			var tree = CSharpSyntaxTree.ParseText(item.Text);
-			var root = tree.GetCompilationUnitRoot();
 
 			var compilation = CSharpCompilation
 				.Create(null)
