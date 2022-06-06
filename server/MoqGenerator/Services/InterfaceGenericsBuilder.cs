@@ -36,7 +36,7 @@ namespace MoqGenerator.Services
 				.GetRoot()
 				.DescendantNodes()
 				.OfType<TypeArgumentListSyntax>()
-				.Where(meth => meth.Parent.GetType() == typeof(GenericNameSyntax))
+				.Where(meth => FilterByParent(meth.Parent))
 				.Select(args => new
 				{
 					interfaceName = ((GenericNameSyntax)args.Parent).Identifier.Text,
@@ -50,11 +50,67 @@ namespace MoqGenerator.Services
 		}
 
 
-
 		// this is for InterfaceStore needs-- return type may not necessarily be the same as other methods
 		public IReadOnlyDictionary<string, InterfaceGenerics> BuildFastest(string interfaceName, SemanticModel model, SyntaxNode member)
 		{
 			throw new NotImplementedException();
+		}
+
+		private bool FilterByParent(SyntaxNode parent)
+		{
+			/*
+				The first clause-- checking for GenericNameSyntax-- is to be sure we're dealing with a generic
+				The second clause is necessary (checking the parent's parent) because otherwise, the following statement:
+
+					IService<UserClassA, IReadOnlyDictionary<UserClassB>>
+				
+				would return this (serialized) dictionary:
+					{
+						"IService": {
+							"InterfaceName": "IService",
+							"GenericTypeArguments": [
+							"UserClassA",
+							"IReadOnlyDictionary<UserClassB>"
+							]
+						},
+						"IReadOnlyDictionary": {
+							"InterfaceName": "IReadOnlyDictionary",
+							"GenericTypeArguments": [
+							"UserClassB"
+							]
+						}
+					}
+
+				and, for now at least, we only want the "top level statement" because when we go to generate moqs, we simply want to
+				change all occurences of TSource, TResult in this interface definition:
+
+					public interface IService<TSource, TResult>
+					{
+						TResult ProcessInput(TSource data);
+					}
+				
+				to code that looks like this:
+
+					var mockService = new Mock<IService<UserClassA, IReadOnlyDictionary<UserClassB>>>();
+
+				so the dictionary we're after in this class is not the "bad" example from above, but rather, just the first key/value
+				pair, like so:
+
+					{
+						"IService": {
+							"InterfaceName": "IService",
+							"GenericTypeArguments": [
+							"UserClassA",
+							"IReadOnlyDictionary<UserClassB>"
+							]
+						}
+					}
+			*/
+
+			return 
+				parent?.GetType() == typeof(GenericNameSyntax) &&
+				parent?.Parent?.GetType() != typeof(TypeArgumentListSyntax)
+			;
 		}
 	}
 }
