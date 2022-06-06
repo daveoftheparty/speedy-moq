@@ -14,32 +14,24 @@ namespace MoqGenerator.Services
 		#warning add XML doc to interface: all methods do the same but some are faster...
 		public IReadOnlyDictionary<string, InterfaceGenerics> BuildSlowest(string code)
 		{
-			throw new NotImplementedException();
+			var tree = CSharpSyntaxTree.ParseText(code);
+			return BuildSlow(tree);
 		}
 
 		public IReadOnlyDictionary<string, InterfaceGenerics> BuildSlow(SyntaxTree tree)
 		{
-			throw new NotImplementedException();
+			var compilation = CSharpCompilation
+				.Create(null)
+				.AddSyntaxTrees(tree);
+
+			return BuildFast(compilation, tree);
 		}
 
 		public IReadOnlyDictionary<string, InterfaceGenerics> BuildFast(CSharpCompilation compilation, SyntaxTree tree)
 		{
-			throw new NotImplementedException();
-		}
-
-
-		// this is for InterfaceStore needs
-		public IReadOnlyDictionary<string, InterfaceGenerics> BuildFastest(string interfaceName, SemanticModel model, SyntaxNode member)
-		{
-			throw new NotImplementedException();
-		}
-
-		private void GetGenericTypeArguments(CSharpCompilation compilation, SyntaxTree tree)
-		{
-			#warning DRY: there is also code in InterfaceStore.GetInterfaceTypeArguments() that has similar concerns
 			var model = compilation.GetSemanticModel(tree);
 			
-			var results = model
+			return model
 				.SyntaxTree
 				.GetRoot()
 				.DescendantNodes()
@@ -50,9 +42,19 @@ namespace MoqGenerator.Services
 					interfaceName = ((GenericNameSyntax)args.Parent).Identifier.Text,
 					typeArgs = args.Arguments.Select(a => a.ToString()).ToList()
 				})
-				// .ToDictionary(pair => pair.interfaceName, pair => (IReadOnlyList<string>)pair.typeArgs)
+				.ToDictionary(
+					pair => pair.interfaceName,
+					pair => new InterfaceGenerics(pair.interfaceName, (IReadOnlyList<string>)pair.typeArgs)
+				)
 				;
 		}
 
+
+
+		// this is for InterfaceStore needs-- return type may not necessarily be the same as other methods
+		public IReadOnlyDictionary<string, InterfaceGenerics> BuildFastest(string interfaceName, SemanticModel model, SyntaxNode member)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -340,6 +340,7 @@ namespace MoqGenerator.Services
 
 		private string GetInterfaceTypeArguments(string interfaceName, SemanticModel model, SyntaxNode member)
 		{
+#warning move me to new InterfaceGenericsBuilder Service!!!!
 			var typeArgs = ((INamedTypeSymbol)model.GetDeclaredSymbol(member))?
 				.TypeArguments
 				.Select(t => t.Name)

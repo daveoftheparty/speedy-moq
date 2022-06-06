@@ -5,6 +5,6 @@ namespace MoqGenerator.Model
 	public record InterfaceGenerics
 	(
 		string InterfaceName,
-		List<string> GenricTypeArguments
+		IReadOnlyList<string> GenericTypeArguments
 	);
 }
