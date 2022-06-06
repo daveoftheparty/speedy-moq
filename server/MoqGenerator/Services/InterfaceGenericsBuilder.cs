@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using MoqGenerator.Model;
 
 namespace MoqGenerator.Services
@@ -12,13 +13,13 @@ namespace MoqGenerator.Services
 	{
 
 		#warning add XML doc to interface: all methods do the same but some are faster...
-		public IReadOnlyDictionary<string, InterfaceGenerics> BuildSlowest(string code)
+		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildSlowest(string code)
 		{
 			var tree = CSharpSyntaxTree.ParseText(code);
 			return BuildSlow(tree);
 		}
 
-		public IReadOnlyDictionary<string, InterfaceGenerics> BuildSlow(SyntaxTree tree)
+		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildSlow(SyntaxTree tree)
 		{
 			var compilation = CSharpCompilation
 				.Create(null)
@@ -27,7 +28,7 @@ namespace MoqGenerator.Services
 			return BuildFast(compilation, tree);
 		}
 
-		public IReadOnlyDictionary<string, InterfaceGenerics> BuildFast(CSharpCompilation compilation, SyntaxTree tree)
+		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildFast(CSharpCompilation compilation, SyntaxTree tree)
 		{
 			var model = compilation.GetSemanticModel(tree);
 			
@@ -37,21 +38,25 @@ namespace MoqGenerator.Services
 				.DescendantNodes()
 				.OfType<TypeArgumentListSyntax>()
 				.Where(meth => FilterByParent(meth.Parent))
-				.Select(args => new
+				.Select(args => 
 				{
-					interfaceName = ((GenericNameSyntax)args.Parent).Identifier.Text,
-					typeArgs = args.Arguments.Select(a => a.ToString()).ToList()
+					return new
+					{
+						interfaceName = ((GenericNameSyntax)args.Parent).Identifier.Text,
+						span = args.Parent.FullSpan,
+						typeArgs = args.Arguments.Select(a => a.ToString()).ToList()
+					};
 				})
 				.ToDictionary(
 					pair => pair.interfaceName,
-					pair => new InterfaceGenerics(pair.interfaceName, (IReadOnlyList<string>)pair.typeArgs)
+					pair => (new InterfaceGenerics(pair.interfaceName, (IReadOnlyList<string>)pair.typeArgs), pair.span)
 				)
 				;
 		}
 
 
 		// this is for InterfaceStore needs-- return type may not necessarily be the same as other methods
-		public IReadOnlyDictionary<string, InterfaceGenerics> BuildFastest(string interfaceName, SemanticModel model, SyntaxNode member)
+		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildFastest(string interfaceName, SemanticModel model, SyntaxNode member)
 		{
 			throw new NotImplementedException();
 		}

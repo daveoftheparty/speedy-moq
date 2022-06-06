@@ -22,7 +22,9 @@ namespace MoqGenerator.UnitTests
 			{
 				Assert.AreEqual(1, actual.Count);
 				Assert.True(actual.ContainsKey(expectedName));
-				CollectionAssert.AreEqual(expectedArgs, actual[expectedName].GenericTypeArguments);
+				Assert.AreEqual(0, actual[expectedName].Location.Start);
+				Assert.AreEqual(code.Length, actual[expectedName].Location.Length);
+				CollectionAssert.AreEqual(expectedArgs, actual[expectedName].Generics.GenericTypeArguments);
 			}
 			catch
 			{
