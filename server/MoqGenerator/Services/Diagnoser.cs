@@ -16,14 +16,21 @@ namespace MoqGenerator.Services
 		private readonly IInterfaceStore _interfaceStore;
 		private readonly IMockText _mockText;
 		private readonly IIndentation _indentation;
+		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 		private readonly ILogger<Diagnoser> _logger;
 
-		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText, IIndentation indentation, ILogger<Diagnoser> logger)
+		public Diagnoser(
+			IInterfaceStore interfaceStore,
+			IMockText mockText,
+			IIndentation indentation,
+			IInterfaceGenericsBuilder genericsBuilder,
+			ILogger<Diagnoser> logger)
 		{
 			_interfaceStore = interfaceStore;
 			_mockText = mockText;
 			_indentation = indentation;
 			_logger = logger;
+			_genericsBuilder = genericsBuilder;
 		}
 
 		private readonly HashSet<string> _testFrameworks = new()
@@ -74,6 +81,10 @@ namespace MoqGenerator.Services
 			watch.StopAndLogInformation(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
 			watch.Restart();
 
+			var generics = _genericsBuilder.BuildFast(compilation, tree);
+			watch.StopAndLogInformation(_logger, $"building InterfaceGenerics for {item.Identifier.Uri} took: ");
+			watch.Restart();
+
 			var diagnostics = compilation
 				.GetDiagnostics()
 				.Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
@@ -88,6 +99,7 @@ namespace MoqGenerator.Services
 					return new
 					{
 						candidateInterface,
+						genericsMatchLocation = x.Location.SourceSpan,
 						diagnosticRange = new Model.Lsp.Range
 							(
 								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
@@ -97,9 +109,12 @@ namespace MoqGenerator.Services
 				})
 				.Where(isEntireLine => isEntireLine.candidateInterface == lines[(int)isEntireLine.diagnosticRange.start.line])
 				.GroupBy(candidate => candidate.candidateInterface)
+
+				#warning does this grp.First() mean we'll never gen diagnostics for more than one interface in a raw text file? test this... has lots of implications on how this code works and how complex it is...
 				.Select(grp => grp.First())
 				;
 
+#warning either in Linq statement above, or here, match up our location with the generics builder stuff so we can pass the right stuff to interfaceStore.exists()
 			
 			var publishableDiagnostics = diagnostics
 				.Where(candidate => _interfaceStore.Exists(candidate.candidateInterface)) // can't gen text if the interface hasn't been loaded

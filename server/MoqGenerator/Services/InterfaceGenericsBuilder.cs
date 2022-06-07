@@ -5,14 +5,17 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model;
 
 namespace MoqGenerator.Services
 {
-	public class InterfaceGenericsBuilder
+
+
+	public class InterfaceGenericsBuilder : IInterfaceGenericsBuilder
 	{
 
-		#warning add XML doc to interface: all methods do the same but some are faster...
+#warning add XML doc to interface: all methods do the same but some are faster...
 		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildSlowest(string code)
 		{
 			var tree = CSharpSyntaxTree.ParseText(code);
@@ -31,14 +34,14 @@ namespace MoqGenerator.Services
 		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildFast(CSharpCompilation compilation, SyntaxTree tree)
 		{
 			var model = compilation.GetSemanticModel(tree);
-			
+
 			return model
 				.SyntaxTree
 				.GetRoot()
 				.DescendantNodes()
 				.OfType<TypeArgumentListSyntax>()
 				.Where(meth => FilterByParent(meth.Parent))
-				.Select(args => 
+				.Select(args =>
 				{
 					return new
 					{
