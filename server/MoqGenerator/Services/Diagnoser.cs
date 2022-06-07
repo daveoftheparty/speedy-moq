@@ -94,19 +94,18 @@ namespace MoqGenerator.Services
 					var generic = generics
 						.Values
 						.FirstOrDefault(v => v.Location == x.Location.SourceSpan);
-					
 
-					// Location refers to the substring indices of the text document
-					var candidateInterface = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
+					// x.Location refers to the substring indices of the text document
+					var lineMatcher = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
+					var candidateInterface = generic.Generics?.InterfaceNameKey ?? lineMatcher;
 					
 					// use this to calculate the range in the document where we want to eventually
 					// request our TextEdit when publishing a QuickFix from CodeActionHandler
 					var roslynRange = x.Location.GetLineSpan();
 					return new
 					{
+						lineMatcher,
 						candidateInterface,
-						#warning I think my override idea was better... we don't want to call InterfaceStore.Exists() ambiguously... we will always get the correct interface back by using the properly keyed name
-						genericInterface = generic.Generics?.InterfaceNameKey,
 						diagnosticRange = new Model.Lsp.Range
 							(
 								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
@@ -114,18 +113,14 @@ namespace MoqGenerator.Services
 							)
 					};
 				})
-				.Where(isEntireLine => isEntireLine.candidateInterface == lines[(int)isEntireLine.diagnosticRange.start.line])
+				.Where(isEntireLine => isEntireLine.lineMatcher == lines[(int)isEntireLine.diagnosticRange.start.line])
 				.GroupBy(candidate => candidate.candidateInterface)
 				.Select(grp => grp.First())
 				;
 
-#warning either in Linq statement above, or here, match up our location with the generics builder stuff so we can pass the right stuff to interfaceStore.exists()
-			
+
 			var publishableDiagnostics = diagnostics
-				.Where(candidate => 
-					_interfaceStore.Exists(candidate.candidateInterface) ||
-					_interfaceStore.Exists(candidate.genericInterface)
-				) // can't gen text if the interface hasn't been loaded
+				.Where(candidate => _interfaceStore.Exists(candidate.candidateInterface)) // can't gen text if the interface hasn't been loaded
 				.Select(loadable =>
 				{
 					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange.start.line);
