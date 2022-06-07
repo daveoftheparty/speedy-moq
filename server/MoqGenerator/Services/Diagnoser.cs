@@ -105,6 +105,7 @@ namespace MoqGenerator.Services
 					return new
 					{
 						candidateInterface,
+						#warning I think my override idea was better... we don't want to call InterfaceStore.Exists() ambiguously... we will always get the correct interface back by using the properly keyed name
 						genericInterface = generic.Generics?.InterfaceNameKey,
 						diagnosticRange = new Model.Lsp.Range
 							(
