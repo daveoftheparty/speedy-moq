@@ -8,6 +8,7 @@ namespace MoqGenerator.Interfaces.Lsp
 {
 	public interface IInterfaceGenericsBuilder
 	{
+		#warning did I really need a dictionary here? I may have, for InterfaceStore, but not for Diagnoser...
 		IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildSlowest(string code);
 		IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildSlow(SyntaxTree tree);
 		IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildFast(CSharpCompilation compilation, SyntaxTree tree);

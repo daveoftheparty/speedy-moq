@@ -46,7 +46,7 @@ namespace MoqGenerator.Services
 					return new
 					{
 						interfaceName = ((GenericNameSyntax)args.Parent).Identifier.Text,
-						span = args.Parent.FullSpan,
+						span = args.Parent.Span,
 						typeArgs = args.Arguments.Select(a => a.ToString()).ToList()
 					};
 				})

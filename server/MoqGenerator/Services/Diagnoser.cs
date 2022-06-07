@@ -90,6 +90,12 @@ namespace MoqGenerator.Services
 				.Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
 				.Select(x =>
 				{
+					// check for a generic:
+					var generic = generics
+						.Values
+						.FirstOrDefault(v => v.Location == x.Location.SourceSpan);
+					
+
 					// Location refers to the substring indices of the text document
 					var candidateInterface = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
 					
@@ -99,7 +105,7 @@ namespace MoqGenerator.Services
 					return new
 					{
 						candidateInterface,
-						genericsMatchLocation = x.Location.SourceSpan,
+						genericInterface = generic.Generics?.InterfaceNameKey,
 						diagnosticRange = new Model.Lsp.Range
 							(
 								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
@@ -109,15 +115,16 @@ namespace MoqGenerator.Services
 				})
 				.Where(isEntireLine => isEntireLine.candidateInterface == lines[(int)isEntireLine.diagnosticRange.start.line])
 				.GroupBy(candidate => candidate.candidateInterface)
-
-				#warning does this grp.First() mean we'll never gen diagnostics for more than one interface in a raw text file? test this... has lots of implications on how this code works and how complex it is...
 				.Select(grp => grp.First())
 				;
 
 #warning either in Linq statement above, or here, match up our location with the generics builder stuff so we can pass the right stuff to interfaceStore.exists()
 			
 			var publishableDiagnostics = diagnostics
-				.Where(candidate => _interfaceStore.Exists(candidate.candidateInterface)) // can't gen text if the interface hasn't been loaded
+				.Where(candidate => 
+					_interfaceStore.Exists(candidate.candidateInterface) ||
+					_interfaceStore.Exists(candidate.genericInterface)
+				) // can't gen text if the interface hasn't been loaded
 				.Select(loadable =>
 				{
 					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange.start.line);
