@@ -8,6 +8,7 @@
   - [Component](#component)
   - [Diagnoser Component - CURRENT STATE](#diagnoser-component---current-state)
   - [Diagnoser Component - TARGET STATE](#diagnoser-component---target-state)
+  - [Diagnoser Component - TARGET STATE ALTERNATE](#diagnoser-component---target-state-alternate)
 - [Diagram workflow](#diagram-workflow)
 - [Generating TOC](#generating-toc)
 
@@ -35,6 +36,14 @@
 [^top](#table-of-contents)
 
 ![Diagnoser Component Target State](./images/diagrams/Diagnoser-Component-Target-State.png)
+
+I've refined this, I don't think the above is quite right,now that I've done some coding. See NEXT target state alternate:
+
+## Diagnoser Component - TARGET STATE ALTERNATE
+[^top](#table-of-contents)
+
+![Diagnoser Component Target State (Alternate)](./images/diagrams/Diagnoser-Component-Target-State-Alternate.drawio.png)
+
 
 # Diagram workflow
 
