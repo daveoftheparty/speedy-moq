@@ -78,8 +78,7 @@ namespace MoqGenerator.IntegrationTests
 				storeLogger,
 				whoaCowboy.Object,
 				new ProjectHandler(projectHandlerLogger, uriHandler.Object),
-				uriHandler.Object,
-				new InterfaceGenericsBuilder());
+				uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(

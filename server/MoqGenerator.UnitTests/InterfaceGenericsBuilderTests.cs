@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using MoqGenerator.Services;
 using NUnit.Framework;
@@ -16,19 +17,22 @@ namespace MoqGenerator.UnitTests
 		public void BuildSlowest(string code, string expectedName, params string[] expectedArgs)
 		{
 			var builder = new InterfaceGenericsBuilder();
-			var actual = builder.BuildSlowest(code);
+			var actuals = builder.BuildSlow(code);
 			
 			try
 			{
-				Assert.AreEqual(1, actual.Count);
-				Assert.True(actual.ContainsKey(expectedName));
-				Assert.AreEqual(0, actual[expectedName].Location.Start);
-				Assert.AreEqual(code.Length, actual[expectedName].Location.Length);
-				CollectionAssert.AreEqual(expectedArgs, actual[expectedName].Generics.GenericTypeArguments);
+				Assert.AreEqual(1, actuals.Count);
+				var actual = actuals.First();
+
+				Assert.AreEqual(expectedName, actual.Generics.InterfaceName);
+				Assert.AreEqual($"{expectedName};{expectedArgs.Length}", actual.Generics.InterfaceNameKey);
+				Assert.AreEqual(0, actual.Location.Start);
+				Assert.AreEqual(code.Length, actual.Location.Length);
+				CollectionAssert.AreEqual(expectedArgs, actual.Generics.GenericTypeArguments);
 			}
 			catch
 			{
-				Console.WriteLine($"Actual results serialized: {JsonSerializer.Serialize(actual)}");
+				Console.WriteLine($"Actual results serialized: {JsonSerializer.Serialize(actuals)}");
 				throw;
 			}
 		}

@@ -36,7 +36,7 @@ namespace bugrepro.Abc.xyZ
 	public interface IThing<T>
 	{
 		T AThingString { get; }
-		T GetItByYourself(T);
+		T GetItByYourself(T data);
 	}
 
 	public class Tests
@@ -45,7 +45,7 @@ namespace bugrepro.Abc.xyZ
 		{
 			string AnotherThingString { get; }
 			T GetSomething();
-			void GetSomethingElse(T);
+			void GetSomethingElse(T input);
 		}
 	}
 }

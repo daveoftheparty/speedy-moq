@@ -56,21 +56,18 @@ namespace MoqGenerator.Services
 		private readonly IWhoaCowboy _whoaCowboy;
 		private readonly IProjectHandler _projectHandler;
 		private readonly IUriHandler _uriHandler;
-		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 
 		public InterfaceStore(
 			ILogger<InterfaceStore> logger,
 			IWhoaCowboy whoaCowboy,
 			IProjectHandler projectHandler,
-			IUriHandler uriHandler,
-			IInterfaceGenericsBuilder genericsBuilder)
+			IUriHandler uriHandler)
 		{
 			_logger = logger;
 			_logger.LogInformation($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 			_whoaCowboy = whoaCowboy;
 			_projectHandler = projectHandler;
 			_uriHandler = uriHandler;
-			_genericsBuilder = genericsBuilder;
 		}
 
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
@@ -157,11 +154,16 @@ namespace MoqGenerator.Services
 					node
 						.Methods
 						.Select(method =>
-							new
+						{
+							var parentSymbol = node.Model.GetDeclaredSymbol(method.Parent);
+							var interfaceName = parentSymbol.Name;
+							var typeArgs = GetInterfaceTypeArguments(interfaceName, node.Model, method.Parent);
+
+							return new
 							{
-								Namespace = node.Model.GetDeclaredSymbol(method.Parent)?.ContainingSymbol?.ToString(),
-								InterfaceName = node.Model.GetDeclaredSymbol(method.Parent).Name,
-								TypeArguments = GetInterfaceTypeArguments(node.Model.GetDeclaredSymbol(method.Parent).Name, node.Model, method.Parent),
+								Namespace = parentSymbol.ContainingSymbol?.ToString(),
+								InterfaceName = typeArgs?.InterfaceNameKey ?? interfaceName,
+								TypeArguments = typeArgs,
 								SourceFile = string.IsNullOrWhiteSpace(method?.Parent.SyntaxTree.FilePath) ? uriAsFile : method.Parent.SyntaxTree.FilePath,
 								MethodName = method.Identifier.Text,
 								ReturnType = method.ReturnType.ToString(),
@@ -173,10 +175,9 @@ namespace MoqGenerator.Services
 										ParameterType = param.Type.ToString(),
 										ParameterName = param.Identifier.Text,
 										ParameterDefinition = param.ToString()
-									}
-									)
-							}
-						)
+									})
+							};
+						})
 				)
 				.GroupBy(x => x.InterfaceName)
 				.ToList();
@@ -240,13 +241,20 @@ namespace MoqGenerator.Services
 				.SelectMany(node => 
 					node
 						.Properties
-						.Select(prop => new 
+						.Select(prop => 
 						{
-							Namespace = node.Model.GetDeclaredSymbol(prop.Parent)?.ContainingSymbol?.ToString(),
-							InterfaceName = node.Model.GetDeclaredSymbol(prop.Parent).Name,
-							TypeArguments = GetInterfaceTypeArguments(node.Model.GetDeclaredSymbol(prop.Parent).Name, node.Model, prop.Parent),
-							SourceFile = string.IsNullOrWhiteSpace(prop?.Parent.SyntaxTree.FilePath) ? uriAsFile : prop.Parent.SyntaxTree.FilePath,
-							PropertyName = prop.Identifier.Text
+							var parentSymbol = node.Model.GetDeclaredSymbol(prop.Parent);
+							var interfaceName = parentSymbol.Name;
+							var typeArgs = GetInterfaceTypeArguments(interfaceName, node.Model, prop.Parent);
+
+							return new
+							{
+								Namespace = parentSymbol.ContainingSymbol?.ToString(),
+								InterfaceName = typeArgs?.InterfaceNameKey ?? interfaceName,
+								TypeArguments = typeArgs,
+								SourceFile = string.IsNullOrWhiteSpace(prop?.Parent.SyntaxTree.FilePath) ? uriAsFile : prop.Parent.SyntaxTree.FilePath,
+								PropertyName = prop.Identifier.Text
+							};
 						})
 				)
 				.GroupBy(x => x.InterfaceName)
@@ -297,16 +305,23 @@ namespace MoqGenerator.Services
 				.SelectMany(node => 
 					node
 						.Indexer
-						.Select(indexer => new 
+						.Select(indexer => 
 						{
-							Namespace = node.Model.GetDeclaredSymbol(indexer.Parent)?.ContainingSymbol?.ToString(),
-							InterfaceName = node.Model.GetDeclaredSymbol(indexer.Parent)?.Name,
-							TypeArguments = GetInterfaceTypeArguments(node.Model.GetDeclaredSymbol(indexer.Parent)?.Name, node.Model, indexer.Parent),
-							SourceFile = string.IsNullOrWhiteSpace(indexer.Parent?.SyntaxTree.FilePath) ? uriAsFile : indexer.Parent?.SyntaxTree.FilePath,
-							KeyType = indexer.ParameterList.Parameters.First().Type.ToString(),
-							ReturnType = indexer.Type.ToString(),
-							HasGet = indexer.AccessorList.Accessors.Any(a => ((AccessorDeclarationSyntax)a).Keyword.Text == "get"),
-							HasSet = indexer.AccessorList.Accessors.Any(a => ((AccessorDeclarationSyntax)a).Keyword.Text == "set"),
+							var parentSymbol = node.Model.GetDeclaredSymbol(indexer.Parent);
+							var interfaceName = parentSymbol.Name;
+							var typeArgs = GetInterfaceTypeArguments(interfaceName, node.Model, indexer.Parent);
+
+							return new 
+							{
+								Namespace = parentSymbol.ContainingSymbol?.ToString(),
+								InterfaceName = typeArgs?.InterfaceNameKey ?? interfaceName,
+								TypeArguments = typeArgs,
+								SourceFile = string.IsNullOrWhiteSpace(indexer.Parent?.SyntaxTree.FilePath) ? uriAsFile : indexer.Parent?.SyntaxTree.FilePath,
+								KeyType = indexer.ParameterList.Parameters.First().Type.ToString(),
+								ReturnType = indexer.Type.ToString(),
+								HasGet = indexer.AccessorList.Accessors.Any(a => ((AccessorDeclarationSyntax)a).Keyword.Text == "get"),
+								HasSet = indexer.AccessorList.Accessors.Any(a => ((AccessorDeclarationSyntax)a).Keyword.Text == "set"),
+							};
 						})
 				)
 				.GroupBy(x => x.InterfaceName)
@@ -345,10 +360,16 @@ namespace MoqGenerator.Services
 			return dict;
 		}
 
-#warning factor out interfaceName param here, and maybe even get rid of this pass-through method altogether
 		private InterfaceGenerics GetInterfaceTypeArguments(string interfaceName, SemanticModel model, SyntaxNode member)
 		{
-			return _genericsBuilder.BuildFastest(model, member);
+			var typeArgs = ((INamedTypeSymbol)model.GetDeclaredSymbol(member))?
+				.TypeArguments
+				.Select(t => t.Name)
+				.ToList();
+
+			return typeArgs.Count == 0
+				? null
+				: new InterfaceGenerics(interfaceName, typeArgs);
 		}
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetDefinitionsByNamespaceByInterface(List<SemanticModel> models, TextDocumentIdentifier textDocId)
@@ -358,6 +379,7 @@ namespace MoqGenerator.Services
 			var methods = GetMethods(models, uriAsFile);
 			var properties = GetProperties(models, uriAsFile);
 			var indexer = GetIndexer(models, uriAsFile);
+			// GetInterfaceGenerics(models);
 
 			// merge the dictionaries
 			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>(methods);

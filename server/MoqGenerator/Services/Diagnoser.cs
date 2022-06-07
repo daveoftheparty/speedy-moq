@@ -81,7 +81,7 @@ namespace MoqGenerator.Services
 			watch.StopAndLogInformation(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
 			watch.Restart();
 
-			var generics = _genericsBuilder.BuildFast(compilation, tree);
+			var generics = _genericsBuilder.BuildFast(tree);
 			watch.StopAndLogInformation(_logger, $"building InterfaceGenerics for {item.Identifier.Uri} took: ");
 			watch.Restart();
 
@@ -92,12 +92,11 @@ namespace MoqGenerator.Services
 				{
 					// check for a generic:
 					var generic = generics
-						.Values
 						.FirstOrDefault(v => v.Location == x.Location.SourceSpan);
 
 					// x.Location refers to the substring indices of the text document
 					var lineMatcher = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
-					var candidateInterface = generic.Generics?.InterfaceNameKey ?? lineMatcher;
+					var candidateInterface = generic?.Generics?.InterfaceNameKey ?? lineMatcher;
 					
 					// use this to calculate the range in the document where we want to eventually
 					// request our TextEdit when publishing a QuickFix from CodeActionHandler

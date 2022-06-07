@@ -15,9 +15,11 @@ namespace MoqGenerator.Model
 			return InterfaceNameKey.Equals(other?.InterfaceNameKey);
 		}
 		
-		public override int GetHashCode()
+		public override int GetHashCode() => InterfaceNameKey.GetHashCode();
+
+		public override string ToString()
 		{
-			return InterfaceNameKey.GetHashCode();
+			return $"{{ InterfaceName = {InterfaceName}, GenericTypeArguments = {string.Join(", ", GenericTypeArguments)} }}";
 		}
 	}
 }

@@ -1,77 +1,143 @@
 {
+	"bugrepro": {
+		"InterfaceName": "IThing;1",
+		"Generics": {
+			"InterfaceName": "IThing",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IThing;1"
+		},
+		"SourceFile": "",
+		"Methods": [
+			
+		],
+		"Properties": [
+			"AThingString"
+		],
+		"Indexer": null
+	},
+	"bugrepro.Tests": {
+		"InterfaceName": "IThing;1",
+		"Generics": {
+			"InterfaceName": "IThing",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IThing;1"
+		},
+		"SourceFile": "",
+		"Methods": [
+			
+		],
+		"Properties": [
+			"AnotherThingString"
+		],
+		"Indexer": null
+	},
+	"bugrepro.Abc": {
+		"InterfaceName": "IThing;1",
+		"Generics": {
+			"InterfaceName": "IThing",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IThing;1"
+		},
+		"SourceFile": "",
+		"Methods": [
+			
+		],
+		"Properties": [
+			"AThingString"
+		],
+		"Indexer": null
+	},
 	"bugrepro.Abc.Tests": {
-		"InterfaceName": "IThing",
+		"InterfaceName": "IThing;1",
+		"Generics": {
+			"InterfaceName": "IThing",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IThing;1"
+		},
 		"SourceFile": "",
 		"Methods": [
 			{
 				"MethodName": "GetSomething",
-				"ReturnType": "void",
+				"ReturnType": "T",
 				"Parameters": [
+					
 				]
 			}
 		],
 		"Properties": [
 			"AnotherThingString"
-		]
+		],
+		"Indexer": null
+	},
+	"bugrepro.Abc.xyZ": {
+		"InterfaceName": "IThing;1",
+		"Generics": {
+			"InterfaceName": "IThing",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IThing;1"
+		},
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "GetItByYourself",
+				"ReturnType": "T",
+				"Parameters": [
+					{
+						"ParameterType": "T",
+						"ParameterName": "data",
+						"ParameterDefinition": "T data"
+					}
+				]
+			}
+		],
+		"Properties": [
+			"AThingString"
+		],
+		"Indexer": null
 	},
 	"bugrepro.Abc.xyZ.Tests": {
-		"InterfaceName": "IThing",
+		"InterfaceName": "IThing;1",
+		"Generics": {
+			"InterfaceName": "IThing",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IThing;1"
+		},
 		"SourceFile": "",
 		"Methods": [
 			{
 				"MethodName": "GetSomething",
-				"ReturnType": "void",
+				"ReturnType": "T",
 				"Parameters": [
+					
 				]
 			},
 			{
 				"MethodName": "GetSomethingElse",
 				"ReturnType": "void",
 				"Parameters": [
+					{
+						"ParameterType": "T",
+						"ParameterName": "input",
+						"ParameterDefinition": "T input"
+					}
 				]
 			}
 		],
 		"Properties": [
 			"AnotherThingString"
-		]
-	},
-	"bugrepro": {
-		"InterfaceName": "IThing",
-		"SourceFile": "",
-		"Methods": [],
-		"Properties": [
-			"AThingString"
-		]
-	},
-	"bugrepro.Tests": {
-		"InterfaceName": "IThing",
-		"SourceFile": "",
-		"Methods": [],
-		"Properties": [
-			"AnotherThingString"
-		]
-	},
-	"bugrepro.Abc": {
-		"InterfaceName": "IThing",
-		"SourceFile": "",
-		"Methods": [],
-		"Properties": [
-			"AThingString"
-		]
-	},
-	"bugrepro.Abc.xyZ": {
-		"InterfaceName": "IThing",
-		"SourceFile": "",
-		"Methods": [
-			{
-				"MethodName": "GetItByYourself",
-				"ReturnType": "void",
-				"Parameters": [
-				]
-			}
 		],
-		"Properties": [
-			"AThingString"
-		]
+		"Indexer": null
 	}
 }

@@ -50,8 +50,7 @@ namespace MoqGenerator.UnitTests
 				logMock,
 				whoaCowboy.Object,
 				new Mock<IProjectHandler>().Object,
-				uriHandler.Object,
-				new InterfaceGenericsBuilder());
+				uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
@@ -70,8 +69,8 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/InterfaceStore/"})]
 		public async Task GoAsync((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 005")
-			// 	return;
+			// if(test.testIdMessage != "TestId: 006")
+				// return;
 
 			var interfaceDict = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(test.testInputs[0]);
 			var inputText = test.testInputs[1];
@@ -96,8 +95,7 @@ namespace MoqGenerator.UnitTests
 				logMock,
 				whoaCowboy.Object,
 				new Mock<IProjectHandler>().Object,
-				uriHandler.Object,
-				new InterfaceGenericsBuilder());
+				uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(
