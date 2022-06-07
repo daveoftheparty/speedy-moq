@@ -56,14 +56,21 @@ namespace MoqGenerator.Services
 		private readonly IWhoaCowboy _whoaCowboy;
 		private readonly IProjectHandler _projectHandler;
 		private readonly IUriHandler _uriHandler;
+		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 
-		public InterfaceStore(ILogger<InterfaceStore> logger, IWhoaCowboy whoaCowboy, IProjectHandler projectHandler, IUriHandler uriHandler)
+		public InterfaceStore(
+			ILogger<InterfaceStore> logger,
+			IWhoaCowboy whoaCowboy,
+			IProjectHandler projectHandler,
+			IUriHandler uriHandler,
+			IInterfaceGenericsBuilder genericsBuilder)
 		{
 			_logger = logger;
 			_logger.LogInformation($"hello from {nameof(InterfaceStore)}:{_thisInstance} ctor...");
 			_whoaCowboy = whoaCowboy;
 			_projectHandler = projectHandler;
 			_uriHandler = uriHandler;
+			_genericsBuilder = genericsBuilder;
 		}
 
 		private async Task LoadCsInterfaceIfNecessaryAsync(TextDocumentItem textDocItem)
@@ -338,17 +345,10 @@ namespace MoqGenerator.Services
 			return dict;
 		}
 
-		private string GetInterfaceTypeArguments(string interfaceName, SemanticModel model, SyntaxNode member)
+#warning factor out interfaceName param here, and maybe even get rid of this pass-through method altogether
+		private InterfaceGenerics GetInterfaceTypeArguments(string interfaceName, SemanticModel model, SyntaxNode member)
 		{
-#warning move me to new InterfaceGenericsBuilder Service!!!!
-			var typeArgs = ((INamedTypeSymbol)model.GetDeclaredSymbol(member))?
-				.TypeArguments
-				.Select(t => t.Name)
-				.ToList();
-
-			return typeArgs.Count == 0
-				? null
-				: $"{interfaceName}<{string.Join(", ", typeArgs)}>";
+			return _genericsBuilder.BuildFastest(model, member);
 		}
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetDefinitionsByNamespaceByInterface(List<SemanticModel> models, TextDocumentIdentifier textDocId)

@@ -219,7 +219,7 @@ namespace MoqGenerator.UnitTests
 							new InterfaceDefinition
 							(
 								"IGenericService",
-								"IGenericService<TSource, TResult>",
+								new InterfaceGenerics("IGenericService", new List<string> { "TSource", "TResult" }),
 								"IGenericService.cs",
 								new List<InterfaceMethod>
 								{

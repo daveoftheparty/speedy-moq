@@ -59,7 +59,7 @@ namespace MoqGenerator.Services
 
 
 		// this is for InterfaceStore needs-- return type may not necessarily be the same as other methods
-		public IReadOnlyDictionary<string, (InterfaceGenerics Generics, TextSpan Location)> BuildFastest(string interfaceName, SemanticModel model, SyntaxNode member)
+		public InterfaceGenerics BuildFastest(SemanticModel model, SyntaxNode member)
 		{
 			throw new NotImplementedException();
 		}

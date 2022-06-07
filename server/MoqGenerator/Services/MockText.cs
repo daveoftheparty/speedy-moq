@@ -107,7 +107,8 @@ namespace MoqGenerator.Services
 
 			mockName = Camelify(mockName);
 
-			var interfacePlusArgs = definition.InterfaceNameWithGenerics ?? definition.InterfaceName;
+#warning get rid of this var when refactoring for new generics:
+			var interfacePlusArgs = definition.InterfaceName;
 
 			results.Add(
 				// var stringAnalyzer = new Mock<IStringAnalyzer>();
