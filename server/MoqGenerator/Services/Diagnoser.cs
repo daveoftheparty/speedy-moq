@@ -105,6 +105,7 @@ namespace MoqGenerator.Services
 					{
 						lineMatcher,
 						candidateInterface,
+						generic?.Generics,
 						diagnosticRange = new Model.Lsp.Range
 							(
 								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
@@ -123,7 +124,7 @@ namespace MoqGenerator.Services
 				.Select(loadable =>
 				{
 					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange.start.line);
-					var mockedTextByNamespace = _mockText.GetMockTextByNamespace(loadable.candidateInterface, config);
+					var mockedTextByNamespace = _mockText.GetMockTextByNamespace(loadable.candidateInterface, loadable.Generics, config);
 
 					var dataDict = mockedTextByNamespace
 						.Select(pair => new

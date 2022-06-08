@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 
 using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Util;
 
@@ -23,7 +24,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		public IReadOnlyDictionary<string, string> GetMockTextByNamespace(string interfaceName, IndentationConfig indentationConfig)
+		public IReadOnlyDictionary<string, string> GetMockTextByNamespace(string interfaceName, InterfaceGenerics userGenerics, IndentationConfig indentationConfig)
 		{
 			var result = new Dictionary<string, string>();
 
@@ -39,7 +40,7 @@ namespace MoqGenerator.Services
 				.Select(nsName => new
 				{
 					Namespace = nsName,
-					Text = GetTextForDefinition(interfaceName, nsName, namespaceDict[nsName], indentationConfig)
+					Text = GetTextForDefinition(interfaceName, nsName, namespaceDict[nsName], indentationConfig, userGenerics)
 				})
 				.ToDictionary(pair => pair.Namespace, pair => pair.Text);
 		}
@@ -49,8 +50,8 @@ namespace MoqGenerator.Services
 			string interfaceName,
 			string namespaceName,
 			Model.InterfaceDefinition definition,
-			IndentationConfig indentationConfig
-		)
+			IndentationConfig indentationConfig,
+			InterfaceGenerics userGenerics)
 		{
 			/*
 
@@ -101,18 +102,22 @@ namespace MoqGenerator.Services
 			var results = new List<string>();
 			var tab = indentationConfig.IndentString;
 
-			var mockName = interfaceName;
+			var isGeneric = definition.Generics != null;
+			var mockName = isGeneric ? definition.Generics.InterfaceName : interfaceName;
+
+			var userInterfaceDeclaration = isGeneric
+				? $"{mockName}<{string.Join(", ", userGenerics.GenericTypeArguments)}>"
+				: definition.InterfaceName;
+
 			if(mockName.StartsWith('I'))
 				mockName = mockName.Substring(1);
 
 			mockName = Camelify(mockName);
 
-#warning get rid of this var when refactoring for new generics:
-			var interfacePlusArgs = definition.InterfaceName;
 
 			results.Add(
 				// var stringAnalyzer = new Mock<IStringAnalyzer>();
-				$"var {mockName} = new Mock<{interfacePlusArgs}>();"
+				$"var {mockName} = new Mock<{userInterfaceDeclaration}>();"
 				);
 
 
@@ -153,7 +158,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Action<IStringAnalyzer>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Action<{interfacePlusArgs}>> {camelName} = x =>",
+						$"Expression<Action<{userInterfaceDeclaration}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}
@@ -163,7 +168,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Func<IStringAnalyzer, int>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Func<{interfacePlusArgs}, {method.ReturnType}>> {camelName} = x =>",
+						$"Expression<Func<{userInterfaceDeclaration}, {method.ReturnType}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}

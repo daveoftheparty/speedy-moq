@@ -10,6 +10,7 @@ using MoqGenerator.Services;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.UnitTests.Utils;
 using System;
+using MoqGenerator.Model;
 
 namespace MoqGenerator.UnitTests
 {
@@ -45,10 +46,13 @@ namespace MoqGenerator.UnitTests
 
 			var mockText = new Mock<IMockText>();
 
-			Expression<Func<IMockText, IReadOnlyDictionary<string, string>>> getMockTextByNamespace = x => x.GetMockTextByNamespace(It.IsAny<string>(), It.IsAny<IndentationConfig>());
+			Expression<Func<IMockText, IReadOnlyDictionary<string, string>>> getMockTextByNamespace = x => x.GetMockTextByNamespace(
+				It.IsAny<string>(),
+				It.IsAny<InterfaceGenerics>(),
+				It.IsAny<IndentationConfig>());
 			mockText
 				.Setup(getMockTextByNamespace)
-				.Returns((string interfaceName, IndentationConfig indentationConfig) =>
+				.Returns((string interfaceName, InterfaceGenerics userGenerics, IndentationConfig indentationConfig) =>
 				{
 					return mockReplacementDictionary;
 				});

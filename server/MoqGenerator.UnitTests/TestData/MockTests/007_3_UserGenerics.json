@@ -1,0 +1,7 @@
+{
+	"Name": "IGenericService",
+	"Arguments": [
+		"float",
+		"double"
+	]
+}
