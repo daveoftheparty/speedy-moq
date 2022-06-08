@@ -100,6 +100,7 @@ namespace MoqGenerator.Services
 			watch.Start();
 
 			var results = new List<string>();
+
 			var tab = indentationConfig.IndentString;
 
 			var isGeneric = definition.Generics != null;
@@ -108,6 +109,20 @@ namespace MoqGenerator.Services
 			var userInterfaceDeclaration = isGeneric
 				? $"{mockName}<{string.Join(", ", userGenerics.GenericTypeArguments)}>"
 				: definition.InterfaceName;
+
+			List<(string replacethis, string withThis)> genericTypeReplacements = null;
+			if(isGeneric)
+			{
+				genericTypeReplacements = definition.Generics.GenericTypeArguments
+					.Zip(
+						userGenerics.GenericTypeArguments,
+						(replaceThis, withThis) => 
+						(
+							replaceThis,
+							withThis
+						))
+					.ToList();
+			}
 
 			if(mockName.StartsWith('I'))
 				mockName = mockName.Substring(1);
@@ -133,6 +148,7 @@ namespace MoqGenerator.Services
 
 			foreach(var property in definition.Properties)
 			{
+				#warning do we need to handle generics in properties?
 				results.Add(
 					// stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
 					$"{mockName}.SetupGet(x => x.{property}).Returns(/* fill me in */);"
@@ -149,7 +165,7 @@ namespace MoqGenerator.Services
 				var camelName = Camelify(methodName);
 				
 				var parameterDeclaration = string.Join(", ", 
-					method.Parameters.Select(p => $"It.IsAny<{p.ParameterType}>()"));
+					method.Parameters.Select(p => $"It.IsAny<{SubGeneric(p.ParameterType, genericTypeReplacements)}>()"));
 
 
 				if(method.ReturnType == "void")
@@ -168,7 +184,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Func<IStringAnalyzer, int>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Func<{userInterfaceDeclaration}, {method.ReturnType}>> {camelName} = x =>",
+						$"Expression<Func<{userInterfaceDeclaration}, {SubGeneric(method.ReturnType, genericTypeReplacements)}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}
@@ -186,7 +202,7 @@ namespace MoqGenerator.Services
 
 				// string patient, char charToCount
 				var callbackDeclaration = string.Join(", ", 
-					method.Parameters.Select(p => $"{p.ParameterDefinition}"
+					method.Parameters.Select(p => $"{SubGeneric(p.ParameterDefinition, genericTypeReplacements)}"
 					));
 
 				var setupType = 
@@ -242,9 +258,22 @@ namespace MoqGenerator.Services
 			return string.Join(Environment.NewLine, lines);
 		}
 
+		private string SubGeneric(string parameterType, IEnumerable<(string replacethis, string withThis)> args)
+		{
+			if(args == null)
+				return parameterType;
+
+			var results = parameterType;
+			foreach(var pair in args)
+			{
+				results = results.Replace(pair.replacethis, pair.withThis);
+			}
+			return results;
+		}
 
 		public void MockIndexer(Model.InterfaceIndexer indexer, List<string> results, string mockName, string tab)
 		{
+			#warning setup failing generics test
 			if(indexer != null)
 			{
 				if(indexer.HasSet)
