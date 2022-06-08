@@ -117,6 +117,40 @@ namespace MoqGenerator.UnitTests
 			return new Dictionary<string, Dictionary<string, InterfaceDefinition>>
 			{
 				{
+					// Test 012
+					/*
+						public interface IGenericIndexer<T>
+						{
+							T this[int index] { get; set; }
+						}
+					*/
+					"IGenericIndexer;1",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IGenericIndexer;1",
+								new InterfaceGenerics("IGenericIndexer", new List<string> { "T" }),
+								"IGenericIndexer.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"int",
+									"T",
+									true,
+									true
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
 					// Test 011
 					/*
 						public interface INode<T>

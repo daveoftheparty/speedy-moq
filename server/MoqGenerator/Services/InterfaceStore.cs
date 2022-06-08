@@ -379,7 +379,6 @@ namespace MoqGenerator.Services
 			var methods = GetMethods(models, uriAsFile);
 			var properties = GetProperties(models, uriAsFile);
 			var indexer = GetIndexer(models, uriAsFile);
-			// GetInterfaceGenerics(models);
 
 			// merge the dictionaries
 			var result = new Dictionary<string, Dictionary<string, InterfaceDefinition>>(methods);

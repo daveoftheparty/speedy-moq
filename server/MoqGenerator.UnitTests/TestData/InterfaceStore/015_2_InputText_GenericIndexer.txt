@@ -1,0 +1,42 @@
+using System.Collections.Generic;
+using NUnit.Framework;
+
+namespace scratch
+{
+	public interface IGenericIndexer<T>
+	{
+		T this[int index] { get; set; }
+	}
+
+	public class GenericIndexer : IGenericIndexer<string>
+	{
+		private readonly List<string> _backing = new List<string>
+		{
+			"asdf",
+			"foo",
+			"qwerty"
+		};
+
+		public string this[int index]
+		{
+			get => _backing[index];
+			set => _backing[index] = value;
+		}
+	}
+
+	public class GenericIndexerTests
+	{
+		[Test]
+		public void Go()
+		{
+			var genericIndexer = new GenericIndexer();
+			Assert.AreEqual("qwerty", genericIndexer[2]);
+
+
+			Assert.AreEqual("foo", genericIndexer[1]);
+			genericIndexer[1] = "bar";
+			Assert.AreEqual("bar", genericIndexer[1]);
+
+		}
+	}
+}
