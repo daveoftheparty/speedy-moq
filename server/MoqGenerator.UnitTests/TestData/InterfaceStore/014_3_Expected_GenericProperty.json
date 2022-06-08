@@ -1,0 +1,22 @@
+{
+	"Foo": {
+		"InterfaceName": "INode;1",
+		"Generics": {
+			"InterfaceName": "INode",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "INode;1"
+		},
+		"SourceFile": "",
+		"Methods": [
+			
+		],
+		"Properties": [
+			"value",
+			"left",
+			"right"
+		],
+		"Indexer": null
+	}
+}

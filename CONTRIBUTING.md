@@ -5,6 +5,10 @@
   - [Architecture](#architecture)
   - [Building/launching from a fresh clone](#buildinglaunching-from-a-fresh-clone)
   - [Debugging the server](#debugging-the-server)
+  - [New models in code](#new-models-in-code)
+  - [Unit testing](#unit-testing)
+  - [Logging in the server](#logging-in-the-server)
+
 ## Architecture
 
 See [docs](./docs/readme.md)
@@ -48,6 +52,11 @@ If you need a new model to communicate between OmniLsp <==> MoqGenerator, take t
 https://microsoft.github.io/language-server-protocol/specification
 
 The model should live in the MoqGenerator.Model.Lsp namespace
+
+
+## Unit testing
+See more notes in [Unit Tests](./server/MoqGenerator.UnitTests/readme.md)
+
 
 ## Logging in the server
 
