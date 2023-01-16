@@ -28,6 +28,19 @@ TLDR;
 if ya want control over the version you can also type it in directly instead of using `<major | minor | patch>` like so: `vsce publish 3.2.1` The git commit *should* have the version as the comment message...
 
 
+## warnings I'm getting from publish that should probably be addressed:
+
+```
+This extension consists of 597 files, out of which 262 are JavaScript files. For performance reasons, you should bundle your extension: https://aka.ms/vscode-bundle-extension . You should also exclude unnecessary files by adding them to your .vscodeignore: https://aka.ms/vscode-vscodeignore
+Publishing daveoftheparty.speedy-moq@0.1.0...
+ INFO  Extension URL (might take a few minutes): https://marketplace.visualstudio.com/items?itemName=daveoftheparty.speedy-moq
+ INFO  Hub URL: https://marketplace.visualstudio.com/manage/publishers/daveoftheparty/extensions/speedy-moq/hub
+ DONE  Published daveoftheparty.speedy-moq@0.1.0.
+ INFO 
+The latest version of vsce is 2.15.0 and you have 1.96.1.
+Update it now: npm install -g vsce
+```
+
 IT'S... ALIVE???
 
 ```
