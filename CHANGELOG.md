@@ -1,15 +1,19 @@
 Change Log
 
 
-- [0.1.0 (Jan 15, 2023)](#010-jan-15-2023)
+- [\[NEXT - 0.1.1?\]](#next---011)
 	- [Changes](#changes)
 	- [Examples](#examples)
+		- [Detecting Test Files](#detecting-test-files)
+- [0.1.0 (Jan 15, 2023)](#010-jan-15-2023)
+	- [Changes](#changes-1)
+	- [Examples](#examples-1)
 		- [Mocking Indexers](#mocking-indexers)
 		- [Better Generics](#better-generics)
 - [0.0.9 (Aug 23, 2021)](#009-aug-23-2021)
 - [0.0.8 (Aug 14, 2021)](#008-aug-14-2021)
-	- [Changes](#changes-1)
-	- [Examples](#examples-1)
+	- [Changes](#changes-2)
+	- [Examples](#examples-2)
 		- [Linq Expression Wrapping](#linq-expression-wrapping)
 - [0.0.7 (Aug 10, 2021)](#007-aug-10-2021)
 - [0.0.6 (Aug 9, 2021)](#006-aug-9-2021)
@@ -17,12 +21,24 @@ Change Log
 - [0.0.4 (Aug 5, 2021)](#004-aug-5-2021)
 
 
+# [NEXT - 0.1.1?]
+
+## Changes
+- fixed a bug in detecting unit test files that would prevent diagnostics/prompts to Generate Moq Setups
+
+## Examples
+### Detecting Test Files
+These using snippets are all valid C# and are now handled:
+```csharp
+		using System;using Xunit;
+using Xunit; // <-- best framework ever? Oddly enough this whole proj is using NUnit 🤣
+using Xunit;using System;
+```
 
 # 0.1.0 (Jan 15, 2023)
 
-***see next heading for format -- if next upgrades to net6.0, maybe version should be 0.1.0***
-
 ## Changes
+- upgraded from net5.0 to net6.0
 - added support for mocking indexers
 - greatly increased usability when dealing with generics.
 - (for extension contributors) Architecture diagrams added, see [CONTRIBUTING.md](CONTRIBUTING.md)
