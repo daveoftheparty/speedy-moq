@@ -14,6 +14,46 @@ public class TestFileFilter : ITestFileFilter
 		"using Microsoft.VisualStudio.TestTools.UnitTesting;"
 	};
 
+	private readonly HashSet<string> _testAttributes = new()
+	{
+		#warning if possible, would it make more sense for this to be a list and be ordered by attributes MORE LIKELY to show up for faster detection?
+		// see https://xunit.net/docs/comparisons for a pretty good list of attributes from all three frameworks
+
+
+		// Xunit
+		"[Fact", // generally seen as [Fact], but sometimes seen as [Fact(<...>
+
+		// NUnit
+		"[Test]",
+		"[TestFixture]", // optional for some test classes
+		"[SetUp]",
+		"[TearDown]",
+		"[OneTimeSetUp]",
+		"[OneTimeTearDown]",
+		"[TestCase(", // note no closing parens/brackets, full implementation might be [TestCase(1, true)]
+
+		// MSTest
+		"[TestMethod]",
+		"[TestClass]", // REQUIRED for every test class
+		"[TestInitialize]",
+		"[TestCleanup]",
+		"[ClassInitialize]",
+		"[ClassCleanup]",
+		"[TestProperty]",
+		"[DataSource(",
+
+		// multiple frameworks
+		"[Theory]",
+		"[Ignore",
+	};
+
+	private readonly List<string> _allTestFragments;
+
+	public TestFileFilter()
+	{
+		_allTestFragments = _testFrameworks.Concat(_testAttributes).ToList();
+	}
+
 	public bool IsTestFile(IReadOnlyList<string> lines)
 	{
 		// return fast if an entire line exactly matches a using statement:
@@ -23,7 +63,7 @@ public class TestFileFilter : ITestFileFilter
 		// a bit slower, need to bounce every line off every test framework item:
 		foreach(var line in lines)
 		{
-			foreach(var framework in _testFrameworks)
+			foreach(var fragment in _allTestFragments)
 			{
 				/*
 				well, this is awkward, because these are easy enough to test for:
@@ -45,7 +85,7 @@ public class TestFileFilter : ITestFileFilter
 				Diagnoser will just output codegen suggestions for non-test files...
 				*/
 
-				if(line.IndexOf(framework) >= 0)
+				if(line.IndexOf(fragment) >= 0)
 					return true;
 			}
 		}
