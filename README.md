@@ -19,7 +19,7 @@ namespace Demo.Lib
 
 ## And:
 ```csharp
-using NUnit.Framework; // or xUnit, Microsoft.VisualStudio.TestTools
+using NUnit.Framework; // or Xunit, Microsoft.VisualStudio.TestTools
 
 namespace Demo.Lib.UnitTests
 {
@@ -71,7 +71,32 @@ namespace Demo.Lib.UnitTests
 
 ## Usage
 
-While in a test file, type out the name of the interface you wish to generate code for. You should be presented with a lightbulb. Using the lightbulb, or Ctrl+. you can now generate your basic Moq code by choosing `Generate Moq Setups*`
+While in a test file, type out the name of the interface you wish to generate code for--on its own line. You should be presented with a lightbulb. Using the lightbulb, or the keyboard sequence `Ctrl`+`.` you can now generate your basic Moq code by choosing `Generate Moq Setups*`
+
+*Note that for interfaces with generic type arguments, you will need to enter the type arguments in angle brackets before you get code generation.*
+
+### Example Generic Usage
+
+```csharp
+using Xunit;
+
+namespace Demo;
+
+public interface IGenericService<TSource, TResult>
+{
+	IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+}
+
+public class ServiceConsumerTests
+{
+	[Test]
+	public void Go()
+	{
+		// enter this to get code generation/moq setups:
+		IGenericService<string, int>
+	}
+}
+```
 
 ## Hints
 

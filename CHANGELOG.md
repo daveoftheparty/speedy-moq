@@ -24,8 +24,9 @@ Change Log
 
 ## Changes
 - added support for mocking indexers
-
 - greatly increased usability when dealing with generics.
+- (for extension contributors) Architecture diagrams added, see [CONTRIBUTING.md](CONTRIBUTING.md)
+
 
 ## Examples
 ### Mocking Indexers
@@ -168,7 +169,7 @@ which, while the T isn't super useful, is at least, syntactically correct... jus
 - more testing around tabs vs. spaces detection for proper output formatting
 - update demo gif, hoping for better display (less blurry)
 - thin dark outline around extension icon for light theme display
-- developer/testing quality of life stuff around test inputs
+- (for extension contributors) quality of life stuff around test inputs
 
 ## Examples
 ### Linq Expression Wrapping
