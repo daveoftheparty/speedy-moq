@@ -1,0 +1,4 @@
+using Xunit; // hi, I'm here!!
+namespace Foo;
+
+public class SomeTests {}

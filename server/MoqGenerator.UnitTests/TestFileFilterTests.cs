@@ -10,14 +10,17 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataSingleFileReader), nameof(TestDataSingleFileReader.GetTestInputs), new object[] {"TestData/TestFileFilter/"})]
 		public void Go((string testFile, string[] inputLines) test)
 		{
+			// if(test.testFile != "004_using-Xunit-nonstandard.true.txt")
+			// 	return;
+
 			var file = test.testFile;
 			Assert.True(
-				file.Contains("true", StringComparison.InvariantCulture) ||
-				file.Contains("false", StringComparison.InvariantCulture),
+				file.Contains(".true.", StringComparison.InvariantCulture) ||
+				file.Contains(".false.", StringComparison.InvariantCulture),
 				"Invalid test file naming convention!"
 				);
 
-			var expected = file.Contains("true", StringComparison.InvariantCulture);
+			var expected = file.Contains(".true.", StringComparison.InvariantCulture);
 
 			var filter = new TestFileFilter();
 			Assert.AreEqual(expected, filter.IsTestFile(test.inputLines));
