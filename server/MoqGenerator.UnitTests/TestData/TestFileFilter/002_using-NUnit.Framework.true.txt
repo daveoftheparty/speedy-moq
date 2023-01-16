@@ -1,0 +1,4 @@
+using NUnit.Framework;
+namespace Foo;
+
+public class SomeTests {}

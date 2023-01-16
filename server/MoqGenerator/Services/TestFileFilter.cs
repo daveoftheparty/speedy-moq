@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using MoqGenerator.Interfaces.Lsp;
 
@@ -15,6 +16,6 @@ public class TestFileFilter : ITestFileFilter
 
 	public bool IsTestFile(IReadOnlyList<string> lines)
 	{
-		throw new System.NotImplementedException();
+		return lines.Any(l => _testFrameworks.Contains(l));
 	}
 }

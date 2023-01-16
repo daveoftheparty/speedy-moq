@@ -1,0 +1,4 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace Foo;
+
+public class SomeTests {}
