@@ -1,0 +1,7 @@
+namespace Foo;
+
+public class SomeTests
+{
+	[Fact]
+	public void Go() {}
+}

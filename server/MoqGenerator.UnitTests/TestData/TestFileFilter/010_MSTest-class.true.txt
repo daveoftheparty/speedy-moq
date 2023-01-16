@@ -1,0 +1,4 @@
+namespace Foo;
+
+[TestClass]
+public class SomeTests {}
