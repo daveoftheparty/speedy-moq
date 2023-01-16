@@ -60,6 +60,7 @@ namespace OmniLsp
 			services.AddTransient<IProjectHandler, ProjectHandler>();
 			services.AddTransient<IUriHandler, UriHandler>();
 			services.AddTransient<IInterfaceGenericsBuilder, InterfaceGenericsBuilder>();
+			services.AddTransient<ITestFileFilter, TestFileFilter>();
 		}
 	}
 }

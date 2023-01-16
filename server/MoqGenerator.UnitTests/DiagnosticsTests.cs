@@ -63,15 +63,29 @@ namespace MoqGenerator.UnitTests
 				.Setup(x => x.GetIndentationConfig(It.IsAny<string>(), It.IsAny<uint>()))
 				.Returns(new IndentationConfig(3, "\t", false));
 
+			var testFileFilter = new Mock<ITestFileFilter>();
+			Expression<Func<ITestFileFilter, bool>> isTestFile = x =>
+				x.IsTestFile(It.IsAny<IReadOnlyList<string>>());
+
+			testFileFilter
+				.Setup(isTestFile)
+				.Returns((IReadOnlyList<string> lines) =>
+				{
+					return true;
+				});
+
 			var diagnoser = new Diagnoser(
 				interfaceStore.Object,
 				mockText.Object,
 				mockIndentation.Object,
 				new InterfaceGenericsBuilder(),
-				new LoggerDouble<Diagnoser>()
+				new LoggerDouble<Diagnoser>(),
+				testFileFilter.Object
 				);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);
 			var actual = diagnoser.GetDiagnostics(textDoc);
+
+			testFileFilter.Verify(isTestFile, Times.Once);
 
 			try
 			{
