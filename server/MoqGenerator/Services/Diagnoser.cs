@@ -18,27 +18,23 @@ namespace MoqGenerator.Services
 		private readonly IIndentation _indentation;
 		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 		private readonly ILogger<Diagnoser> _logger;
+		private readonly ITestFileFilter _testFileFilter;
 
 		public Diagnoser(
 			IInterfaceStore interfaceStore,
 			IMockText mockText,
 			IIndentation indentation,
 			IInterfaceGenericsBuilder genericsBuilder,
-			ILogger<Diagnoser> logger)
+			ILogger<Diagnoser> logger,
+			ITestFileFilter testFileFilter)
 		{
 			_interfaceStore = interfaceStore;
 			_mockText = mockText;
 			_indentation = indentation;
 			_logger = logger;
 			_genericsBuilder = genericsBuilder;
+			_testFileFilter = testFileFilter;
 		}
-
-		private readonly HashSet<string> _testFrameworks = new()
-		{
-			"using NUnit.Framework;",
-			"using Xunit;",
-			"using Microsoft.VisualStudio.TestTools.UnitTesting;"
-		};
 
 		private readonly List<string> _requiredImports = new()
 		{
@@ -59,7 +55,7 @@ namespace MoqGenerator.Services
 				.ToList();
 
 			// check if we're dealing with a test file, otherwise bail early...
-			if(!lines.Any(line => _testFrameworks.Contains(line)))
+			if(!_testFileFilter.IsTestFile(lines))
 			{
 				_logger.LogInformation($"{item.Identifier.Uri} does not appear to be a test file");
 				watch.StopAndLogInformation(_logger, $"discarding {item.Identifier.Uri} for not being a test file took: ");
