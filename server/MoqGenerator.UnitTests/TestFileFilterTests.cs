@@ -10,7 +10,7 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataSingleFileReader), nameof(TestDataSingleFileReader.GetTestInputs), new object[] {"TestData/TestFileFilter/"})]
 		public void Go((string testFile, string[] inputLines) test)
 		{
-			// if(test.testFile != "004_using-Xunit-nonstandard.true.txt")
+			// if(test.testFile != "008_Xunit-Fact.true.txt")
 			// 	return;
 
 			var file = test.testFile;
