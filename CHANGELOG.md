@@ -1,4 +1,6 @@
-## (next, see next heading for format)
+# CHANGELOG
+
+## (next, see next heading for format -- if next upgrades to net6.0, maybe version should be 0.1.0)
 - added support for mocking indexers, this code:
 ```csharp
 public interface IHasIndexer
@@ -17,6 +19,112 @@ hasIndexer
 hasIndexer
 	.SetupSet(x => x[It.IsAny<string>()] = It.IsAny<string>())
 	.Callback((string key, string value) => hasIndexerStore[key] = value);
+```
+- greatly increased usability when dealing with generics.
+  - BEFORE this release, when you entered the generic interface name, you got a lame version of the setups with, in the following example, TSource, TResult-- and would have to edit the code in several places:
+```csharp
+public interface IGenericService<TSource, TResult>
+{
+	IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+	void Increment(string name, int value);
+}
+
+// before moq setups applied:
+public class GenericServiceTests
+{
+	[Test]
+	public void Go()
+	{
+		// you would type this on a single line:
+		IGenericService
+	}
+}
+
+// class after Generating Moq Setups:
+public class GenericServiceTests
+{
+	[Test]
+	public void Go()
+	{
+		// YUCK!!!
+		var genericService = new Mock<IGenericService<TSource, TResult>>();
+
+		Expression<Func<IGenericService<TSource, TResult>, IEnumerable<TResult>>> transformSource = x =>
+			x.TransformSource(It.IsAny<IEnumerable<TSource>>());
+
+		genericService
+			.Setup(transformSource)
+			.Returns((IEnumerable<TSource> items) =>
+			{
+				return default;
+			});
+
+		Expression<Action<IGenericService<TSource, TResult>>> increment = x =>
+			x.Increment(It.IsAny<string>(), It.IsAny<int>());
+
+		genericService
+			.Setup(increment)
+			.Callback((string name, int value) =>
+			{
+				return;
+			});
+
+		genericService.Verify(transformSource, Times.Once);
+		genericService.Verify(increment, Times.Once);
+	}
+}
+```
+  - AFTER this release, enter the generic interface __*and the type arguments you wish to use*__ and you get a much better result:
+```csharp
+public interface IGenericService<TSource, TResult>
+{
+	IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+	void Increment(string name, int value);
+}
+
+// before moq setups applied:
+public class GenericServiceTests
+{
+	[Test]
+	public void Go()
+	{
+		// you would type this on a single line:
+		IGenericService<char, int>
+	}
+}
+
+// class after Generating Moq Setups:
+public class GenericServiceTests
+{
+	[Test]
+	public void Go()
+	{
+		var genericService = new Mock<IGenericService<char, int>>();
+
+		Expression<Func<IGenericService<char, int>, IEnumerable<int>>> transformSource = x =>
+			x.TransformSource(It.IsAny<IEnumerable<char>>());
+
+		genericService
+			.Setup(transformSource)
+			.Returns((IEnumerable<char> items) =>
+			{
+				return default;
+			});
+
+		Expression<Action<IGenericService<char, int>>> increment = x =>
+			x.Increment(It.IsAny<string>(), It.IsAny<int>());
+
+		genericService
+			.Setup(increment)
+			.Callback((string name, int value) =>
+			{
+				return;
+			});
+
+		genericService.Verify(transformSource, Times.Once);
+		genericService.Verify(increment, Times.Once);
+	}
+}
 ```
 
 
