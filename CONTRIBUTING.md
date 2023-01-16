@@ -54,6 +54,8 @@ https://microsoft.github.io/language-server-protocol/specification
 The model should live in the MoqGenerator.Model.Lsp namespace
 
 
+The OmniSharp repository is: https://github.com/OmniSharp/csharp-language-server-protocol
+
 ## Unit testing
 See more notes in [Unit Tests](./server/MoqGenerator.UnitTests/readme.md)
 
