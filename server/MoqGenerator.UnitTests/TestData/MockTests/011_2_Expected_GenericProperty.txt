@@ -1,0 +1,7 @@
+<< begin FooNamespace
+			var node = new Mock<INode<int>>();
+
+			node.SetupGet(x => x.value).Returns(/* fill me in */);
+			node.SetupGet(x => x.left).Returns(/* fill me in */);
+			node.SetupGet(x => x.right).Returns(/* fill me in */);
+end FooNamespace >>

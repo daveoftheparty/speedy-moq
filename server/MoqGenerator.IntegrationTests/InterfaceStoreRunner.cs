@@ -74,7 +74,11 @@ namespace MoqGenerator.IntegrationTests
 			var storeLogger = new LoggerDouble<InterfaceStore>();
 			var projectHandlerLogger = new LoggerDouble<ProjectHandler>();
 
-			var store = new InterfaceStore(storeLogger, whoaCowboy.Object, new ProjectHandler(projectHandlerLogger, uriHandler.Object), uriHandler.Object);
+			var store = new InterfaceStore(
+				storeLogger,
+				whoaCowboy.Object,
+				new ProjectHandler(projectHandlerLogger, uriHandler.Object),
+				uriHandler.Object);
 			await store.LoadDefinitionsIfNecessaryAsync(
 				new TextDocumentItem
 				(

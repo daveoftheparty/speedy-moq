@@ -19,6 +19,11 @@ namespace MoqGenerator.UnitTests
 {
 	public class MockTextTests
 	{
+		private class UserGenerics
+		{
+			public string Name { get; set; }
+			public List<string> Arguments { get; set; }
+		}
 
 		[Test]
 		public void NoInterfaceDefinitionShouldLog()
@@ -31,7 +36,7 @@ namespace MoqGenerator.UnitTests
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
 			var interfaceName = "asdf";
-			var actual = mockText.GetMockTextByNamespace(interfaceName, DefaultIndent());
+			var actual = mockText.GetMockTextByNamespace(interfaceName, null, DefaultIndent());
 			
 			Assert.AreEqual(0, actual.Count);
 			Assert.IsTrue(
@@ -50,8 +55,8 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/MockTests/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 008")
-			// 	return;
+			// if(test.testIdMessage != "TestId: 007")
+				// return;
 
 			var interfaceName = test.testInputs[0];
 			var hereDict = new HereDict();
@@ -62,7 +67,14 @@ namespace MoqGenerator.UnitTests
 
 			var mockText = new MockText(logMock, storeMock.mock.Object);
 
-			var actual = mockText.GetMockTextByNamespace(interfaceName, DefaultIndent());
+			InterfaceGenerics userGenerics = null;
+			if(test.testInputs.Length > 2)
+			{
+				var args = JsonSerializer.Deserialize<UserGenerics>(test.testInputs[2]);
+				userGenerics = new InterfaceGenerics(args.Name, args.Arguments);
+			}
+
+			var actual = mockText.GetMockTextByNamespace(interfaceName, userGenerics, DefaultIndent());
 			
 			try
 			{
@@ -104,6 +116,75 @@ namespace MoqGenerator.UnitTests
 		{
 			return new Dictionary<string, Dictionary<string, InterfaceDefinition>>
 			{
+				{
+					// Test 012
+					/*
+						public interface IGenericIndexer<T>
+						{
+							T this[int index] { get; set; }
+						}
+					*/
+					"IGenericIndexer;1",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"IGenericIndexer;1",
+								new InterfaceGenerics("IGenericIndexer", new List<string> { "T" }),
+								"IGenericIndexer.cs",
+								new List<InterfaceMethod>(),
+								new List<string>(),
+								new InterfaceIndexer
+								(
+									"int",
+									"T",
+									true,
+									true
+								)
+							)
+						}
+					}
+				},
+
+
+
+				{
+					// Test 011
+					/*
+						public interface INode<T>
+						{
+							T value { get; set; }
+							INode<T> left { get; set; }
+							INode<T> right { get; set; }
+						}
+					*/
+					"INode;1",
+					new Dictionary<string, InterfaceDefinition>
+					{
+						{
+							"FooNamespace",
+							new InterfaceDefinition
+							(
+								"INode;1",
+								new InterfaceGenerics("INode", new List<string> { "T" }),
+								"IGenericService.cs",
+								new List<InterfaceMethod>(),
+								new List<string>
+								{
+									"value",
+									"left",
+									"right"
+								},
+								null
+							)
+						}
+					}
+				},
+
+
+
 				{
 					/*
 						public interface IHasListStringByLongIndexer
@@ -211,15 +292,15 @@ namespace MoqGenerator.UnitTests
 							void Increment(string name, int value);
 						}
 					*/
-					"IGenericService",
+					"IGenericService;2",
 					new Dictionary<string, InterfaceDefinition>
 					{
 						{
 							"FooNamespace",
 							new InterfaceDefinition
 							(
-								"IGenericService",
-								"IGenericService<TSource, TResult>",
+								"IGenericService;2",
+								new InterfaceGenerics("IGenericService", new List<string> { "TSource", "TResult" }),
 								"IGenericService.cs",
 								new List<InterfaceMethod>
 								{

@@ -1,0 +1,9 @@
+namespace Foo
+{
+	public interface INode<T>
+	{
+		T value { get; set; }
+		INode<T> left { get; set; }
+		INode<T> right { get; set; }
+	}
+}

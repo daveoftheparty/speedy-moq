@@ -19,7 +19,7 @@ namespace Demo.Lib
 
 ## And:
 ```csharp
-using NUnit.Framework; // or xUnit, Microsoft.VisualStudio.TestTools
+using NUnit.Framework; // or Xunit, Microsoft.VisualStudio.TestTools
 
 namespace Demo.Lib.UnitTests
 {
@@ -71,7 +71,32 @@ namespace Demo.Lib.UnitTests
 
 ## Usage
 
-While in a test file, type out the name of the interface you wish to generate code for. You should be presented with a lightbulb. Using the lightbulb, or Ctrl+. you can now generate your basic Moq code by choosing `Generate Moq Setups*`
+While in a test file, type out the name of the interface you wish to generate code for--on its own line. You should be presented with a lightbulb. Using the lightbulb, or the keyboard sequence `Ctrl`+`.` you can now generate your basic Moq code by choosing `Generate Moq Setups*`
+
+*Note that for interfaces with generic type arguments, you will need to enter the type arguments in angle brackets before you get code generation.*
+
+### Example Generic Usage
+
+```csharp
+using Xunit;
+
+namespace Demo;
+
+public interface IGenericService<TSource, TResult>
+{
+	IEnumerable<TResult> TransformSource(IEnumerable<TSource> items);
+}
+
+public class ServiceConsumerTests
+{
+	[Test]
+	public void Go()
+	{
+		// enter this to get code generation/moq setups:
+		IGenericService<string, int>
+	}
+}
+```
 
 ## Hints
 
@@ -79,7 +104,7 @@ There are probably bugs, and lots of them. [File an issue!](https://github.com/d
 
 If you don't get the codefix (the lightbulb), it may be one of these reasons:
 - Extension isn't ready yet. It may take 3-5 seconds to read your code and prepare suggestions from the time a .cs file is first opened in the IDE.
-- Your interface name is misspelled.
+- Your interface name is misspelled. Code completion should help avoid that. _Your interface name must be the only text on a line, other than whitespace._
 - Your test project does not yet reference the project where the interface is declared.
 - The extension doesn't recognize the file you are editing as a test file. Currently test file detection is a simple matter of looking to see if any of these statements appear in your .cs file. If the extension is missing a test framework, please let me know.
 	- `using NUnit.Framework;`

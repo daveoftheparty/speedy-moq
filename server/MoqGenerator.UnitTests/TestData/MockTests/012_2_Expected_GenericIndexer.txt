@@ -1,0 +1,11 @@
+<< begin FooNamespace
+			var genericIndexer = new Mock<IGenericIndexer<char>>();
+
+			var genericIndexerStore = new Dictionary<int, char>();
+			genericIndexer
+				.Setup(x => x[It.IsAny<int>()])
+				.Returns((int key) => genericIndexerStore[key]);
+			genericIndexer
+				.SetupSet(x => x[It.IsAny<int>()] = It.IsAny<char>())
+				.Callback((int key, char value) => genericIndexerStore[key] = value);
+end FooNamespace >>

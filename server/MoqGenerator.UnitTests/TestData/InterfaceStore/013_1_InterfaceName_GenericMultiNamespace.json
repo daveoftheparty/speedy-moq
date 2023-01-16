@@ -1,0 +1,12 @@
+{
+	"IThing;1" : [
+		"bugrepro",
+		"bugrepro.Tests",
+
+		"bugrepro.Abc",
+		"bugrepro.Abc.Tests",
+
+		"bugrepro.Abc.xyZ",
+		"bugrepro.Abc.xyZ.Tests"
+	]
+}

@@ -1,7 +1,14 @@
 {
 	"Foo": {
-		"InterfaceName": "IGenericService",
-		"InterfaceNameWithGenerics": "IGenericService<TSource, TResult>",
+		"InterfaceName": "IGenericService;2",
+		"Generics": {
+			"InterfaceName": "IGenericService",
+			"GenericTypeArguments": [
+				"TSource",
+				"TResult"
+			],
+			"InterfaceNameKey": "IGenericService;2"
+		},
 		"SourceFile": "",
 		"Methods": [
 			{

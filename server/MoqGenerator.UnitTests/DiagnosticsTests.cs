@@ -10,6 +10,7 @@ using MoqGenerator.Services;
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.UnitTests.Utils;
 using System;
+using MoqGenerator.Model;
 
 namespace MoqGenerator.UnitTests
 {
@@ -18,6 +19,9 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/Diagnostics/"})]
 		public void Go((string testIdMessage, string[] testInputs) test)
 		{
+			// if(test.testIdMessage != "TestId: 012")
+			// 	return;
+
 			var input = test.testInputs[0];
 			var expected = JsonSerializer.Deserialize<IEnumerable<Diagnostic>>(test.testInputs[1]);
 
@@ -38,14 +42,17 @@ namespace MoqGenerator.UnitTests
 			var interfaceStore = new Mock<IInterfaceStore>();
 			interfaceStore
 				.Setup(x => x.Exists(It.IsAny<string>()))
-				.Returns((string name) => name == "IStringAnalyzer");
+				.Returns((string name) => name == "IStringAnalyzer" || name == "IStringAnalyzer;2");
 
 			var mockText = new Mock<IMockText>();
 
-			Expression<Func<IMockText, IReadOnlyDictionary<string, string>>> getMockTextByNamespace = x => x.GetMockTextByNamespace(It.IsAny<string>(), It.IsAny<IndentationConfig>());
+			Expression<Func<IMockText, IReadOnlyDictionary<string, string>>> getMockTextByNamespace = x => x.GetMockTextByNamespace(
+				It.IsAny<string>(),
+				It.IsAny<InterfaceGenerics>(),
+				It.IsAny<IndentationConfig>());
 			mockText
 				.Setup(getMockTextByNamespace)
-				.Returns((string interfaceName, IndentationConfig indentationConfig) =>
+				.Returns((string interfaceName, InterfaceGenerics userGenerics, IndentationConfig indentationConfig) =>
 				{
 					return mockReplacementDictionary;
 				});
@@ -60,6 +67,7 @@ namespace MoqGenerator.UnitTests
 				interfaceStore.Object,
 				mockText.Object,
 				mockIndentation.Object,
+				new InterfaceGenericsBuilder(),
 				new LoggerDouble<Diagnoser>()
 				);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);

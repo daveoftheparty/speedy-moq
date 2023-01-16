@@ -59,6 +59,7 @@ namespace OmniLsp
 			services.AddTransient<IIndentation, Indentation>();
 			services.AddTransient<IProjectHandler, ProjectHandler>();
 			services.AddTransient<IUriHandler, UriHandler>();
+			services.AddTransient<IInterfaceGenericsBuilder, InterfaceGenericsBuilder>();
 		}
 	}
 }

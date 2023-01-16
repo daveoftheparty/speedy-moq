@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 
 using MoqGenerator.Interfaces.Lsp;
+using MoqGenerator.Model;
 using MoqGenerator.Model.Lsp;
 using MoqGenerator.Util;
 
@@ -23,7 +24,7 @@ namespace MoqGenerator.Services
 		}
 
 
-		public IReadOnlyDictionary<string, string> GetMockTextByNamespace(string interfaceName, IndentationConfig indentationConfig)
+		public IReadOnlyDictionary<string, string> GetMockTextByNamespace(string interfaceName, InterfaceGenerics userGenerics, IndentationConfig indentationConfig)
 		{
 			var result = new Dictionary<string, string>();
 
@@ -39,7 +40,7 @@ namespace MoqGenerator.Services
 				.Select(nsName => new
 				{
 					Namespace = nsName,
-					Text = GetTextForDefinition(interfaceName, nsName, namespaceDict[nsName], indentationConfig)
+					Text = GetTextForDefinition(interfaceName, nsName, namespaceDict[nsName], indentationConfig, userGenerics)
 				})
 				.ToDictionary(pair => pair.Namespace, pair => pair.Text);
 		}
@@ -49,8 +50,8 @@ namespace MoqGenerator.Services
 			string interfaceName,
 			string namespaceName,
 			Model.InterfaceDefinition definition,
-			IndentationConfig indentationConfig
-		)
+			IndentationConfig indentationConfig,
+			InterfaceGenerics userGenerics)
 		{
 			/*
 
@@ -99,19 +100,39 @@ namespace MoqGenerator.Services
 			watch.Start();
 
 			var results = new List<string>();
+
 			var tab = indentationConfig.IndentString;
 
-			var mockName = interfaceName;
+			var isGeneric = definition.Generics != null;
+			var mockName = isGeneric ? definition.Generics.InterfaceName : interfaceName;
+
+			var userInterfaceDeclaration = isGeneric
+				? $"{mockName}<{string.Join(", ", userGenerics.GenericTypeArguments)}>"
+				: definition.InterfaceName;
+
+			List<(string replacethis, string withThis)> genericTypeReplacements = null;
+			if(isGeneric)
+			{
+				genericTypeReplacements = definition.Generics.GenericTypeArguments
+					.Zip(
+						userGenerics.GenericTypeArguments,
+						(replaceThis, withThis) => 
+						(
+							replaceThis,
+							withThis
+						))
+					.ToList();
+			}
+
 			if(mockName.StartsWith('I'))
 				mockName = mockName.Substring(1);
 
 			mockName = Camelify(mockName);
 
-			var interfacePlusArgs = definition.InterfaceNameWithGenerics ?? definition.InterfaceName;
 
 			results.Add(
 				// var stringAnalyzer = new Mock<IStringAnalyzer>();
-				$"var {mockName} = new Mock<{interfacePlusArgs}>();"
+				$"var {mockName} = new Mock<{userInterfaceDeclaration}>();"
 				);
 
 
@@ -123,7 +144,7 @@ namespace MoqGenerator.Services
 			)
 				results.Add("");
 
-			MockIndexer(definition.Indexer, results, mockName, tab);
+			MockIndexer(definition.Indexer, genericTypeReplacements, results, mockName, tab);
 
 			foreach(var property in definition.Properties)
 			{
@@ -143,7 +164,7 @@ namespace MoqGenerator.Services
 				var camelName = Camelify(methodName);
 				
 				var parameterDeclaration = string.Join(", ", 
-					method.Parameters.Select(p => $"It.IsAny<{p.ParameterType}>()"));
+					method.Parameters.Select(p => $"It.IsAny<{SubGeneric(p.ParameterType, genericTypeReplacements)}>()"));
 
 
 				if(method.ReturnType == "void")
@@ -152,7 +173,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Action<IStringAnalyzer>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Action<{interfacePlusArgs}>> {camelName} = x =>",
+						$"Expression<Action<{userInterfaceDeclaration}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}
@@ -162,7 +183,7 @@ namespace MoqGenerator.Services
 					{
 						// Expression<Func<IStringAnalyzer, int>> howManyItems = x =>
 						//	x.HowManyItems(It.IsAny<string>(), It.IsAny<char>());
-						$"Expression<Func<{interfacePlusArgs}, {method.ReturnType}>> {camelName} = x =>",
+						$"Expression<Func<{userInterfaceDeclaration}, {SubGeneric(method.ReturnType, genericTypeReplacements)}>> {camelName} = x =>",
 						$"{tab}x.{methodName}({parameterDeclaration});"
 					});
 				}
@@ -180,7 +201,7 @@ namespace MoqGenerator.Services
 
 				// string patient, char charToCount
 				var callbackDeclaration = string.Join(", ", 
-					method.Parameters.Select(p => $"{p.ParameterDefinition}"
+					method.Parameters.Select(p => $"{SubGeneric(p.ParameterDefinition, genericTypeReplacements)}"
 					));
 
 				var setupType = 
@@ -236,17 +257,37 @@ namespace MoqGenerator.Services
 			return string.Join(Environment.NewLine, lines);
 		}
 
+		private string SubGeneric(string parameterType, IEnumerable<(string replacethis, string withThis)> args)
+		{
+			if(args == null)
+				return parameterType;
 
-		public void MockIndexer(Model.InterfaceIndexer indexer, List<string> results, string mockName, string tab)
+			var results = parameterType;
+			foreach(var pair in args)
+			{
+				results = results.Replace(pair.replacethis, pair.withThis);
+			}
+			return results;
+		}
+
+		public void MockIndexer(
+			Model.InterfaceIndexer indexer,
+			List<(string replacethis, string withThis)> genericTypeReplacements,
+			List<string> results,
+			string mockName,
+			string tab)
 		{
 			if(indexer != null)
 			{
+				var keyType = SubGeneric(indexer.KeyType, genericTypeReplacements);
+				var returnType = SubGeneric(indexer.ReturnType, genericTypeReplacements);
+
 				if(indexer.HasSet)
 				{
 					results.Add("");
 					// hasIndexerStore = new Dictionary<string, string>();
 					results.Add(
-						$"var {mockName}Store = new Dictionary<{indexer.KeyType}, {indexer.ReturnType}>();"
+						$"var {mockName}Store = new Dictionary<{keyType}, {returnType}>();"
 					);
 				}
 
@@ -261,19 +302,19 @@ namespace MoqGenerator.Services
 
 					results.Add(mockName);
 					results.Add(
-						$"{tab}.Setup(x => x[It.IsAny<{indexer.KeyType}>()])"
+						$"{tab}.Setup(x => x[It.IsAny<{keyType}>()])"
 					);
 
 					if(indexer.HasSet)
 					{
 						results.Add(
-							$"{tab}.Returns(({indexer.KeyType} key) => {mockName}Store[key]);"
+							$"{tab}.Returns(({keyType} key) => {mockName}Store[key]);"
 						);
 					}
 					else
 					{
 						results.Add(
-							$"{tab}.Returns(({indexer.KeyType} key) => default);"
+							$"{tab}.Returns(({keyType} key) => default);"
 						);
 					}
 				}
@@ -286,10 +327,10 @@ namespace MoqGenerator.Services
 
 					results.Add(mockName);
 					results.Add(
-						$"{tab}.SetupSet(x => x[It.IsAny<{indexer.KeyType}>()] = It.IsAny<{indexer.ReturnType}>())"
+						$"{tab}.SetupSet(x => x[It.IsAny<{keyType}>()] = It.IsAny<{returnType}>())"
 					);
 					results.Add(
-						$"{tab}.Callback(({indexer.KeyType} key, {indexer.ReturnType} value) => {mockName}Store[key] = value);"
+						$"{tab}.Callback(({keyType} key, {returnType} value) => {mockName}Store[key] = value);"
 					);
 				}
 			}

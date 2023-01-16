@@ -16,14 +16,21 @@ namespace MoqGenerator.Services
 		private readonly IInterfaceStore _interfaceStore;
 		private readonly IMockText _mockText;
 		private readonly IIndentation _indentation;
+		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 		private readonly ILogger<Diagnoser> _logger;
 
-		public Diagnoser(IInterfaceStore interfaceStore, IMockText mockText, IIndentation indentation, ILogger<Diagnoser> logger)
+		public Diagnoser(
+			IInterfaceStore interfaceStore,
+			IMockText mockText,
+			IIndentation indentation,
+			IInterfaceGenericsBuilder genericsBuilder,
+			ILogger<Diagnoser> logger)
 		{
 			_interfaceStore = interfaceStore;
 			_mockText = mockText;
 			_indentation = indentation;
 			_logger = logger;
+			_genericsBuilder = genericsBuilder;
 		}
 
 		private readonly HashSet<string> _testFrameworks = new()
@@ -66,7 +73,6 @@ namespace MoqGenerator.Services
 			// will also do some of the heavy lifting for us on line location/range
 
 			var tree = CSharpSyntaxTree.ParseText(item.Text);
-			var root = tree.GetCompilationUnitRoot();
 
 			var compilation = CSharpCompilation
 				.Create(null)
@@ -75,20 +81,31 @@ namespace MoqGenerator.Services
 			watch.StopAndLogInformation(_logger, $"building syntax tree for {item.Identifier.Uri} took: ");
 			watch.Restart();
 
+			var generics = _genericsBuilder.BuildFast(tree);
+			watch.StopAndLogInformation(_logger, $"building InterfaceGenerics for {item.Identifier.Uri} took: ");
+			watch.Restart();
+
 			var diagnostics = compilation
 				.GetDiagnostics()
 				.Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
 				.Select(x =>
 				{
-					// Location refers to the substring indices of the text document
-					var candidateInterface = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
+					// check for a generic:
+					var generic = generics
+						.FirstOrDefault(v => v.Location == x.Location.SourceSpan);
+
+					// x.Location refers to the substring indices of the text document
+					var lineMatcher = item.Text.Substring(x.Location.SourceSpan.Start, x.Location.SourceSpan.Length);
+					var candidateInterface = generic?.Generics?.InterfaceNameKey ?? lineMatcher;
 					
 					// use this to calculate the range in the document where we want to eventually
 					// request our TextEdit when publishing a QuickFix from CodeActionHandler
 					var roslynRange = x.Location.GetLineSpan();
 					return new
 					{
+						lineMatcher,
 						candidateInterface,
+						generic?.Generics,
 						diagnosticRange = new Model.Lsp.Range
 							(
 								new Position((uint)roslynRange.StartLinePosition.Line, (uint)roslynRange.StartLinePosition.Character),
@@ -96,18 +113,18 @@ namespace MoqGenerator.Services
 							)
 					};
 				})
-				.Where(isEntireLine => isEntireLine.candidateInterface == lines[(int)isEntireLine.diagnosticRange.start.line])
+				.Where(isEntireLine => isEntireLine.lineMatcher == lines[(int)isEntireLine.diagnosticRange.start.line])
 				.GroupBy(candidate => candidate.candidateInterface)
 				.Select(grp => grp.First())
 				;
 
-			
+
 			var publishableDiagnostics = diagnostics
 				.Where(candidate => _interfaceStore.Exists(candidate.candidateInterface)) // can't gen text if the interface hasn't been loaded
 				.Select(loadable =>
 				{
 					var config = _indentation.GetIndentationConfig(item.Text, loadable.diagnosticRange.start.line);
-					var mockedTextByNamespace = _mockText.GetMockTextByNamespace(loadable.candidateInterface, config);
+					var mockedTextByNamespace = _mockText.GetMockTextByNamespace(loadable.candidateInterface, loadable.Generics, config);
 
 					var dataDict = mockedTextByNamespace
 						.Select(pair => new

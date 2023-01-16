@@ -5,7 +5,7 @@ namespace MoqGenerator.Model
 	public record InterfaceDefinition
 	(
 		string InterfaceName,
-		string InterfaceNameWithGenerics,
+		InterfaceGenerics Generics,
 		string SourceFile,
 		IReadOnlyList<InterfaceMethod> Methods,
 		IReadOnlyList<string> Properties,

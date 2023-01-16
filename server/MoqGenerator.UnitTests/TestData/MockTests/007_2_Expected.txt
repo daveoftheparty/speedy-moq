@@ -1,17 +1,17 @@
 << begin FooNamespace
-			var genericService = new Mock<IGenericService<TSource, TResult>>();
+			var genericService = new Mock<IGenericService<float, double>>();
 
-			Expression<Func<IGenericService<TSource, TResult>, IEnumerable<TResult>>> transformSource = x =>
-				x.TransformSource(It.IsAny<IEnumerable<TSource>>());
+			Expression<Func<IGenericService<float, double>, IEnumerable<double>>> transformSource = x =>
+				x.TransformSource(It.IsAny<IEnumerable<float>>());
 
 			genericService
 				.Setup(transformSource)
-				.Returns((IEnumerable<TSource> items) =>
+				.Returns((IEnumerable<float> items) =>
 				{
 					return default;
 				});
 
-			Expression<Action<IGenericService<TSource, TResult>>> increment = x =>
+			Expression<Action<IGenericService<float, double>>> increment = x =>
 				x.Increment(It.IsAny<string>(), It.IsAny<int>());
 
 			genericService

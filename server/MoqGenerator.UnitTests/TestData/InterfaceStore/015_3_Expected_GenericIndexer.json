@@ -1,0 +1,25 @@
+{
+	"scratch": {
+		"InterfaceName": "IGenericIndexer;1",
+		"Generics": {
+			"InterfaceName": "IGenericIndexer",
+			"GenericTypeArguments": [
+				"T"
+			],
+			"InterfaceNameKey": "IGenericIndexer;1"
+		},
+		"SourceFile": "",
+		"Methods": [
+			
+		],
+		"Properties": [
+			
+		],
+		"Indexer": {
+			"KeyType": "int",
+			"ReturnType": "T",
+			"HasGet": true,
+			"HasSet": true
+		}
+	}
+}
