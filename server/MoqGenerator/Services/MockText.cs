@@ -148,7 +148,6 @@ namespace MoqGenerator.Services
 
 			foreach(var property in definition.Properties)
 			{
-				#warning do we need to handle generics in properties?
 				results.Add(
 					// stringAnalyzer.SetupGet(x => x.SomeUrl).Returns(/ fill me in /);
 					$"{mockName}.SetupGet(x => x.{property}).Returns(/* fill me in */);"
