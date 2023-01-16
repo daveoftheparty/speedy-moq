@@ -1,7 +1,7 @@
 Change Log
 
 
-- [\[NEXT RELEASE\]](#next-release)
+- [0.1.0 (Jan 15, 2023)](#010-jan-15-2023)
 	- [Changes](#changes)
 	- [Examples](#examples)
 		- [Mocking Indexers](#mocking-indexers)
@@ -18,7 +18,7 @@ Change Log
 
 
 
-# [NEXT RELEASE]
+# 0.1.0 (Jan 15, 2023)
 
 ***see next heading for format -- if next upgrades to net6.0, maybe version should be 0.1.0***
 
