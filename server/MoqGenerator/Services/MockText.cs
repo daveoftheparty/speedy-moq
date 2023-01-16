@@ -277,7 +277,6 @@ namespace MoqGenerator.Services
 			string mockName,
 			string tab)
 		{
-			#warning setup failing generics test
 			if(indexer != null)
 			{
 				var keyType = SubGeneric(indexer.KeyType, genericTypeReplacements);
