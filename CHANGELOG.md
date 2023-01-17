@@ -1,7 +1,7 @@
 Change Log
 
 
-- [\[NEXT - 0.1.1?\]](#next---011)
+- [0.1.1 (Jan 16, 2023)](#011-jan-16-2023)
 	- [Changes](#changes)
 	- [Examples](#examples)
 		- [Detecting Test Files](#detecting-test-files)
@@ -21,10 +21,11 @@ Change Log
 - [0.0.4 (Aug 5, 2021)](#004-aug-5-2021)
 
 
-# [NEXT - 0.1.1?]
+# 0.1.1 (Jan 16, 2023)
 
 ## Changes
 - fixed a bug in detecting unit test files that would prevent diagnostics/prompts to Generate Moq Setups
+- fixed a bug detecting unit test files when a project has global usings, and contains no file-level usings of test frameworks (now searches for most test attributes like Fact, Theory, TestCase, etc...)
 
 ## Examples
 ### Detecting Test Files
