@@ -4,15 +4,15 @@
   - do a dotnet clean / dotnet build cycle to check for new warnings
   - update changelog.md
 - publish to marketplace
+- push commit/tags
 - merge your PR into main
 
 
 ## publish steps:
 
 (In main directory, speedy-moq)
-1) npm run compile
-2) build.bat (because for some reason I can't run npm in the bat file yet)
-3) publish:
+1) build.bat
+2) publish:
 	- vsce login daveoftheparty
 	- ~~vsce publish patch -m "publishing extension: is this thing on?"~~
 	- vsce publish patch -m "publishing extension: is this thing on?"
