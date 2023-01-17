@@ -15,7 +15,7 @@
 2) publish:
 	- vsce login daveoftheparty
 	- ~~vsce publish patch -m "publishing extension: is this thing on?"~~
-	- vsce publish patch -m "publishing extension: is this thing on?"
+	- vsce publish 0.1.1
 
 
 The publish command breaks down like so:
