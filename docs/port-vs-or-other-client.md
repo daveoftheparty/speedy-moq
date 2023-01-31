@@ -69,5 +69,9 @@ https://learn.microsoft.com/en-us/visualstudio/extensibility/adding-an-lsp-exten
 
 
 
+### VisualStudio.Exensibility 
+YouTube playlist on the new VisualStudio.Exensibility model
+https://www.youtube.com/watch?v=L5zYUZvWnJE&list=PLReL099Y5nRc6m-CLanAhWGO3_7DD_1Nu&index=1
 
-
+a repo that has samples:
+https://github.com/microsoft/VSExtensibility
