@@ -11,7 +11,7 @@
 				"--disable-extensions",
 				"--extensionDevelopmentPath=${workspaceRoot}"
 			],
-			"outFiles": ["${workspaceRoot}/client/out/**/*.js"],
+			"outFiles": ["${workspaceRoot}/clients/vscode/out/**/*.js"],
 			"preLaunchTask": {
 				"type": "npm",
 				"script": "watch"

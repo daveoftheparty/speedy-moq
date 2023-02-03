@@ -12,8 +12,8 @@ cd ..
 
 echo building for package/extension release
 
-if exist "./client/out/server" (
-	rmdir /s /q "./client/out/server"
+if exist "./clients/vscode/out/server" (
+	rmdir /s /q "./clients/vscode/out/server"
 )
 
 dotnet build ^
@@ -21,5 +21,5 @@ dotnet build ^
 	server/OmniLsp/OmniLsp.csproj ^
 	/property:GenerateFullPaths=true ^
 	/consoleloggerparameters:NoSummary ^
-	--output ./client/out/server
+	--output ./clients/vscode/out/server
 
