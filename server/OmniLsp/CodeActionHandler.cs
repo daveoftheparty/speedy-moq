@@ -25,6 +25,7 @@ namespace OmniLsp
 		{
 			_logger = logger;
 			_whoaCowboy = whoaCowboy;
+			_logger.LogInformation("Code action constructed...");
 		}
 
 		#region ICodeActionHandler
@@ -40,11 +41,28 @@ namespace OmniLsp
 
 		public Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
 		{
+			_logger.LogInformation("Code action firing...");
 			if(!_whoaCowboy.GiddyUp)
 				return Task.FromResult(new CommandOrCodeActionContainer());
 
-			_logger.LogInformation("Code action firing...");
-			
+			_logger.LogInformation("Code action enabled...");
+
+			#region debugging code
+			// maybe temporary, maybe not, let's log the incoming diagnostics to see if something about the Visual Studio extension 
+			// and the code below with the where clauses is filtering out our actions:
+
+			_logger.LogInformation("CADIAG begin");
+
+			request.Context.Diagnostics?
+				.Select(diagnostic => $"CADIAG \t\t\t\tSource: {diagnostic?.Source ?? "null"} Data: {diagnostic?.Data?.ToString() ?? "null"}")
+				.ToList()
+				.ForEach(m => _logger.LogInformation(m))
+				;
+
+			_logger.LogInformation("CADIAG end");
+
+			#endregion debugging code
+
 			var actions = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic?.Source != null)
 				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.Ordinal))

@@ -36,8 +36,9 @@ namespace OmniLsp
 				.ConfigureLogging(x => x
 					// plenty of rants & raves about logging in CONTRIBUTING.md at the root of this repo 😎
 					.AddLanguageProtocolLogging() // seems to be required to get any of OUR logs
-					.AddFilter("OmniSharp", LogLevel.Warning)
+					.AddFilter("OmniSharp", LogLevel.Information)
 					.AddFilter("MoqGenerator", LogLevel.Information)
+					.AddFilter("OmniLsp", LogLevel.Information)
 				)
 				.WithServices(x => ConfigureServices(x, giddyUp))
 				.WithHandler<TextDocumentHandler>()
