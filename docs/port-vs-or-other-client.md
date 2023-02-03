@@ -75,3 +75,12 @@ https://www.youtube.com/watch?v=L5zYUZvWnJE&list=PLReL099Y5nRc6m-CLanAhWGO3_7DD_
 
 a repo that has samples:
 https://github.com/microsoft/VSExtensibility
+
+## Why won't the thing just fuckin work?
+
+this talks about content types, it's possible that my language server isn't being allowed to work with c#, though I don't think that's the case since I actually do get the diagnostics. but maybe the system is disallowing the quickfix-- teh actual codeaction-- due to this:
+https://github.com/microsoft/VSSDK-Extensibility-Samples/issues/201
+
+
+also, above came from this google search:
+implementing ILanguageClient for textDocument/codeAction
