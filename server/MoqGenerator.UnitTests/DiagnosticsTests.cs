@@ -80,7 +80,8 @@ namespace MoqGenerator.UnitTests
 				mockIndentation.Object,
 				new InterfaceGenericsBuilder(),
 				new LoggerDouble<Diagnoser>(),
-				testFileFilter.Object
+				testFileFilter.Object,
+				new Mock<ICodeActionStore>().Object
 				);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);
 			var actual = diagnoser.GetDiagnostics(textDoc);

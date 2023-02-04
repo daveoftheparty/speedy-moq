@@ -19,6 +19,7 @@ namespace MoqGenerator.Services
 		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 		private readonly ILogger<Diagnoser> _logger;
 		private readonly ITestFileFilter _testFileFilter;
+		private readonly ICodeActionStore _codeActionStore;
 
 		public Diagnoser(
 			IInterfaceStore interfaceStore,
@@ -26,7 +27,8 @@ namespace MoqGenerator.Services
 			IIndentation indentation,
 			IInterfaceGenericsBuilder genericsBuilder,
 			ILogger<Diagnoser> logger,
-			ITestFileFilter testFileFilter)
+			ITestFileFilter testFileFilter,
+			ICodeActionStore codeActionStore)
 		{
 			_interfaceStore = interfaceStore;
 			_mockText = mockText;
@@ -34,6 +36,7 @@ namespace MoqGenerator.Services
 			_logger = logger;
 			_genericsBuilder = genericsBuilder;
 			_testFileFilter = testFileFilter;
+			_codeActionStore = codeActionStore;
 		}
 
 		private readonly List<string> _requiredImports = new()
@@ -130,11 +133,15 @@ namespace MoqGenerator.Services
 						})
 						.ToDictionary(textByNs => textByNs.NamespaceName, textByNs => textByNs.Text);
 
+					var codeGuid = _codeActionStore.StoreAction(dataDict);
+
 					return new Diagnostic
 					(
 						loadable.diagnosticRange,
 						DiagnosticSeverity.Error,
-						Constants.DiagnosticCode_CanMoq,
+						// $"hah!{codeGuid.ToString()}",
+						codeGuid.ToString(),
+						// Constants.DiagnosticCode_CanMoq,
 						Constants.DiagnosticSource,
 						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
 						dataDict

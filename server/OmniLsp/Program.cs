@@ -53,7 +53,7 @@ namespace OmniLsp
 			services.AddSingleton(typeof(IWhoaCowboy), new WhoaCowboy { GiddyUp = giddyUp });
 
 			services.AddSingleton<IInterfaceStore, InterfaceStore>();
-
+			services.AddSingleton<ICodeActionStore, CodeActionStore>();
 
 			services.AddTransient<IDiagnoser, Diagnoser>();
 			services.AddTransient<IMockText, MockText>();

@@ -11,6 +11,9 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using Newtonsoft.Json;
+
+using OmniLsp.Adapters;
 
 using MoqGenerator.Interfaces.Lsp;
 
@@ -20,12 +23,14 @@ namespace OmniLsp
 	{
 		private readonly ILogger<CodeActionHandler> _logger;
 		private readonly IWhoaCowboy _whoaCowboy;
+		private readonly ICodeActionStore _codeActionStore;
 
-		public CodeActionHandler(ILogger<CodeActionHandler> logger, IWhoaCowboy whoaCowboy)
+		public CodeActionHandler(ILogger<CodeActionHandler> logger, IWhoaCowboy whoaCowboy, ICodeActionStore codeActionStore)
 		{
 			_logger = logger;
 			_whoaCowboy = whoaCowboy;
 			_logger.LogInformation("Code action constructed...");
+			_codeActionStore = codeActionStore;
 		}
 
 		#region ICodeActionHandler
@@ -54,7 +59,7 @@ namespace OmniLsp
 			_logger.LogInformation("CADIAG begin");
 
 			request.Context.Diagnostics?
-				.Select(diagnostic => $"CADIAG \t\t\t\tSource: {diagnostic?.Source ?? "null"} Data: {diagnostic?.Data?.ToString() ?? "null"}")
+				.Select(diagnostic => $"CADIAG \t\t\t\tSource: {diagnostic?.Source ?? "null"} Code: {diagnostic?.Code?.String ?? "null"} Data: {diagnostic?.Data?.ToString() ?? "null"}")
 				.ToList()
 				.ForEach(m => _logger.LogInformation(m))
 				;
@@ -66,11 +71,21 @@ namespace OmniLsp
 			var actions = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic?.Source != null)
 				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.Ordinal))
-				.Where(diagnostic => !string.IsNullOrWhiteSpace(diagnostic?.Data?.ToString()))
+				// .Where(diagnostic => !string.IsNullOrWhiteSpace(diagnostic?.Data?.ToString()))
+				.Where(diagnostic => Guid.TryParse(diagnostic.Code.Value.String, out var _))
 				.Select(diagnostic => new
 				{
 					diagnostic,
-					edits = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>>(diagnostic.Data.ToString())
+					// edits = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>>(diagnostic.Data.ToString())
+					// edits = JsonConvert.DeserializeObject<IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>>(diagnostic.Data.ToString())
+					
+					edits = _codeActionStore.GetAction(Guid.Parse(diagnostic.Code.Value.String))
+						.Select(pair => new
+						{
+							pair.Key,
+							Value = pair.Value.Select(TextEditAdapter.From)
+						})
+						.ToDictionary(pair => pair.Key, pair => pair.Value)
 				})
 				.SelectMany(
 					diagnostic => diagnostic.edits.Select(kvp =>

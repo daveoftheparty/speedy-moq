@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using Newtonsoft.Json;
 
 namespace OmniLsp.Adapters
 {
@@ -34,17 +35,7 @@ namespace OmniLsp.Adapters
 					NamespaceName = teByNamespace.Key,
 					Edits = teByNamespace
 						.Value
-						.Select(te => 
-							new TextEdit
-							{
-								Range = new Range(
-									(int)te.Range.start.line,
-									(int)te.Range.start.character,
-									(int)te.Range.end.line,
-									(int)te.Range.end.character),
-								NewText = te.NewText
-							}
-						)
+						.Select(TextEditAdapter.From)
 					}
 				)
 				.ToDictionary(pair => pair.NamespaceName, pair => pair.Edits);
@@ -60,7 +51,8 @@ namespace OmniLsp.Adapters
 				Code = diagnostic.Code,
 				Source = diagnostic.Source,
 				Message = diagnostic.Message,
-				Data = JsonSerializer.Serialize(omniData)
+				// Data = JsonSerializer.Serialize(omniData)
+				Data = JsonConvert.SerializeObject(omniData)
 			};
 		}
 
@@ -95,7 +87,8 @@ namespace OmniLsp.Adapters
 				diagnostic.Code,
 				diagnostic.Source,
 				diagnostic.Message,
-				JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
+				// JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
+				JsonConvert.DeserializeObject<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
 			);
 		}
 	}
