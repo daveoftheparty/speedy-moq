@@ -16,7 +16,7 @@ namespace VisualStudioClient
 {
 	[ContentType("CSharp")]
 	[Export(typeof(ILanguageClient))]
-	public class LanguageClient : ILanguageClient
+	public class LanguageClient : ILanguageClient, IDisposable
 	{
 		public string Name => "Speedy Moq";
 
@@ -31,6 +31,8 @@ namespace VisualStudioClient
 		public event AsyncEventHandler<EventArgs> StartAsync;
 		public event AsyncEventHandler<EventArgs> StopAsync;
 
+		private Process _languageServer;
+
 		public async Task<Connection> ActivateAsync(CancellationToken token)
 		{
 			await Task.Yield();
@@ -39,8 +41,6 @@ namespace VisualStudioClient
 			//info.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Server", @"MockLanguageServer.exe");
 			//info.Arguments = "bar";
 
-			// potential problems: can this net framework thing not interact with a net6 dll/exe?
-			//info.FileName = @"C:\src\daveoftheparty\speedy-moq\server\OmniLsp\bin\Debug\net6.0\OmniLsp.dll";
 			info.FileName = @"C:\src\daveoftheparty\speedy-moq\server\OmniLsp\bin\Debug\net6.0\OmniLsp.exe";
 			info.Arguments = "true";
 			info.RedirectStandardInput = true;
@@ -48,15 +48,15 @@ namespace VisualStudioClient
 			info.UseShellExecute = false;
 			info.CreateNoWindow = true;
 
-#warning this process stays running, do something on deactivateasync or whatever the hook is... probably why Bicep coders used some sort of process manager
-			Process process = new Process();
-			process.StartInfo = info;
+			_languageServer = new Process();
+			_languageServer.StartInfo = info;
 
-			if (process.Start())
+			if (_languageServer.Start())
 			{
-				return new Connection(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
+				return new Connection(_languageServer.StandardOutput.BaseStream, _languageServer.StandardInput.BaseStream);
 			}
 
+			
 			return null;
 		}
 
@@ -64,6 +64,56 @@ namespace VisualStudioClient
 		{
 			await StartAsync.InvokeAsync(this, EventArgs.Empty);
 		}
+
+		public async Task StopServerAsync()
+		{
+			if (StopAsync != null)
+			{
+				await StopAsync.InvokeAsync(this, EventArgs.Empty);
+			}
+		}
+
+		#region shutting down the language server
+
+		private bool _isDisposed;
+		~LanguageClient() => Dispose(false);
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_isDisposed)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects)
+					if (_languageServer != null)
+					{
+						_languageServer.Kill();
+						/*
+						try
+						{
+							_languageServer.Close();
+						}
+						finally
+						{
+							if (!_languageServer.HasExited)
+								_languageServer.Kill();
+						}
+						*/
+					}
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
+				// TODO: set large fields to null
+				_isDisposed = true;
+			}
+		}
+
+		#endregion shutting down the language server
 
 		public Task OnServerInitializeFailedAsync(Exception e)
 		{
@@ -118,5 +168,7 @@ namespace VisualStudioClient
 				var g = new Uri(Assembly.GetExecutingAssembly().CodeBase); // check localpath, absolutepath
 			} catch (Exception e) { }
 		}
+
+
 	}
 }
