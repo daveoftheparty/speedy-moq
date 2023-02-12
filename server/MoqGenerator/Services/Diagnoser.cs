@@ -19,6 +19,7 @@ namespace MoqGenerator.Services
 		private readonly IInterfaceGenericsBuilder _genericsBuilder;
 		private readonly ILogger<Diagnoser> _logger;
 		private readonly ITestFileFilter _testFileFilter;
+		private readonly IClientAbilities _clientAbilities;
 		private readonly ICodeActionStore _codeActionStore;
 
 		public Diagnoser(
@@ -28,6 +29,7 @@ namespace MoqGenerator.Services
 			IInterfaceGenericsBuilder genericsBuilder,
 			ILogger<Diagnoser> logger,
 			ITestFileFilter testFileFilter,
+			IClientAbilities clientAbilities,
 			ICodeActionStore codeActionStore)
 		{
 			_interfaceStore = interfaceStore;
@@ -36,6 +38,7 @@ namespace MoqGenerator.Services
 			_logger = logger;
 			_genericsBuilder = genericsBuilder;
 			_testFileFilter = testFileFilter;
+			_clientAbilities = clientAbilities;
 			_codeActionStore = codeActionStore;
 		}
 
@@ -133,18 +136,18 @@ namespace MoqGenerator.Services
 						})
 						.ToDictionary(textByNs => textByNs.NamespaceName, textByNs => textByNs.Text);
 
-					var codeGuid = _codeActionStore.StoreAction(dataDict);
+					string codeKey = null;
+					if(!_clientAbilities.CanReceiveDiagnosticData)
+						codeKey = _codeActionStore.StoreAction(dataDict);
 
 					return new Diagnostic
 					(
 						loadable.diagnosticRange,
 						DiagnosticSeverity.Error,
-						// $"hah!{codeGuid.ToString()}",
-						codeGuid.ToString(),
-						// Constants.DiagnosticCode_CanMoq,
+						_clientAbilities.CanReceiveDiagnosticData ? Constants.DiagnosticCode_CanMoq : codeKey,
 						Constants.DiagnosticSource,
-						Constants.MessagesByDiagnosticCode[Constants.DiagnosticCode_CanMoq],
-						dataDict
+						Constants.DiagnosticMessage,
+						_clientAbilities.CanReceiveDiagnosticData ? dataDict : null
 					);
 				})
 				.ToList()

@@ -15,20 +15,9 @@ namespace OmniLsp
 	{
 		static async Task Main(string[] args)
 		{
-			var giddyUp = false;
-			try
-			{
-				giddyUp = Convert.ToBoolean(args[0]);
-			}
-			catch
-			{
-				throw new ArgumentException(
-					"Pass in true or false for the first parameter. True means GO!" +
-					" False means halt until a debugger can be attached." +
-					$" Args passed (pipe delimited): [{string.Join('|', args)}]"
-					);
-			}
+			var (giddyUp, canReceiveDiagnosticData) = ParseArgs(args);
 
+			
 			var server = await LanguageServer.From(options =>
 				options
 				.WithInput(Console.OpenStandardInput())
@@ -40,7 +29,7 @@ namespace OmniLsp
 					.AddFilter("MoqGenerator", LogLevel.Information)
 					.AddFilter("OmniLsp", LogLevel.Information)
 				)
-				.WithServices(x => ConfigureServices(x, giddyUp))
+				.WithServices(x => ConfigureServices(x, giddyUp, canReceiveDiagnosticData))
 				.WithHandler<TextDocumentHandler>()
 				.WithHandler<CodeActionHandler>()
 				);
@@ -48,9 +37,10 @@ namespace OmniLsp
 			await server.WaitForExit;
 		}
 
-		static void ConfigureServices(IServiceCollection services, bool giddyUp)
+		static void ConfigureServices(IServiceCollection services, bool giddyUp, bool canReceiveDiagnosticData)
 		{
 			services.AddSingleton(typeof(IWhoaCowboy), new WhoaCowboy { GiddyUp = giddyUp });
+			services.AddSingleton(typeof(IClientAbilities), new ClientAbilities { CanReceiveDiagnosticData = canReceiveDiagnosticData });
 
 			services.AddSingleton<IInterfaceStore, InterfaceStore>();
 			services.AddSingleton<ICodeActionStore, CodeActionStore>();
@@ -62,6 +52,45 @@ namespace OmniLsp
 			services.AddTransient<IUriHandler, UriHandler>();
 			services.AddTransient<IInterfaceGenericsBuilder, InterfaceGenericsBuilder>();
 			services.AddTransient<ITestFileFilter, TestFileFilter>();
+		}
+
+		static (bool giddyUp, bool canReceiveDiagnosticData) ParseArgs(string[] args)
+		{
+			var usage = new ArgumentException(
+					"Pass in true or false for the first parameter. True means GO!" +
+					" False means halt until a debugger can be attached." +
+					" Second param needs to be language client name and match switch statement in Program.cs" +
+					$" Args passed (pipe delimited): [{string.Join('|', args)}]"
+					);
+
+			if(args.Length != 2)
+				throw usage;
+
+			var giddyUp = false;
+			var canReceiveDiagnosticData = false;
+
+			try
+			{
+				giddyUp = Convert.ToBoolean(args[0]);
+			}
+			catch
+			{
+				throw usage;
+			}
+
+			switch (args[1])
+			{
+				case "vscode":
+					canReceiveDiagnosticData = true;
+					break;
+				case "visual-studio":
+					canReceiveDiagnosticData = false;
+					break;
+				default:
+					throw usage;
+			}
+
+			return (giddyUp, canReceiveDiagnosticData);
 		}
 	}
 }

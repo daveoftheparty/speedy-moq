@@ -7,10 +7,10 @@ using Payload=System.Collections.Generic.IReadOnlyDictionary<string, System.Coll
 
 namespace MoqGenerator.Services;
 
-// this class ONLY exists because Visual Studio sucks and I can't get Diagnostic data to/from TextDocument <== > CodeAction
+// this class ONLY exists because Visual Studio as a client doesn't seem to persist Diagnostic.Data? between TextDocument and CodeAction
 public class CodeActionStore : ICodeActionStore
 {
-	private readonly Dictionary<Guid, Payload> _store = new();
+	private readonly Dictionary<string, Payload> _store = new();
 
 	private readonly ILogger<CodeActionStore> _logger;
 
@@ -19,13 +19,14 @@ public class CodeActionStore : ICodeActionStore
 		_logger = logger;
 	}
 
-	public Guid StoreAction(Payload action)
+	public string StoreAction(Payload action)
 	{
-		var guid = Guid.NewGuid();
-		_store.Add(guid, action);
+		#warning trim the store using some sort of queue/cache
+		var key = $"{Constants.DiagnosticSource}({Guid.NewGuid().ToString()})";
+		_store.Add(key, action);
 		_logger.LogInformation($"store depth: {_store.Count}");
-		return guid;
+		return key;
 	}
 
-	public Payload GetAction(Guid key) => _store[key];
+	public Payload GetAction(string key) => _store[key];
 }

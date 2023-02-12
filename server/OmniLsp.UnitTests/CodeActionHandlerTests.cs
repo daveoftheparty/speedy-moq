@@ -48,7 +48,7 @@ namespace OmniLsp.UnitTests
 			var whoaCowboy = new Mock<IWhoaCowboy>();
 			whoaCowboy.SetupGet(x => x.GiddyUp).Returns(true);
 
-			var handler = new CodeActionHandler(logger, whoaCowboy.Object, new Mock<ICodeActionStore>().Object);
+			var handler = new CodeActionHandler(logger, whoaCowboy.Object, new Mock<IClientAbilities>().Object, new Mock<ICodeActionStore>().Object);
 			Assert.DoesNotThrowAsync(async () => await handler.Handle(request, CancellationToken.None));
 		}
 	}

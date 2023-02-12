@@ -11,7 +11,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using Newtonsoft.Json;
 
 using OmniLsp.Adapters;
 
@@ -23,13 +22,15 @@ namespace OmniLsp
 	{
 		private readonly ILogger<CodeActionHandler> _logger;
 		private readonly IWhoaCowboy _whoaCowboy;
+		private readonly IClientAbilities _clientAbilities;
 		private readonly ICodeActionStore _codeActionStore;
 
-		public CodeActionHandler(ILogger<CodeActionHandler> logger, IWhoaCowboy whoaCowboy, ICodeActionStore codeActionStore)
+		public CodeActionHandler(ILogger<CodeActionHandler> logger, IWhoaCowboy whoaCowboy, IClientAbilities clientAbilities, ICodeActionStore codeActionStore)
 		{
 			_logger = logger;
 			_whoaCowboy = whoaCowboy;
 			_logger.LogInformation("Code action constructed...");
+			_clientAbilities = clientAbilities;
 			_codeActionStore = codeActionStore;
 		}
 
@@ -53,6 +54,7 @@ namespace OmniLsp
 			_logger.LogInformation("Code action enabled...");
 
 			#region debugging code
+#if FALSE
 			// maybe temporary, maybe not, let's log the incoming diagnostics to see if something about the Visual Studio extension 
 			// and the code below with the where clauses is filtering out our actions:
 
@@ -65,27 +67,36 @@ namespace OmniLsp
 				;
 
 			_logger.LogInformation("CADIAG end");
+#endif
 
 			#endregion debugging code
 
 			var actions = request.Context.Diagnostics?
 				.Where(diagnostic => diagnostic?.Source != null)
 				.Where(diagnostic => diagnostic.Source.Equals(MoqGenerator.Constants.DiagnosticSource, StringComparison.Ordinal))
-				// .Where(diagnostic => !string.IsNullOrWhiteSpace(diagnostic?.Data?.ToString()))
-				.Where(diagnostic => Guid.TryParse(diagnostic.Code.Value.String, out var _))
-				.Select(diagnostic => new
+				.Select(diagnostic => 
 				{
-					diagnostic,
-					// edits = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>>(diagnostic.Data.ToString())
-					// edits = JsonConvert.DeserializeObject<IReadOnlyDictionary<string, IReadOnlyList<TextEdit>>>(diagnostic.Data.ToString())
-					
-					edits = _codeActionStore.GetAction(Guid.Parse(diagnostic.Code.Value.String))
-						.Select(pair => new
-						{
-							pair.Key,
-							Value = pair.Value.Select(TextEditAdapter.From)
-						})
-						.ToDictionary(pair => pair.Key, pair => pair.Value)
+					Dictionary<string, List<TextEdit>> edits;
+
+					if(_clientAbilities.CanReceiveDiagnosticData)	
+						edits = JsonSerializer.Deserialize<Dictionary<string, List<TextEdit>>>(diagnostic.Data.ToString());
+					else
+					{
+						edits = _codeActionStore.GetAction(diagnostic.Code.Value.String)
+							.Select(pair => new
+							{
+								pair.Key,
+								Value = pair.Value.Select(TextEditAdapter.From).ToList()
+							})
+							.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+					}
+
+					return new
+					{
+						diagnostic,
+						 edits
+					};
 				})
 				.SelectMany(
 					diagnostic => diagnostic.edits.Select(kvp =>

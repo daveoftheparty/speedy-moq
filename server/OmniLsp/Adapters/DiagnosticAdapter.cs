@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using Newtonsoft.Json;
+using MoqGenerator.Interfaces.Lsp;
 
 namespace OmniLsp.Adapters
 {
 	public class DiagnosticAdapter
 	{
-		public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic From(MoqGenerator.Model.Lsp.Diagnostic diagnostic)
+		public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic From(MoqGenerator.Model.Lsp.Diagnostic diagnostic, IClientAbilities clientAbilities)
 		{
 			DiagnosticSeverity severity = DiagnosticSeverity.Error;
 			switch(diagnostic.Severity)
@@ -27,18 +27,22 @@ namespace OmniLsp.Adapters
 					break;
 			}
 
-			// have to convert our TextEdit to Omni's version:
-			var omniData = diagnostic
-				.Data
-				.Select(teByNamespace => new
-				{
-					NamespaceName = teByNamespace.Key,
-					Edits = teByNamespace
-						.Value
-						.Select(TextEditAdapter.From)
-					}
-				)
-				.ToDictionary(pair => pair.NamespaceName, pair => pair.Edits);
+			Dictionary<string, IEnumerable<TextEdit>> omniData = null;
+			if(clientAbilities.CanReceiveDiagnosticData)
+			{
+				// have to convert our TextEdit to Omni's version:
+				omniData = diagnostic
+					.Data
+					.Select(teByNamespace => new
+					{
+						NamespaceName = teByNamespace.Key,
+						Edits = teByNamespace
+							.Value
+							.Select(TextEditAdapter.From)
+						}
+					)
+					.ToDictionary(pair => pair.NamespaceName, pair => pair.Edits);
+			}
 
 			return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic
 			{
@@ -51,13 +55,12 @@ namespace OmniLsp.Adapters
 				Code = diagnostic.Code,
 				Source = diagnostic.Source,
 				Message = diagnostic.Message,
-				// Data = JsonSerializer.Serialize(omniData)
-				Data = JsonConvert.SerializeObject(omniData)
+				Data = omniData != null ? JsonSerializer.Serialize(omniData) : null
 			};
 		}
 
 		// well, I wrote this method thinking I needed it. And as of now, I don't, but I don't want to write it again:
-		public static MoqGenerator.Model.Lsp.Diagnostic From(OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic diagnostic)
+		public static MoqGenerator.Model.Lsp.Diagnostic From(OmniSharp.Extensions.LanguageServer.Protocol.Models.Diagnostic diagnostic, IClientAbilities clientAbilities)
 		{
 			MoqGenerator.Model.Lsp.DiagnosticSeverity severity = MoqGenerator.Model.Lsp.DiagnosticSeverity.Error;
 			switch(diagnostic.Severity)
@@ -87,8 +90,7 @@ namespace OmniLsp.Adapters
 				diagnostic.Code,
 				diagnostic.Source,
 				diagnostic.Message,
-				// JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
-				JsonConvert.DeserializeObject<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
+				clientAbilities.CanReceiveDiagnosticData ? JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString()) : null
 			);
 		}
 	}

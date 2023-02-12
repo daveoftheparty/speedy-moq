@@ -10,14 +10,6 @@ namespace MoqGenerator
 		public static string DiagnosticSource = "SpeedyMoq";
 		public static string DiagnosticCode_CanMoq = "SpeedyMoq001";
 		public static string CodeActionFixTitle = "Generate Moq Setups";
-		
-		public static Dictionary<string, string> MessagesByDiagnosticCode = new()
-		{
-			{
-				DiagnosticCode_CanMoq,
-				"We can generate basic Moq code for you from this interface name!"
-			},
-		};
-		
+		public static string DiagnosticMessage = "We can generate basic Moq code for you from this interface name!";
 	}
 }

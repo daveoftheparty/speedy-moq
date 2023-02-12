@@ -42,7 +42,7 @@ namespace VisualStudioClient
 			//info.Arguments = "bar";
 
 			info.FileName = @"C:\src\daveoftheparty\speedy-moq\server\OmniLsp\bin\Debug\net6.0\OmniLsp.exe";
-			info.Arguments = "true";
+			info.Arguments = "true visual-studio";
 			info.RedirectStandardInput = true;
 			info.RedirectStandardOutput = true;
 			info.UseShellExecute = false;

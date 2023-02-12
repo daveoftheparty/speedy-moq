@@ -74,6 +74,9 @@ namespace MoqGenerator.UnitTests
 					return true;
 				});
 
+			var clientAbilities = new Mock<IClientAbilities>();
+			clientAbilities.SetupGet(x => x.CanReceiveDiagnosticData).Returns(true);
+
 			var diagnoser = new Diagnoser(
 				interfaceStore.Object,
 				mockText.Object,
@@ -81,6 +84,7 @@ namespace MoqGenerator.UnitTests
 				new InterfaceGenericsBuilder(),
 				new LoggerDouble<Diagnoser>(),
 				testFileFilter.Object,
+				clientAbilities.Object,
 				new Mock<ICodeActionStore>().Object
 				);
 			var textDoc = new TextDocumentItem(new TextDocumentIdentifier("somefile.cs", 0), Constants.LanguageId, input);

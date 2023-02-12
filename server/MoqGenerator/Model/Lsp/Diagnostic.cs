@@ -10,7 +10,6 @@ namespace MoqGenerator.Model.Lsp
 		string Code,
 		string Source,
 		string Message,
-		#warning kill this Data attribute if the CodeActionStore fixes the Visual Studio problem?
 		IReadOnlyDictionary<string, IReadOnlyList<TextEdit>> Data // anything extra we want to send to/process in code action provider
 	);
 

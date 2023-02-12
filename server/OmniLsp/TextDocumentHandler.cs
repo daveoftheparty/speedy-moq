@@ -23,14 +23,17 @@ namespace OmniLsp
 		private readonly ILanguageServerFacade _router;
 		private readonly IDiagnoser _diagnoser;
 		private readonly IInterfaceStore _interfaceStore;
-		private readonly string _thisInstance = Guid.NewGuid().ToString();
+		private readonly IClientAbilities _clientAbilities;
 		
-		public TextDocumentHandler(ILogger<TextDocumentHandler> logger, ILanguageServerFacade router, IDiagnoser diagnoser, IInterfaceStore interfaceStore)
+		private readonly string _thisInstance = Guid.NewGuid().ToString();
+
+		public TextDocumentHandler(ILogger<TextDocumentHandler> logger, ILanguageServerFacade router, IDiagnoser diagnoser, IInterfaceStore interfaceStore, IClientAbilities clientAbilities)
 		{
 			_logger = logger;
 			_router = router;
 			_diagnoser = diagnoser;
 			_interfaceStore = interfaceStore;
+			_clientAbilities = clientAbilities;
 
 			_logger.LogInformation($"hello from {nameof(TextDocumentHandler)}:{_thisInstance} ctor...");
 		}
@@ -100,7 +103,7 @@ namespace OmniLsp
 				_router.TextDocument.PublishDiagnostics(new PublishDiagnosticsParams
 				{
 					Uri = uri,
-					Diagnostics = diagnostics.Select(d => DiagnosticAdapter.From(d)).ToList()
+					Diagnostics = diagnostics.Select(d => DiagnosticAdapter.From(d, _clientAbilities)).ToList()
 				});
 			}
 			catch (Exception e)
