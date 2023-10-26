@@ -2,12 +2,14 @@
 
 ## Table of Contents
 - [Contributing](#contributing)
-  - [Architecture](#architecture)
-  - [Building/launching from a fresh clone](#buildinglaunching-from-a-fresh-clone)
-  - [Debugging the server](#debugging-the-server)
-  - [New models in code](#new-models-in-code)
-  - [Unit testing](#unit-testing)
-  - [Logging in the server](#logging-in-the-server)
+	- [Table of Contents](#table-of-contents)
+	- [Architecture](#architecture)
+	- [Building/launching from a fresh clone](#buildinglaunching-from-a-fresh-clone)
+		- [Troubleshooting](#troubleshooting)
+	- [Debugging the server](#debugging-the-server)
+	- [New models in code](#new-models-in-code)
+	- [Unit testing](#unit-testing)
+	- [Logging in the server](#logging-in-the-server)
 
 ## Architecture
 
@@ -27,6 +29,9 @@ After that, you should be able to launch the extension using F5, and debug the s
 I am currently developing this extension under:
 - node 14.15.3
 - npm 6.14.13
+
+### Troubleshooting
+If you get an error message in the extension host (F5 to launch the debugger with the extension in a new VsCode instance) about not being able to find OmniLsp.dll; try running build.bat at the root of this repo and see if that fixes your problem. For whatever reason, a dotnet build in the server folder will give you an OmniLsp.exe but not a dll. Running build.bat will give you the dll.
 
 ## Debugging the server
 
