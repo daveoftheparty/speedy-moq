@@ -1,3 +1,23 @@
+- [Picking this back up 2023-10-25](#picking-this-back-up-2023-10-25)
+	- [testing in Visual Studio](#testing-in-visual-studio)
+	- [next steps](#next-steps)
+- [Porting to Visual Studio (or another client)](#porting-to-visual-studio-or-another-client)
+	- [google searches](#google-searches)
+	- [vscode extension resources](#vscode-extension-resources)
+	- [multi-client resources](#multi-client-resources)
+	- [Main visual studio extension resources](#main-visual-studio-extension-resources)
+		- [VisualStudio.Exensibility](#visualstudioexensibility)
+
+# Picking this back up 2023-10-25
+boy did I let this sit long (from February)
+
+## testing in Visual Studio
+To launch/test extension in Visual Studio, you actually need to start in VS. Open solution `.\daveoftheparty\speedy-moq\clients\visual-studio\VisualStudioClient.sln` and in there, you can just press F5. I don't recall if you can then debug the server from VSCode, or you'd have to do an attach process from within either VSCode or Visual Studio... but this is how you launch and manually test
+
+## next steps
+lots of links and info below, but VSCode still works from F5, Visual Studio as well.
+really the next thing is all about packaging/deploying the extension for both clients and any cleanup/reorg to do now.
+
 # Porting to Visual Studio (or another client)
 
 plan:
@@ -76,11 +96,3 @@ https://www.youtube.com/watch?v=L5zYUZvWnJE&list=PLReL099Y5nRc6m-CLanAhWGO3_7DD_
 a repo that has samples:
 https://github.com/microsoft/VSExtensibility
 
-## Why won't the thing just fuckin work?
-
-this talks about content types, it's possible that my language server isn't being allowed to work with c#, though I don't think that's the case since I actually do get the diagnostics. but maybe the system is disallowing the quickfix-- teh actual codeaction-- due to this:
-https://github.com/microsoft/VSSDK-Extensibility-Samples/issues/201
-
-
-also, above came from this google search:
-implementing ILanguageClient for textDocument/codeAction

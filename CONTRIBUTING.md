@@ -6,6 +6,7 @@
 	- [Architecture](#architecture)
 	- [Building/launching from a fresh clone](#buildinglaunching-from-a-fresh-clone)
 		- [Troubleshooting](#troubleshooting)
+	- [Writing Code (Smoke Testing)](#writing-code-smoke-testing)
 	- [Debugging the server](#debugging-the-server)
 	- [New models in code](#new-models-in-code)
 	- [Unit testing](#unit-testing)
@@ -32,6 +33,14 @@ I am currently developing this extension under:
 
 ### Troubleshooting
 If you get an error message in the extension host (F5 to launch the debugger with the extension in a new VsCode instance) about not being able to find OmniLsp.dll; try running build.bat at the root of this repo and see if that fixes your problem. For whatever reason, a dotnet build in the server folder will give you an OmniLsp.exe but not a dll. Running build.bat will give you the dll.
+
+## Writing Code (Smoke Testing)
+
+More in subsequent sections, but this is about writing code without being in debug mode: testing the extension as you're writing.
+
+I work in VSCode almost exclusively, and like mentioned in the section above, F5 will launch the extension (in another VSCode window) to quickly smoke test code.
+
+If you need to smoke test in Visual Studio, you'll actually have to open up this specific solution *__in__* Visual Studio: `.\daveoftheparty\speedy-moq\clients\visual-studio\VisualStudioClient.sln`. Once opened, you can also use F5 to launch the extension (in a new Visual Studio window) for debugging. Note that Visual Studio is *__much__* slower than VSCode, and you may not get the "Generate Moq Setups" Quickfix (Ctrl + .) on an interface name until the extension has fully loaded. You can either watch the output window for the Speedy-Moq extension and wait for everything to be ready and *__then__* try to generate Moq setups-- or, you can simply change the whitespace around your interface name (tab/shft tab a few times) until Visual Studio catches up and Speedy Moq is ready to go.
 
 ## Debugging the server
 
