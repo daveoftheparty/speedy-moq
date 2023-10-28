@@ -5,7 +5,10 @@
 	- [google searches](#google-searches)
 	- [vscode extension resources](#vscode-extension-resources)
 	- [multi-client resources](#multi-client-resources)
+		- [ACTUAL BLOG about creating extension for THREE different clients!!!](#actual-blog-about-creating-extension-for-three-different-clients)
 	- [Main visual studio extension resources](#main-visual-studio-extension-resources)
+		- [walkthrough](#walkthrough)
+		- [cmd line publishing](#cmd-line-publishing)
 		- [VisualStudio.Exensibility](#visualstudioexensibility)
 
 # Picking this back up 2023-10-25
@@ -15,8 +18,11 @@ boy did I let this sit long (from February)
 To launch/test extension in Visual Studio, you actually need to start in VS. Open solution `.\daveoftheparty\speedy-moq\clients\visual-studio\VisualStudioClient.sln` and in there, you can just press F5. I don't recall if you can then debug the server from VSCode, or you'd have to do an attach process from within either VSCode or Visual Studio... but this is how you launch and manually test
 
 ## next steps
-lots of links and info below, but VSCode still works from F5, Visual Studio as well.
+- lots of links and info below, but VSCode still works from F5, Visual Studio as well.
 really the next thing is all about packaging/deploying the extension for both clients and any cleanup/reorg to do now.
+- even though I moved the vscode client to clients/vscode instead of just being the whole "clients" folder, this whole repo is still sort of setup as if vscode was the only client. Instructions for deploying, and package lock and vscode folder are setup to only do dev/deployment from vscode. That's ok, but may impact how I organize for multi deployments.
+
+
 
 # Porting to Visual Studio (or another client)
 
@@ -71,9 +77,11 @@ bicep appears to have both a vscode and vs client
 https://github.com/Azure/bicep
 
 
-`ACTUAL BLOG about creating extension for THREE different clients!!!`
+
+### ACTUAL BLOG about creating extension for THREE different clients!!!
 https://www.toptal.com/javascript/language-server-protocol-tutorial
 
+The above article has some associated repos. [Here is one](https://github.com/reergymerej/standalone-vscode-ext/tree/master) that is a pretty bare bones vscode extension. The reason this is interesting is because I can look at what is in the package.json and the extension.js and the .vscode folder to see the BARE MINIMUM for setting up an extension for that client. 
 
 ## Main visual studio extension resources
 
@@ -87,6 +95,12 @@ https://visualstudio.microsoft.com/vs/features/extend/
 ms dox SPECIFICALLY about creating an LSP extension:
 https://learn.microsoft.com/en-us/visualstudio/extensibility/adding-an-lsp-extension?view=vs-2022
 
+### walkthrough
+
+Publishing: https://learn.microsoft.com/en-us/visualstudio/extensibility/walkthrough-publishing-a-visual-studio-extension?view=vs-2022
+ 
+### cmd line publishing
+https://learn.microsoft.com/en-us/visualstudio/extensibility/walkthrough-publishing-a-visual-studio-extension-via-command-line?view=vs-2022
 
 
 ### VisualStudio.Exensibility 
