@@ -22,7 +22,11 @@ To launch/test extension in Visual Studio, you actually need to start in VS. Ope
 really the next thing is all about packaging/deploying the extension for both clients and any cleanup/reorg to do now.
 - even though I moved the vscode client to clients/vscode instead of just being the whole "clients" folder, this whole repo is still sort of setup as if vscode was the only client. Instructions for deploying, and package lock and vscode folder are setup to only do dev/deployment from vscode. That's ok, but may impact how I organize for multi deployments.
 
-
+- this path is the cmd line for publishing to visual studio:
+	- c:\Program Files\Microsoft Visual Studio\2022\Community\VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe
+	- i'll have to probably create a build batch file just for visual studio, and i'll want to copy the following images into ./clients/visual-studio/ in case I ever update their source in the ./docs/images folder:
+		- /icon-32x32.png
+		- /icon-200x200.png
 
 # Porting to Visual Studio (or another client)
 

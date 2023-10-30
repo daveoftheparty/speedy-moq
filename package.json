@@ -24,7 +24,7 @@
 		"TDD",
 		"Generation"
 	],
-	"icon": "docs/images/icon.png",
+	"icon": "docs/images/icon-128x128.png",
 	"galleryBanner": {
 		"color": "#252526",
 		"theme": "dark"

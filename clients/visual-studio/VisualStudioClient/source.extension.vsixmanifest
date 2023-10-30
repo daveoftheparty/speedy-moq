@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="VisualStudioClient.a3a4ad95-468d-4b54-aeb1-6890a1480002" Version="1.0" Language="en-US" Publisher="Company" />
-		<DisplayName>VisualStudioClient</DisplayName>
-		<Description>Empty VSIX Project.</Description>
+		<Identity Id="speedy-moq" Version="0.1.2" Language="en-US" Publisher="daveoftheparty" />
+		<DisplayName>Speedy Moq</DisplayName>
+		<Description xml:space="preserve">Code generation to speed up testing in C# using the Moq library.</Description>
+		<MoreInfo>https://github.com/daveoftheparty/speedy-moq</MoreInfo>
+		<License>MIT</License>
+		<Icon>icon-32x32.png</Icon>
+		<PreviewImage>icon-200x200.png</PreviewImage>
+		<Tags>C#;Moq;Testing;TDD;Generation</Tags>
+		<Preview>true</Preview>
+		<ReleaseNotes>https://raw.githubusercontent.com/daveoftheparty/speedy-moq/main/CHANGELOG.md</ReleaseNotes>
 	</Metadata>
 	<Installation>
 		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
