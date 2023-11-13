@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="speedy-moq" Version="0.1.2" Language="en-US" Publisher="daveoftheparty" />
+		<Identity Id="speedy-moq-visual-studio" Version="0.1.2" Language="en-US" Publisher="daveoftheparty" />
 		<DisplayName>Speedy Moq</DisplayName>
 		<Description xml:space="preserve">Code generation to speed up testing in C# using the Moq library.</Description>
 		<MoreInfo>https://github.com/daveoftheparty/speedy-moq</MoreInfo>
-		<License>MIT</License>
-		<Icon>icon-32x32.png</Icon>
-		<PreviewImage>icon-200x200.png</PreviewImage>
+		<License>Resources\MIT-License.txt</License>
+		<Icon>Resources\icon-128x128.png</Icon>
+		<PreviewImage>Resources\icon-200x200.png</PreviewImage>
 		<Tags>C#;Moq;Testing;TDD;Generation</Tags>
 		<Preview>true</Preview>
-		<ReleaseNotes>https://raw.githubusercontent.com/daveoftheparty/speedy-moq/main/CHANGELOG.md</ReleaseNotes>
+		<!-- <ReleaseNotes>https://raw.githubusercontent.com/daveoftheparty/speedy-moq/main/CHANGELOG.md</ReleaseNotes> -->
 	</Metadata>
 	<Installation>
 		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 18.0)">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
 	</Installation>

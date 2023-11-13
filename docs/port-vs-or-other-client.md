@@ -24,10 +24,7 @@ really the next thing is all about packaging/deploying the extension for both cl
 
 - this path is the cmd line for publishing to visual studio:
 	- c:\Program Files\Microsoft Visual Studio\2022\Community\VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe
-	- i'll have to probably create a build batch file just for visual studio, and i'll want to copy the following images into ./clients/visual-studio/ in case I ever update their source in the ./docs/images folder:
-		- /icon-32x32.png
-		- /icon-200x200.png
-
+	- i'll have to probably create a build batch file just for visual studio
 # Porting to Visual Studio (or another client)
 
 plan:
