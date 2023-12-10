@@ -80,11 +80,21 @@
 	</ItemGroup>
 	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 	<Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-			 Other similar extension points exist, see Microsoft.Common.targets.
-	<Target Name="BeforeBuild">
+
+
+
+	<Target Name="CustomBeforeBuild" BeforeTargets="Build">
+		<!-- https://learn.microsoft.com/en-us/visualstudio/msbuild/exec-task?view=vs-2022 -->
+		<Exec Command="dotnet build -c Release ../../../server/OmniLsp/OmniLsp.csproj /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary --output ./LanguageServer"/>
 	</Target>
-	<Target Name="AfterBuild">
+
+	<Target Name="IncludeLanguageServerDependencies" AfterTargets="CustomBeforeBuild">
+		<ItemGroup>
+			<VSIXSourceItem Include="./LanguageServer/**">
+				<VSIXSubPath>LanguageServer</VSIXSubPath>
+			</VSIXSourceItem>
+		</ItemGroup>
 	</Target>
-	-->
+
+
 </Project>

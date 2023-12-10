@@ -23,3 +23,12 @@ dotnet build ^
 	/consoleloggerparameters:NoSummary ^
 	--output ./clients/vscode/out/server
 
+:: /E is empty dirs
+:: /Q is do not list filenames
+:: /H copies hidden and system files
+:: /R overwrites read-only files
+:: /Y disables prompting when a file will be overwritten
+xcopy ^
+	./clients/vscode/out/server ^
+	./clients/visual-studio/VisualStudioClient/LanguageServer ^
+	/E /Q /H /R /Y

@@ -36,12 +36,21 @@ namespace VisualStudioClient
 		public async Task<Connection> ActivateAsync(CancellationToken token)
 		{
 			await Task.Yield();
-			//DebugLocation();
+			DebugLocation();
 			ProcessStartInfo info = new ProcessStartInfo();
+
 			//info.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Server", @"MockLanguageServer.exe");
 			//info.Arguments = "bar";
+			/*
+            string vsixInstallPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string languageServerExePath = Path.Combine(vsixInstallPath, BicepLanguageServerClientConstants.BicepLanguageServerInstallationSubPath, "Bicep.LangServer.exe");
+			 */
 
-			info.FileName = @"C:\src\daveoftheparty\speedy-moq\server\OmniLsp\bin\Debug\net6.0\OmniLsp.exe";
+
+			//info.FileName = @"C:\src\daveoftheparty\speedy-moq\server\OmniLsp\bin\Debug\net6.0\OmniLsp.exe";
+			
+			info.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "LanguageServer", "OmniLsp.exe");
+
 			info.Arguments = "true visual-studio";
 			info.RedirectStandardInput = true;
 			info.RedirectStandardOutput = true;
@@ -145,6 +154,7 @@ namespace VisualStudioClient
 			{
 				var a = Assembly.GetExecutingAssembly().Location;
 				var b = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+				var c = "hold it right there";
 			} catch (Exception e) { }
 
 			try
