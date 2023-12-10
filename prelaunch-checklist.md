@@ -3,7 +3,7 @@
   - run unit tests
   - do a dotnet clean / dotnet build cycle to check for new warnings
   - update changelog.md
-- publish to marketplace
+- publish to marketplace (this will create a new commit on your branch that is tagged and update package.json for you, just need to push the commit after successful publich!)
 - push commit/tags
 - merge your PR into main
 

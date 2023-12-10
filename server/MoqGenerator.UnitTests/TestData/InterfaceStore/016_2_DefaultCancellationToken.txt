@@ -1,0 +1,8 @@
+using System.Threading;
+
+namespace asdf;
+
+public interface Thang
+{
+	Task<bool> SomeServiceWithCancel(string foo, CancellationToken cancellationToken = default(CancellationToken));
+}

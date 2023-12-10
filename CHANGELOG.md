@@ -1,18 +1,20 @@
 Change Log
 
 
-- [0.1.1 (Jan 16, 2023)](#011-jan-16-2023)
+- [0.1.2 (Dec 9, 2023)](#012-dec-9-2023)
 	- [Changes](#changes)
+- [0.1.1 (Jan 16, 2023)](#011-jan-16-2023)
+	- [Changes](#changes-1)
 	- [Examples](#examples)
 		- [Detecting Test Files](#detecting-test-files)
 - [0.1.0 (Jan 15, 2023)](#010-jan-15-2023)
-	- [Changes](#changes-1)
+	- [Changes](#changes-2)
 	- [Examples](#examples-1)
 		- [Mocking Indexers](#mocking-indexers)
 		- [Better Generics](#better-generics)
 - [0.0.9 (Aug 23, 2021)](#009-aug-23-2021)
 - [0.0.8 (Aug 14, 2021)](#008-aug-14-2021)
-	- [Changes](#changes-2)
+	- [Changes](#changes-3)
 	- [Examples](#examples-2)
 		- [Linq Expression Wrapping](#linq-expression-wrapping)
 - [0.0.7 (Aug 10, 2021)](#007-aug-10-2021)
@@ -20,6 +22,35 @@ Change Log
 - [0.0.5 (Aug 7, 2021)](#005-aug-7-2021)
 - [0.0.4 (Aug 5, 2021)](#004-aug-5-2021)
 
+# 0.1.2 (Dec 9, 2023)
+## Changes
+Fixed a bug with defaults in callbacks.
+
+Before change, this signature:
+```csharp
+public interface ISmile
+{
+	void ShallWeSmile(bool happy = true);
+}
+```
+would generate this callback:
+```csharp
+smile
+	.Setup(shallWeSmile)
+	.Callback((bool happy = true) =>
+	{
+		return;
+	});
+```
+which was a syntax error. and will now generate:
+```csharp
+smile
+	.Setup(shallWeSmile)
+	.Callback((bool happy) =>
+	{
+		return;
+	});
+```
 
 # 0.1.1 (Jan 16, 2023)
 
