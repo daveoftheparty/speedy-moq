@@ -69,8 +69,8 @@ namespace MoqGenerator.UnitTests
 		[TestCaseSource(typeof(TestDataReader), nameof(TestDataReader.GetTestInputs), new object[] {"TestData/InterfaceStore/"})]
 		public async Task GoAsync((string testIdMessage, string[] testInputs) test)
 		{
-			// if(test.testIdMessage != "TestId: 006")
-				// return;
+			// if(test.testIdMessage != "TestId: 016")
+			// 	return;
 
 			var interfaceDict = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(test.testInputs[0]);
 			var inputText = test.testInputs[1];
@@ -125,6 +125,10 @@ namespace MoqGenerator.UnitTests
 							JsonSerializer.Serialize(actualDefinition),
 							test.testIdMessage
 							);
+
+
+						// If this fails, the CleanDefaults() method in InterfaceStore class may have been a hack and not an actual solve
+						Assert.True(expectedDefinition.Methods.All(m => m.Parameters.All(p => p.ParameterDefinition == p.ParameterType + " " + p.ParameterName)), test.testIdMessage);
 					}
 				}
 			}

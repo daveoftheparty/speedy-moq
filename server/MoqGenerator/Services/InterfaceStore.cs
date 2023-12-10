@@ -174,7 +174,7 @@ namespace MoqGenerator.Services
 									{
 										ParameterType = param.Type.ToString(),
 										ParameterName = param.Identifier.Text,
-										ParameterDefinition = param.ToString()
+										ParameterDefinition = CleanDefaults(param.ToString())
 									})
 							};
 						})
@@ -223,6 +223,12 @@ namespace MoqGenerator.Services
 			return dict;
 		}
 
+		private string CleanDefaults(string parameterDefinition)
+		{
+			var tokens = parameterDefinition.Split('=');
+			return tokens[0].Trim();
+
+		}
 
 		private Dictionary<string, Dictionary<string, InterfaceDefinition>> GetProperties(List<SemanticModel> models, string uriAsFile)
 		{

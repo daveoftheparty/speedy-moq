@@ -1,0 +1,24 @@
+{
+	"Bar": {
+		"InterfaceName": "Smile",
+		"Generics": null,
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "ShallWeSmile",
+				"ReturnType": "void",
+				"Parameters": [
+					{
+						"ParameterType": "bool",
+						"ParameterName": "happy",
+						"ParameterDefinition": "bool happy"
+					}
+				]
+			}
+		],
+		"Properties": [
+			
+		],
+		"Indexer": null
+	}
+}

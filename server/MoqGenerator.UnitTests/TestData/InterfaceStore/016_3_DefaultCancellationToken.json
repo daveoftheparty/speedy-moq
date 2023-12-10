@@ -1,0 +1,29 @@
+{
+	"asdf": {
+		"InterfaceName": "Thang",
+		"Generics": null,
+		"SourceFile": "",
+		"Methods": [
+			{
+				"MethodName": "SomeServiceWithCancel",
+				"ReturnType": "Task<bool>",
+				"Parameters": [
+					{
+						"ParameterType": "string",
+						"ParameterName": "foo",
+						"ParameterDefinition": "string foo"
+					},
+					{
+						"ParameterType": "CancellationToken",
+						"ParameterName": "cancellationToken",
+						"ParameterDefinition": "CancellationToken cancellationToken"
+					}
+				]
+			}
+		],
+		"Properties": [
+			
+		],
+		"Indexer": null
+	}
+}

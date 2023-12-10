@@ -1,0 +1,6 @@
+namespace Bar;
+
+public interface Smile
+{
+	void ShallWeSmile(bool happy = true);
+}
