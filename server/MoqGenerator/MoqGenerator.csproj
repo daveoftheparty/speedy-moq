@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Buildalyzer" Version="3.2.2" />
     <PackageReference Include="Buildalyzer.Workspaces" Version="3.2.2" />
