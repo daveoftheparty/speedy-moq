@@ -32,7 +32,7 @@ namespace OmniLsp
 		{
 			return new CodeActionRegistrationOptions
 			{
-				DocumentSelector = new DocumentSelector(new DocumentFilter { Pattern = MoqGenerator.Constants.FileGlob} ),
+				DocumentSelector = new TextDocumentSelector(new TextDocumentFilter { Pattern = MoqGenerator.Constants.FileGlob} ),
 				CodeActionKinds = new Container<CodeActionKind>(CodeActionKind.QuickFix),
 				ResolveProvider = false
 			};

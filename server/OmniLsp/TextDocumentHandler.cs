@@ -37,15 +37,15 @@ namespace OmniLsp
 
 		#region TextDocumentSyncHandlerBase overrides
 
-		private readonly DocumentSelector _documentSelector = new DocumentSelector(new DocumentFilter { Pattern = MoqGenerator.Constants.FileGlob });
+		private readonly TextDocumentSelector _documentSelector = new TextDocumentSelector(new TextDocumentFilter { Pattern = MoqGenerator.Constants.FileGlob });
 
 		public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri) => new TextDocumentAttributes(uri, MoqGenerator.Constants.LanguageId);
 		
-		protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(SynchronizationCapability capability, ClientCapabilities clientCapabilities)
+		protected override TextDocumentSyncRegistrationOptions CreateRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
 		{
 			return new TextDocumentSyncRegistrationOptions
 			{
-				DocumentSelector = DocumentSelector.ForLanguage(MoqGenerator.Constants.LanguageId),
+				DocumentSelector = TextDocumentSelector.ForLanguage(MoqGenerator.Constants.LanguageId),
 				Change = TextDocumentSyncKind.Full
 			};
 		}

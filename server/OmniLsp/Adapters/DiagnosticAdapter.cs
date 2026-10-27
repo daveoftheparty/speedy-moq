@@ -94,7 +94,7 @@ namespace OmniLsp.Adapters
 				severity,
 				diagnostic.Code,
 				diagnostic.Source,
-				diagnostic.Message,
+				diagnostic.Message.HasString ? diagnostic.Message.String : diagnostic.Message.MarkupContent?.Value,
 				JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyList<MoqGenerator.Model.Lsp.TextEdit>>>(diagnostic.Data.ToString())
 			);
 		}
