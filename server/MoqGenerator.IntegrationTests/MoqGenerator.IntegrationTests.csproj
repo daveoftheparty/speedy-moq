@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-    <PackageReference Include="NUnit" Version="3.13.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="coverlet.collector" Version="3.0.2" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="NUnit" />
+		<PackageReference Include="NUnit3TestAdapter" />
+		<PackageReference Include="coverlet.collector" />
+		<PackageReference Include="Moq" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MoqGenerator\MoqGenerator.csproj" />
-    <ProjectReference Include="..\MoqGenerator.UnitTests\MoqGenerator.UnitTests.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MoqGenerator\MoqGenerator.csproj" />
+		<ProjectReference Include="..\MoqGenerator.UnitTests\MoqGenerator.UnitTests.csproj" />
+	</ItemGroup>
 
 </Project>
