@@ -4,6 +4,7 @@
     <PackageReference Include="Buildalyzer" />
     <PackageReference Include="Buildalyzer.Workspaces" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
   </ItemGroup>
 
