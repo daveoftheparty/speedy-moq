@@ -45,7 +45,7 @@ namespace OmniLsp
 		{
 			return new TextDocumentSyncRegistrationOptions
 			{
-				DocumentSelector = TextDocumentSelector.ForLanguage(MoqGenerator.Constants.LanguageId),
+				DocumentSelector = new TextDocumentSelector(new TextDocumentFilter { Language = MoqGenerator.Constants.LanguageId, Scheme = "file" }),
 				Change = TextDocumentSyncKind.Full
 			};
 		}
