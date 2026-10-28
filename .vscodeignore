@@ -18,6 +18,7 @@ client/node_modules/**
 server/**
 **/*.tsbuildinfo
 build.bat
+build.sh
 CODEOWNERS
 prelaunch-checklist.md
 client/package-lock.json
