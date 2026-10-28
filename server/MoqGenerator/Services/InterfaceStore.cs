@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 using Buildalyzer;
 using Buildalyzer.Workspaces;
+using Buildalyzer.IO;
 
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model;
@@ -494,7 +495,7 @@ namespace MoqGenerator.Services
 					break;
 
 				buildWatch.Start();
-				var project = manager.GetProject(projectName);
+				var project = manager.GetProject(IOPath.Parse(projectName));
 				buildWatch.Stop();
 
 				addToWorkspaceWatch.Start();
