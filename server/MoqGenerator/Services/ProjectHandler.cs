@@ -89,7 +89,9 @@ namespace MoqGenerator.Services
 					.Descendants()
 					.Where(xl => xl.Name.LocalName == "ProjectReference")
 					.Select(projRefPath => projRefPath.Attribute("Include").Value)
-					.Select(refPath => 
+					// csproj files typically use Windows separators, which won't resolve on mac/linux
+					.Select(refPath => refPath.Replace('\\', Path.DirectorySeparatorChar))
+					.Select(refPath =>
 					{
 						if(Path.IsPathFullyQualified(refPath) && File.Exists(refPath))
 							return refPath;

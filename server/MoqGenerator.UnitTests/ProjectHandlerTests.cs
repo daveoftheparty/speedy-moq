@@ -83,8 +83,11 @@ namespace MoqGenerator.UnitTests
 				var testIdMessage = new DirectoryInfo(dir).Name;
 				var fileReadPath = dir + Path.DirectorySeparatorChar;
 
-				var rootProj = fileReadPath + File.ReadAllText(fileReadPath + "root.txt").Trim();
-				var expected = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(fileReadPath + "expected.json"));
+				// test data is written with Windows separators, normalize for the current OS
+				var rootProj = fileReadPath + ToLocalSeparators(File.ReadAllText(fileReadPath + "root.txt").Trim());
+				var expected = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(fileReadPath + "expected.json"))
+					.Select(ToLocalSeparators)
+					.ToList();
 				yield return
 				(
 					testIdMessage,
@@ -93,5 +96,7 @@ namespace MoqGenerator.UnitTests
 				);
 			}
 		}
+
+		private static string ToLocalSeparators(string path) => path.Replace('\\', Path.DirectorySeparatorChar);
 	}
 }

@@ -1,4 +1,4 @@
-using System.IO;
+using System;
 
 using MoqGenerator.Interfaces.Lsp;
 using MoqGenerator.Model.Lsp;
@@ -9,8 +9,8 @@ namespace MoqGenerator.Services
 	{
 		public string GetFilePath(TextDocumentIdentifier textDocId)
 		{
-			var nonStandardizedPath = textDocId.Uri.Replace("file:///", "");
-			return Path.GetFullPath(nonStandardizedPath);
+			// Uri handles percent-decoding, and keeps the leading slash on unix paths
+			return new Uri(textDocId.Uri).LocalPath;
 		}
 	}
 }

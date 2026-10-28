@@ -10,13 +10,12 @@
 	"license": "MIT",
 	"version": "0.0.0",
 	"engines": {
-		"vscode": "^1.43.0"
+		"vscode": "^1.91.0"
 	},
 	"dependencies": {
-		"vscode-languageclient": "^7.0.0"
+		"vscode-languageclient": "^11.0.0"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.43.0",
-		"@vscode/test-electron": "^1.6.1"
+		"@types/vscode": "~1.91.0"
 	}
 }

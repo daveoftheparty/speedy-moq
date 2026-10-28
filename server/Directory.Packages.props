@@ -1,0 +1,30 @@
+<Project>
+
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+	</PropertyGroup>
+
+
+
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+		<PackageVersion Include="Moq" Version="4.21.0" />
+		<PackageVersion Include="NUnit" Version="5.0.0" />
+		<PackageVersion Include="NUnit3TestAdapter" Version="6.3.1" />
+		<PackageVersion Include="coverlet.collector" Version="10.1.0" />
+
+		<PackageVersion Include="Buildalyzer" Version="9.0.0" />
+		<PackageVersion Include="Buildalyzer.Workspaces" Version="9.0.0" />
+		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
+		<PackageVersion Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="5.9.0" />
+		<PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.14" />
+
+		<PackageVersion Include="OmniSharp.Extensions.LanguageServer" Version="0.19.11" />
+
+		<!-- security pins: transitive via Buildalyzer -> Microsoft.Build.Tasks.Core -->
+		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+		<PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.14" />
+	</ItemGroup>
+
+</Project>

@@ -89,7 +89,12 @@ namespace MoqGenerator.UnitTests
 
 			try
 			{
-				Assert.AreEqual(JsonSerializer.Serialize(expected), JsonSerializer.Serialize(actual), test.testIdMessage);
+				// compare content, not line endings: Diagnoser emits Environment.NewLine,
+				// and expected json may be authored on either Windows or mac
+				Assert.AreEqual(
+					JsonSerializer.Serialize(expected).Replace("\\r\\n", "\\n"),
+					JsonSerializer.Serialize(actual).Replace("\\r\\n", "\\n"),
+					test.testIdMessage);
 			}
 			catch
 			{
