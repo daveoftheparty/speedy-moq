@@ -17,3 +17,9 @@ client/node_modules/**
 !client/node_modules/balanced-match/**
 server/**
 **/*.tsbuildinfo
+build.bat
+CODEOWNERS
+prelaunch-checklist.md
+client/package-lock.json
+docs/**
+!docs/images/icon.png

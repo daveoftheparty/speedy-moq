@@ -61,9 +61,6 @@
 		"watch": "tsc -b -w",
 		"postinstall": "cd client && npm install && npm install && cd .."
 	},
-	"dependencies": {
-		"vscode-languageclient": "^11.0.0"
-	},
 	"devDependencies": {
 		"@types/node": "^20.19.43",
 		"@types/vscode": "~1.91.0",
