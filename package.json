@@ -30,7 +30,7 @@
 		"theme": "dark"
 	},
 	"engines": {
-		"vscode": "^1.43.0"
+		"vscode": "^1.91.0"
 	},
 	"activationEvents": [
 		"onLanguage:csharp"
@@ -62,11 +62,11 @@
 		"postinstall": "cd client && npm install && npm install && cd .."
 	},
 	"dependencies": {
-		"vscode-languageclient": "^7.0.0"
+		"vscode-languageclient": "^11.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^20.19.43",
-		"@types/vscode": "^1.43.0",
+		"@types/vscode": "~1.91.0",
 		"typescript": "^7.0.2"
 	}
 }
